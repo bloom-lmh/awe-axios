@@ -457,10 +457,12 @@ describe('4. 加入子项测试', () => {
     });
   });
   test.only('4.4 @HttpApi上直接添加绝对路径', async () => {
-    const port = 4000;
-    @HttpApi(`http://localhost:${port}/users`)
+    @HttpApi(`http://localhost:4000/users`)
     class UserApi {
-      @Get('list/:name/:id')
+      @Get({
+        url: '',
+        retry: true,
+      })
       async getUsers(
         @PathParam('id') id: string,
         @PathParam('name') name: string,

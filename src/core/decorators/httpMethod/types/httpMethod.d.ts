@@ -14,9 +14,9 @@ export type RetryConfig =
        */
       delay?: number;
     }
-  | boolean
-  | number
-  | [number, number];
+  | boolean // 是否开启，开启则采用默认值
+  | number // 请求重传的次数
+  | [number, number]; // 请求重传次数和延时（基础延时）
 
 /**
  * 防抖配置

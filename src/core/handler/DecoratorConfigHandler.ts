@@ -9,6 +9,14 @@ export class DecoratorConfigHandler {
    * @description 去除无用配置
    */
   treeShakingConfig<T extends object, K extends keyof T>(config: T, keys: K[]): Omit<T, K> {
+    return DecoratorConfigHandler.treeShakingConfig(config, keys);
+  }
+
+  /**
+   * 树摇配置
+   * @description 去除无用配置
+   */
+  static treeShakingConfig<T extends object, K extends keyof T>(config: T, keys: K[]): Omit<T, K> {
     // 深拷贝config
     let cloneConfig = ObjectUtils.deepClone(config);
     for (const key of keys) {
@@ -20,7 +28,6 @@ export class DecoratorConfigHandler {
     }
     return cloneConfig;
   }
-
   /**
    * 保留指定配置
    * @param config 配置对象
