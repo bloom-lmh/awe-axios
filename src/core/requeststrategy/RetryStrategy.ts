@@ -1,16 +1,20 @@
 import { RetryConfig } from '../decorators/httpMethod/types/httpMethod';
+import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 
 /**
  * 请求重传策略
  * @param requestExcutor
  * @returns
  */
-export function RetryStrategy(requestFn: () => Promise<any>, config: RetryConfig) {
+export function RetryStrategy(requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>, config: RetryConfig) {
   // 默认配置
   const defaultConfig = {
     count: 3,
     delay: 1000,
   };
+  if (!config) {
+    return requestFn;
+  }
   if (typeof config === 'number') {
     defaultConfig.count = config;
   }
@@ -23,13 +27,9 @@ export function RetryStrategy(requestFn: () => Promise<any>, config: RetryConfig
     defaultConfig.count = config[0] || defaultConfig.count;
     defaultConfig.delay = config[1] || defaultConfig.delay;
   }
-  if (!config) {
-    return requestFn;
-  }
   const { count, delay } = defaultConfig;
-
   // 返回执行函数
-  return async () => {
+  return async (httpRequestConfig: HttpRequestConfig) => {
     // 最后一次错误
     let lastError;
     // 进行请求重传
@@ -41,7 +41,7 @@ export function RetryStrategy(requestFn: () => Promise<any>, config: RetryConfig
           const backoffDelay = delay * Math.pow(2, i - 1);
           await new Promise(resolve => setTimeout(resolve, backoffDelay));
         }
-        return await requestFn();
+        return await requestFn(httpRequestConfig);
       } catch (error) {
         lastError = error;
         if (i === count - 1) {

@@ -456,7 +456,7 @@ describe('4. 加入子项测试', () => {
       message: 'http://localhost:4000/users/list/:name/:id',
     });
   });
-  test.only('4.4 @HttpApi上直接添加绝对路径', async () => {
+  test('4.4 @HttpApi上直接添加绝对路径', async () => {
     @HttpApi(`http://localhost:4000/users`)
     class UserApi {
       @Get({

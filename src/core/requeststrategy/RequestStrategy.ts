@@ -4,6 +4,8 @@ import axios from 'axios';
 
 /**
  * 请求策略
+ * @param requestFn 请求函数
+ * @param config 防抖配置
  */
 export function RequestStrategy(): any {
   return (config: HttpRequestConfig) => {
