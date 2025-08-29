@@ -1,13 +1,14 @@
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import axios from 'axios';
+import { RetryConfig, ThrottleConfig } from '../decorators/httpMethod/types/httpMethod';
 
 /**
  * 请求策略
  * @param requestFn 请求函数
  * @param config 防抖配置
  */
-export function RequestStrategy(): any {
+export function baseRequest(): any {
   return (config: HttpRequestConfig) => {
     const { refAxios = axios } = config;
     // 树摇配置

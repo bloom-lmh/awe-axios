@@ -1,37 +1,45 @@
 import { RetryConfig } from '../decorators/httpMethod/types/httpMethod';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
+import { Signal } from '../signal/Signal';
 
 /**
  * 请求重传策略
  * @param requestExcutor
  * @returns
  */
-export function RetryStrategy(requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>, config: RetryConfig) {
+export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>, config: RetryConfig) {
   // 默认配置
-  const defaultConfig = {
+  let defaultConfig = {
     count: 3,
-    delay: 1000,
+    delay: 100,
+    signal: new Signal(),
   };
+  // 处理配置
   if (!config) {
     return requestFn;
   }
   if (typeof config === 'number') {
     defaultConfig.count = config;
   }
+  if (config instanceof Signal) {
+    config = { signal: config };
+  }
   if (typeof config === 'object') {
-    config = config as {};
-    defaultConfig.count = config.count || defaultConfig.count;
-    defaultConfig.delay = config.delay || defaultConfig.delay;
+    defaultConfig = { ...config, ...defaultConfig };
   }
   if (Array.isArray(config)) {
     defaultConfig.count = config[0] || defaultConfig.count;
     defaultConfig.delay = config[1] || defaultConfig.delay;
   }
-  const { count, delay } = defaultConfig;
-  // 返回执行函数
+  const { count, delay, signal } = defaultConfig;
+  // 实现请求重传
   return async (httpRequestConfig: HttpRequestConfig) => {
+    if (signal.isAborted()) {
+      return await requestFn(httpRequestConfig);
+    }
     // 最后一次错误
     let lastError;
+
     // 进行请求重传
     for (let i = 0; i < count; i++) {
       try {
@@ -41,10 +49,12 @@ export function RetryStrategy(requestFn: (httpRequestConfig: HttpRequestConfig) 
           const backoffDelay = delay * Math.pow(2, i - 1);
           await new Promise(resolve => setTimeout(resolve, backoffDelay));
         }
+        console.log(`执行了:${i + 1}次,延时${delay}`);
+
         return await requestFn(httpRequestConfig);
       } catch (error) {
         lastError = error;
-        if (i === count - 1) {
+        if (i >= count - 1) {
           break;
         }
       }

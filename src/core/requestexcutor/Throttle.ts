@@ -1,17 +1,18 @@
 import { ThrottleConfig } from '../decorators/httpMethod/types/httpMethod';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
+import { Signal } from '../signal/Signal';
 
 /**
  * 节流请求策略
  */
-export function ThrottleStrategy(
+export function withThrottle(
   requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>,
   config: ThrottleConfig,
 ) {
   // 默认配置
-  const defaultConfig = {
+  let defaultConfig = {
     interval: 100,
-    signal: null,
+    signal: new Signal(),
     immediate: true,
   };
   if (!config) {
@@ -21,16 +22,20 @@ export function ThrottleStrategy(
   if (typeof config === 'number') {
     defaultConfig.interval = config;
   }
+  if (config instanceof Signal) {
+    config = { signal: config };
+  }
   if (typeof config === 'object') {
-    defaultConfig.interval = config.interval || defaultConfig.interval;
-    defaultConfig.signal = config.signal || defaultConfig.signal;
-    defaultConfig.immediate = config.immediate || defaultConfig.immediate;
+    defaultConfig = { ...config, ...defaultConfig };
   }
   // 实现节流
-  let { interval, immediate } = defaultConfig;
+  let { interval, immediate, signal } = defaultConfig;
   let lastTime = Date.now();
   let timer: any = null;
   return async (httpRequestConfig: HttpRequestConfig) => {
+    if (signal.isAborted()) {
+      return await requestFn(httpRequestConfig);
+    }
     // 首次直接执行
     if (immediate) {
       immediate = !immediate;

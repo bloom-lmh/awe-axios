@@ -3,7 +3,6 @@ import { DecoratedClassOrProto, MethodDecorator } from '../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { MethodDecoratorFactory } from '../MethodDecoratorFactory';
 import { MethodDecoratorValidator } from '@/core/validator/MethodDecoratorValidator';
-import { AxiosPlusRequestConfig } from './types/httpMethod';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecoratorStateManager';
@@ -15,6 +14,10 @@ import { axiosPlusRequestConfigSchema } from '@/core/schema/httpMethod/HttpMetho
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { Inject } from '..';
+import { baseRequest } from '@/core/requestexcutor/BaseRequest';
+import { withRetry } from '@/core/requestexcutor/Retry';
+import { withThrottle } from '@/core/requestexcutor/Throttle';
+import { withDebounce } from '@/core/requestexcutor/Debounce';
 
 /**
  * Get装饰器工厂
@@ -101,9 +104,9 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     // 若是对象只检测AxiosPlus的配置
     if (typeof config === 'object') {
       config = this.configHandler.partialConfig(config, ['throttle', 'debounce', 'retry']);
+      // throttle和debounce不能同时存在，以及一些边界值测试
+      JoiUtils.validate(axiosPlusRequestConfigSchema, config);
     }
-    // throttle和debounce不能同时存在，以及一些边界值测试
-    JoiUtils.validate(axiosPlusRequestConfigSchema, config);
   }
 
   /**
@@ -150,11 +153,21 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * 实现配置
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
-  protected applyConfig(): void {
+  protected applyConfig(): (config: HttpRequestConfig) => Promise<any> {
     // 获取原始配置
-    // const { throttle, debounce, retry } = this.decoratorConfig;
+    const { throttle, debounce, retry } = this.decoratorConfig;
     // 实现这些功能
-    //config.setAdapter()
+    let requestFn = baseRequest();
+    if (retry) {
+      requestFn = withRetry(requestFn, retry);
+    }
+    if (throttle) {
+      requestFn = withThrottle(requestFn, throttle);
+    }
+    if (debounce) {
+      requestFn = withDebounce(requestFn, debounce);
+    }
+    return requestFn;
   }
 
   /**
@@ -218,7 +231,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       // 设置状态
       this.setupState(target, propertyKey);
       // 实现配置
-      this.applyConfig();
+      const request = this.applyConfig();
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(descriptor.value, {
         /**
@@ -227,13 +240,13 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
          * @param _this 调用代理方法时的this
          * @param args 调用代理方法传入的参数
          */
-        apply: (invoke, _this, args) => {
+        apply: async (invoke, _this, args) => {
           // 后处理配置
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig();
           // 发送请求
-          //return refAxios(axiosRequestConfig);
+          return await request(this.decoratorConfig);
         },
       });
       return descriptor;

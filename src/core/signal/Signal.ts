@@ -10,10 +10,21 @@ export class Signal {
   /**
    * 是否取消
    */
-  isAborted() {}
+  isAborted() {
+    return this.aborted;
+  }
 
   /**
-   * 取消请求
+   * 取消信号量
    */
-  abort() {}
+  abort() {
+    this.aborted = true;
+  }
+
+  /**
+   * 启用信号量
+   */
+  enable() {
+    this.aborted = false;
+  }
 }

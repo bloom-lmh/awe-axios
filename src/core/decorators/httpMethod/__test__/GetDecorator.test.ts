@@ -26,12 +26,21 @@ const server = setupServer(
     }),
   ],
 );
+// 劫持axios函数，此后axios变为了mock函数
+jest.mock('axios');
+// axios声明为mock方法
+const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// 劫持定时器，需要手动推荐定时器时间
+jest.useFakeTimers();
 beforeAll(() => {
   server.listen();
 });
-
 afterAll(() => {
   server.close();
+});
+afterEach(() => {
+  // 清理每次测试的状态
+  jest.clearAllMocks();
 });
 describe.skip('1. Get装饰器基本流程测试', () => {
   test('1.1 装饰器冲突测试', () => {
@@ -460,8 +469,7 @@ describe('4. 加入子项测试', () => {
     @HttpApi(`http://localhost:4000/users`)
     class UserApi {
       @Get({
-        url: '',
-        retry: true,
+        url: 'list/:name/:id',
       })
       async getUsers(
         @PathParam('id') id: string,
@@ -478,4 +486,76 @@ describe('4. 加入子项测试', () => {
       message: 'http://localhost:4000/users/list/:name/:id',
     });
   });
+});
+
+describe.only('5. 加入防抖节流等功能进行测试', () => {
+  test('5.1 不启用请求重发功能', async () => {
+    const request = axios.create({
+      baseURL: 'http://localhost:3000',
+    });
+    @HttpApi('users')
+    @RefAxios(request)
+    class UserApi {
+      @Get('/list/:name/:id')
+      async getUsers(@PathParam('id') id: string, @PathParam('name') name: string): Promise<any> {}
+    }
+
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('1', 'xm');
+    console.log(data);
+    expect(data).toEqual({
+      message: 'http://localhost:3000/users/list/:name/:id',
+    });
+  });
+  test.only('5.2 启用请求重发功能，并使用默认值', async () => {
+    const mockResponse = { message: 'http://localhost:8000/list/xm/1' };
+
+    // 模拟：失败、失败、成功
+    mockedAxios
+      .mockRejectedValueOnce(new Error('Network Error'))
+      .mockRejectedValueOnce(new Error('Network Error'))
+      .mockResolvedValueOnce(mockResponse);
+    @HttpApi('http://localhost:8000')
+    class UserApi {
+      @Get({
+        url: '/list/:name/:id',
+        retry: true,
+      })
+      async getUsers(@PathParam('id') id: string, @PathParam('name') name: string): Promise<any> {}
+    }
+    const userApi = new UserApi();
+    const resultPromise = userApi.getUsers('1', 'xm');
+    // 第一次请求（立即执行）
+    await Promise.resolve(); // 让微任务队列执行
+
+    // 第一次重试（100ms）
+    jest.advanceTimersByTime(100);
+    await Promise.resolve(); // 确保 Promise 回调执行
+    // 第二次重试（200ms）
+    jest.advanceTimersByTime(200);
+    await Promise.resolve();
+    // 第三次重试（10000ms）
+    jest.advanceTimersByTime(10000);
+    await Promise.resolve();
+    const result = await resultPromise;
+    expect(mockedAxios).toHaveBeenCalledTimes(3);
+    expect(result).toEqual(mockResponse);
+  }, 13_000);
+
+  test('5.3 启用请求重发功能，并传入数值作为重发次数', async () => {});
+  test('5.4 启用请求重发功能，并传入数组作为重发次数和延时', async () => {});
+  test('5.5 启用请求重发功能，并设置信号量，取消和开启请求重发', async () => {});
+
+  test('5.6 不启用防抖功能', async () => {});
+  test('5.7 启用防抖功能，并使用默认值', async () => {});
+  test('5.8 启用防抖功能，并传入数值所谓防抖延时', async () => {});
+  test('5.9 启用防抖功能，传入信号量', async () => {});
+  test('5.10 启用防抖功能，传入对象', async () => {});
+  test('5.11 启用防抖功能，并使用默认值', async () => {});
+
+  test('5.12 不启用节流功能', async () => {});
+  test('5.13 启用节流功能，并使用默认值', async () => {});
+  test('5.14 启用节流功能，并传入数值作为间隔', async () => {});
+  test('5.15 启用节流功能，并传入信号量', async () => {});
+  test('5.16 启用节流功能，并传入对象', async () => {});
 });

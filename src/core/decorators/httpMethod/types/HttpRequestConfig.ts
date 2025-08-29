@@ -26,7 +26,7 @@ import {
   TransitionalOptions,
 } from 'axios';
 import { HttpMethodDecoratorConfig } from './HttpMethodDecoratorConfig';
-import { DebounceConfig, RetryConfig } from './httpMethod';
+import { DebounceConfig, RetryConfig, ThrottleConfig } from './httpMethod';
 
 /**
  * http请求配置
@@ -66,12 +66,37 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
   setRetry(retryConfig: RetryConfig) {
     this.axiosConfig.retry = retryConfig;
   }
+  /**
+   * 获取请求重传配置
+   */
+  get retry() {
+    return this.axiosConfig.retry;
+  }
 
   /**
    * 设置防抖
    */
-  setDebounce(debounce: DebounceConfig) {
-    this.axiosConfig.debounce = debounce;
+  setDebounce(debounceConfig: DebounceConfig) {
+    this.axiosConfig.debounce = debounceConfig;
+  }
+  /**
+   * 获取防抖配置
+   */
+  get debounce() {
+    return this.axiosConfig.debounce;
+  }
+  /**
+   * 设置节流
+   */
+  setThrottle(throttleConfig: ThrottleConfig) {
+    this.axiosConfig.throttle = throttleConfig;
+  }
+
+  /**
+   * 获取节流配置
+   */
+  get throttle() {
+    return this.axiosConfig.throttle;
   }
 
   // ========== 基础请求配置 ==========

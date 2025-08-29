@@ -1,3 +1,4 @@
+import { Signal } from '@/core/signal/Signal';
 import { Axios, AxiosInstance } from 'axios';
 
 /**
@@ -13,9 +14,14 @@ export type RetryConfig =
        * 请求重传延时(单位ms)
        */
       delay?: number;
+      /**
+       * 信号量
+       */
+      signal?: Signal;
     }
   | boolean // 是否开启，开启则采用默认值
   | number // 请求重传的次数
+  | Signal
   | [number, number]; // 请求重传次数和延时（基础延时）
 
 /**
@@ -24,16 +30,17 @@ export type RetryConfig =
 export type DebounceConfig =
   | {
       /**
-       * 取消防抖的信号量
-       */
-      signal?: any;
-      /**
        * 防抖延时
        */
       delay?: number;
+      /**
+       * 信号量
+       */
+      signal?: Signal;
     }
   | boolean
-  | number;
+  | number
+  | Signal;
 
 /**
  * 节流配置
@@ -43,7 +50,7 @@ export type ThrottleConfig =
       /**
        * 取消节流的信号量
        */
-      signal?: any;
+      signal?: Signal;
       /**
        * 节流间隔
        */
@@ -54,7 +61,8 @@ export type ThrottleConfig =
       immediate?: boolean;
     }
   | boolean
-  | number;
+  | number
+  | Signal;
 /**
  * AxiosPlus为axios请求配置增加的额外配置
  */
