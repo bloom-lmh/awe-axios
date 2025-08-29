@@ -3,7 +3,7 @@ import { Signal } from './Signal';
 /**
  * 信号量控制器
  */
-export abstract class SignalController {
+export class SignalController {
   /**
    * 信号量
    */

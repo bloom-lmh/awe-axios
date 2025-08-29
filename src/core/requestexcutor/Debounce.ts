@@ -27,24 +27,29 @@ export function withDebounce(
     config = { signal: config };
   }
   if (typeof config === 'object') {
-    defaultConfig = { ...config, ...defaultConfig };
+    defaultConfig = { ...defaultConfig, ...config };
   }
   // 实现防抖
   const { delay, signal } = defaultConfig;
-  let lastTime = Date.now();
+  let timer: any;
+
   return async (httpRequestConfig: HttpRequestConfig) => {
     // 取消防抖
     if (signal.isAborted()) {
       return await requestFn(httpRequestConfig);
     }
-    // 获取本次执行时间
-    let currentTime = Date.now();
-    // 本次执行时间与上次执行时间间隔
-    let span = currentTime - lastTime;
-    if (delay >= span) {
-      return await requestFn(httpRequestConfig);
-    } else {
-      lastTime = currentTime;
-    }
+    clearTimeout(timer);
+    return new Promise((resolve, reject) => {
+      timer = setTimeout(async () => {
+        try {
+          const result = await requestFn(httpRequestConfig);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          timer = null;
+        }
+      }, delay);
+    });
   };
 }

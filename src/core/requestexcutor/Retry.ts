@@ -25,7 +25,7 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
     config = { signal: config };
   }
   if (typeof config === 'object') {
-    defaultConfig = { ...config, ...defaultConfig };
+    defaultConfig = { ...defaultConfig, ...config };
   }
   if (Array.isArray(config)) {
     defaultConfig.count = config[0] || defaultConfig.count;
@@ -48,8 +48,8 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
           // 指数退避
           const backoffDelay = delay * Math.pow(2, i - 1);
           await new Promise(resolve => setTimeout(resolve, backoffDelay));
+          console.log(`执行了:${i + 1}次,延时${delay},幂等性${backoffDelay}`);
         }
-        console.log(`执行了:${i + 1}次,延时${delay}`);
 
         return await requestFn(httpRequestConfig);
       } catch (error) {

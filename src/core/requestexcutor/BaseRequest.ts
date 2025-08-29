@@ -1,7 +1,6 @@
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import axios from 'axios';
-import { RetryConfig, ThrottleConfig } from '../decorators/httpMethod/types/httpMethod';
 
 /**
  * 请求策略
@@ -18,6 +17,7 @@ export function baseRequest(): any {
       'debounce',
       'throttle',
     ]);
+
     return refAxios(axiosRequestConfig);
   };
 }

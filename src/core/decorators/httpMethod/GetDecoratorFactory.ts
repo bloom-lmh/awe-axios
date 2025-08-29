@@ -159,12 +159,16 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     // 实现这些功能
     let requestFn = baseRequest();
     if (retry) {
+      console.log('retry');
+
       requestFn = withRetry(requestFn, retry);
     }
     if (throttle) {
+      console.log('throttle');
       requestFn = withThrottle(requestFn, throttle);
     }
     if (debounce) {
+      console.log('debounce');
       requestFn = withDebounce(requestFn, debounce);
     }
     return requestFn;
@@ -246,7 +250,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
           // 后置配置检查
           this.postCheckConfig();
           // 发送请求
-          return await request(this.decoratorConfig);
+          return request(this.decoratorConfig);
         },
       });
       return descriptor;
