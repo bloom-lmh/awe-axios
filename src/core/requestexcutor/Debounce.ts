@@ -14,6 +14,7 @@ export function withDebounce(
   // 默认配置
   let defaultConfig = {
     signal: new Signal(),
+    immediate: false,
     delay: 100,
   };
   if (!config) {
@@ -30,12 +31,16 @@ export function withDebounce(
     defaultConfig = { ...defaultConfig, ...config };
   }
   // 实现防抖
-  const { delay, signal } = defaultConfig;
+  let { delay, immediate, signal } = defaultConfig;
   let timer: any;
-
   return async (httpRequestConfig: HttpRequestConfig) => {
     // 取消防抖
     if (signal.isAborted()) {
+      return await requestFn(httpRequestConfig);
+    }
+    // 立即执行
+    if (immediate) {
+      immediate = false;
       return await requestFn(httpRequestConfig);
     }
     clearTimeout(timer);

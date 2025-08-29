@@ -30,6 +30,10 @@ export type RetryConfig =
 export type DebounceConfig =
   | {
       /**
+       * 首次是否立即执行
+       */
+      immediate?: boolean;
+      /**
        * 防抖延时
        */
       delay?: number;
@@ -55,10 +59,6 @@ export type ThrottleConfig =
        * 节流间隔
        */
       interval?: number;
-      /**
-       * 首次是否立即执行
-       */
-      immediate?: boolean;
     }
   | boolean
   | number

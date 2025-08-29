@@ -39,6 +39,7 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
     }
     // 最后一次错误
     let lastError;
+    console.log('重传执行了');
 
     // 进行请求重传
     for (let i = 0; i < count; i++) {
@@ -48,9 +49,10 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
           // 指数退避
           const backoffDelay = delay * Math.pow(2, i - 1);
           await new Promise(resolve => setTimeout(resolve, backoffDelay));
-          console.log(`执行了:${i + 1}次,延时${delay},幂等性${backoffDelay}`);
         }
+        console.log(`重传执行${i + 1}次`);
 
+        // 需要await才能捕获错误，否则返回拒绝的promise
         return await requestFn(httpRequestConfig);
       } catch (error) {
         lastError = error;
