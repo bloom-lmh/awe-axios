@@ -114,6 +114,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
       if (!refAxios && config.refAxios) {
         httpConfig.setRefAxios(config.refAxios);
       }
+      // 合并mock配置
     });
     return config;
   }

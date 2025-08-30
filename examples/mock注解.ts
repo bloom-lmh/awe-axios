@@ -1,4 +1,4 @@
-import { Get } from '@/core/decorators';
+import { Get, HttpApi } from '@/core/decorators';
 import axios from 'axios';
 import { HttpResponse } from 'msw';
 
@@ -7,21 +7,18 @@ const getUserById = {
   fail: () => {},
 };
 const handler = () => {};
-
+@HttpApi({})
 class UserApi {
-  @Get()
-  /* @Mock({
-    success: {
-      handler: () => {
-        return HttpResponse.json({});
+  @Get({
+    mock: {
+      handlers: {
+        success: () => {},
       },
-      options: {},
-    },
-    fail: () => {
-      return HttpResponse.json({});
+      condition: () => {
+        return process.env.NODE_ENV === 'development';
+      },
     },
   })
-  @Mock(() => {}) */
   getUserById({}) {}
 }
 

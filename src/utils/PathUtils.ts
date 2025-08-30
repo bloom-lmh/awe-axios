@@ -10,7 +10,7 @@ export class PathUtils {
    * 构造函数
    * @param value 待处理的值
    */
-  constructor(value: string) {
+  constructor(value: string = '') {
     this.value = value;
   }
   /**
@@ -37,6 +37,7 @@ export class PathUtils {
     this.value = PathUtils.resolvePathParams(this.value, params);
     return this;
   }
+
   /**
    * 转换为结果
    * @returns 处理后的结果

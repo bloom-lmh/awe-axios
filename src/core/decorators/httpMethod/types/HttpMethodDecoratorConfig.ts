@@ -34,6 +34,10 @@ import {
 } from 'axios';
 
 /**
+ * 默认Http方法装饰器配置
+ */
+export const defaultHttpMtdDecoratorConfig: HttpMethodDecoratorConfig = {};
+/**
  * http 方法装饰器配置基类
  * @description 实现Axios请求配置建造者模式，提供统一的配置接口
  */

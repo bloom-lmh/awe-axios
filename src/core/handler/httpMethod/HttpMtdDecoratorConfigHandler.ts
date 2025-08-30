@@ -1,14 +1,12 @@
 import { HttpRequestConfig } from '@/core/decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../DecoratorConfigHandler';
 import { HttpMethodDecoratorConfig } from '@/core/decorators/httpMethod/types/HttpMethodDecoratorConfig';
+import { MockConfig } from '@/core/decorators/httpMethod/types/httpMethod';
 
 /**
  * http方法装饰器配置处理器
  */
 export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
-  /**
-   * 防抖配置项处理
-   */
   /**
    * 合并http装饰器和子项配置
    * @description 当有原子装饰器定义在http方法装饰器下时，需要将httpMethod装饰器与之进行合并，这个操作只会执行一次

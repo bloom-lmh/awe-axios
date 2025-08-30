@@ -14,7 +14,7 @@ type DecoratedClassProto = HasClassStateManager;
 /**
  * 被装饰类
  */
-export type DecoratedClass<T = any> = new (...args: any[]) => T;
+export type DecoratedClass<T = any> = (new (...args: any[]) => T) & HasClassStateManager;
 /**
  * 被装饰类或原型
  */

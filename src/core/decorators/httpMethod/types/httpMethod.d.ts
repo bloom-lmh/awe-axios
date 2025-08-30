@@ -84,13 +84,12 @@ export type MockConfig = {
    * mock处理器
    */
   handlers?: MockHandlers;
-  /**
-   * 是否开启mock
-   * @returns 如果返回true接口会走mock 返回false走真实接口
-   * @description 当某个接口开发完毕时可以关闭mock，走真实接口
-   */
-  on?: (() => boolean) | boolean;
 
+  /**
+   * 走mock的条件
+   * @description 开启mock后，为了不改变原代码，我们可以设置走真实接口的条件
+   */
+  condition?: () => boolean;
   /**
    * 运作次数
    * @description mock次数，当接口被mock对应次数后不再访问mock接口
@@ -159,5 +158,11 @@ export type HttpApiDecoratorConfig = {
   /**
    * mock配置
    */
-  mockOn?: (() => boolean) | boolean;
+  mock?: {
+    /**
+     * 走mock的条件
+     * @description 开启mock后，为了不改变原代码，我们可以设置走真实接口的条件
+     */
+    condition?: () => boolean;
+  };
 };

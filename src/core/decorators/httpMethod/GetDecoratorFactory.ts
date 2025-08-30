@@ -18,6 +18,9 @@ import { baseRequest } from '@/core/requestexcutor/BaseRequest';
 import { withRetry } from '@/core/requestexcutor/Retry';
 import { withThrottle } from '@/core/requestexcutor/Throttle';
 import { withDebounce } from '@/core/requestexcutor/Debounce';
+import { MockAPI } from '../mock/MockAPI';
+import { http } from 'msw';
+import { withMock } from '@/core/requestexcutor/Mock';
 
 /**
  * Get装饰器工厂
@@ -125,12 +128,18 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     }
     config.method = 'get';
 
-    // 与子装饰器配置合并
+    // 获取子项配置
     const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+    // 合并子项配置
     let httpRequestConfig = subItemsConfig
       ? this.configHandler.mergeSubItemsConfig(config, subItemsConfig)
       : new HttpRequestConfig(config);
 
+    const { refAxios = axios } = httpRequestConfig;
+    // 以axios的默认路径为baseURL
+    if (refAxios.defaults.baseURL) {
+      httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
+    }
     this.decoratorConfig = httpRequestConfig;
   }
 
@@ -154,8 +163,10 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
   protected applyConfig(): (config: HttpRequestConfig) => Promise<any> {
+    // 实现mock
+    this.applyMock();
     // 实现防抖、节流和重传
-    const { throttle, debounce, retry } = this.decoratorConfig;
+    const { throttle, debounce, retry, mock } = this.decoratorConfig;
     // 实现这些功能
     let requestFn = baseRequest();
     if (retry) {
@@ -167,13 +178,43 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     if (debounce) {
       requestFn = withDebounce(requestFn, debounce);
     }
+    if (mock) {
+      requestFn = withMock(requestFn, mock);
+    }
     return requestFn;
   }
 
   /**
    * 应用mock
    */
-  protected applyMock() {}
+  protected applyMock() {
+    const { mock } = this.decoratorConfig;
+    let absUrl = '';
+    // 注册handlers
+    if (mock && mock.handlers) {
+      // 获取路径
+      const { baseURL, url, allowAbsoluteUrls } = this.decoratorConfig;
+      // 获取装饰器唯一id
+      const decoratorId = this.decoratorInfo.id;
+      // 若允许url为绝对路径且url为绝对路径则采用url为绝对路径
+      if (url && allowAbsoluteUrls && PathUtils.isAbsoluteHttpUrl(url)) {
+        absUrl = url;
+      } else {
+        absUrl = baseURL + '/' + url;
+        absUrl = PathUtils.chain(absUrl).removeExtraSpace().removeExtraSlash().toResult();
+      }
+      // 是方法直接注册为默认
+      if (typeof mock.handlers === 'function') {
+        MockAPI.registerHandlers(http.get(absUrl + 'default' + '/' + decoratorId, () => {}));
+      }
+      if (typeof mock.handlers === 'object') {
+        // 遍历所有的属性作为键
+        for (let key in mock.handlers) {
+          MockAPI.registerHandlers(http.get(absUrl + key + '/' + decoratorId, mock.handlers[key]));
+        }
+      }
+    }
+  }
   /**
    * 后处理配置
    * @param target 被装饰的类或类原型
@@ -188,18 +229,16 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       DECORATORNAME.PATHPARAM,
       DECORATORNAME.QUERYPARAM,
     ]);
-    // 获取配置url
-    let { url = '', refAxios = axios } = httpRequestConfig;
     // 解析路径参数
-    let resolvedUrl = new PathUtils(url).resolvePathParams(pathParams).removeExtraSpace().removeExtraSlash().toResult();
+    let resolvedUrl = new PathUtils(httpRequestConfig.url)
+      .resolvePathParams(pathParams)
+      .removeExtraSpace()
+      .removeExtraSlash()
+      .toResult();
     // 设置查询参数
     httpRequestConfig.setParams(queryParams);
     // 设置基本路径
     httpRequestConfig.setUrl(resolvedUrl);
-    // 以axios的默认路径为baseURL
-    if (refAxios.defaults.baseURL) {
-      httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
-    }
   }
 
   /**
@@ -236,6 +275,8 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       this.setupState(target, propertyKey);
       // 实现配置
       const request = this.applyConfig();
+      // 获取mock配置
+      const { mock } = this.decoratorConfig;
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(descriptor.value, {
         /**
@@ -249,6 +290,15 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig();
+
+          /*   // 若开启了mock
+          if (mock) {
+            return {
+              mock: (type = 'default') => {
+                return request(this.decoratorConfig);
+              },
+            };
+          } */
           // 发送请求
           return request(this.decoratorConfig);
         },

@@ -20,6 +20,9 @@ export class PropertyDecoratorValidator implements DecoratorValidator {
     return this.instance ? this.instance : new PropertyDecoratorValidator();
   }
   /**
+   * 校验装饰器冲突
+   */
+  /**
    * 是否有依赖的装饰器
    * @param target 被装饰的目标对象或其原型
    * @param decoratorName 装饰器名称
