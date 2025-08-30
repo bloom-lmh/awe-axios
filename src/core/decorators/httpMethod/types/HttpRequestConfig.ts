@@ -26,7 +26,7 @@ import {
   TransitionalOptions,
 } from 'axios';
 import { HttpMethodDecoratorConfig } from './HttpMethodDecoratorConfig';
-import { DebounceConfig, RetryConfig, ThrottleConfig } from './httpMethod';
+import { DebounceConfig, MockConfig, MockHandlers, RetryConfig, ThrottleConfig } from './httpMethod';
 
 /**
  * http请求配置
@@ -97,6 +97,19 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
    */
   get throttle() {
     return this.axiosConfig.throttle;
+  }
+  /**
+   * 设置mock handlers
+   */
+  setMock(config: MockConfig) {
+    this.axiosConfig.mock = config;
+  }
+
+  /**
+   * 获取mock配置
+   */
+  get mock() {
+    return this.axiosConfig.mock;
   }
 
   // ========== 基础请求配置 ==========

@@ -1,5 +1,5 @@
 import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
-import { DecoratedClassOrProto, ClassDecorator, DecoratedClass, HttpApiDecoratorConfig } from '../decorator';
+import { DecoratedClassOrProto, ClassDecorator, DecoratedClass } from '../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { ClassDecoratorValidator } from '@/core/validator/ClassDecoratorValidator';
@@ -7,6 +7,7 @@ import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorSt
 import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecoratorStateManager';
 import { Inject } from '..';
 import { PathUtils } from '@/utils/PathUtils';
+import { HttpApiDecoratorConfig } from './types/httpMethod';
 
 /**
  * httpApi装饰器工厂

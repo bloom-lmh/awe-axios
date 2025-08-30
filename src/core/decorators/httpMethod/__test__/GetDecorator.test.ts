@@ -359,7 +359,7 @@ describe('3. 与@HttpApi集成测试', () => {
   });
 });
 
-describe('4. 加入子项测试', () => {
+describe('4. 加入子项@AxiosRef和@RefAxios测试', () => {
   test('4.1 能够通过@AxiosRef来添加axios实例', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000',

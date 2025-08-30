@@ -119,16 +119,16 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ) {
-    // 处理字符串配置项
+    // 标准化配置
     if (typeof config === 'string') {
       config = { url: config };
     }
     config.method = 'get';
 
-    // 获取并合并子装饰器配置
-    const sumItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
-    let httpRequestConfig = sumItemsConfig
-      ? this.configHandler.mergeSubItemsConfig(config, sumItemsConfig)
+    // 与子装饰器配置合并
+    const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+    let httpRequestConfig = subItemsConfig
+      ? this.configHandler.mergeSubItemsConfig(config, subItemsConfig)
       : new HttpRequestConfig(config);
 
     this.decoratorConfig = httpRequestConfig;
@@ -154,26 +154,26 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
   protected applyConfig(): (config: HttpRequestConfig) => Promise<any> {
-    // 获取原始配置
+    // 实现防抖、节流和重传
     const { throttle, debounce, retry } = this.decoratorConfig;
     // 实现这些功能
     let requestFn = baseRequest();
     if (retry) {
-      console.log('retry');
-
       requestFn = withRetry(requestFn, retry);
     }
     if (throttle) {
-      console.log('throttle');
       requestFn = withThrottle(requestFn, throttle);
     }
     if (debounce) {
-      console.log('debounce');
       requestFn = withDebounce(requestFn, debounce);
     }
     return requestFn;
   }
 
+  /**
+   * 应用mock
+   */
+  protected applyMock() {}
   /**
    * 后处理配置
    * @param target 被装饰的类或类原型

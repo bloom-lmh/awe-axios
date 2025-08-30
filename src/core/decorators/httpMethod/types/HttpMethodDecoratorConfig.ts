@@ -1,7 +1,13 @@
-import { AxiosPlusRequestConfig, DebounceConfig, RetryConfig, ThrottleConfig } from './httpMethod';
+import {
+  AxiosPlusRequestConfig,
+  DebounceConfig,
+  MockConfig,
+  MockHandlers,
+  RetryConfig,
+  ThrottleConfig,
+} from './httpMethod';
 import {
   AddressFamily,
-  Axios,
   AxiosAdapter,
   AxiosBasicCredentials,
   AxiosHeaders,
@@ -33,31 +39,6 @@ import {
  */
 export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>, AxiosPlusRequestConfig {
   /**
-   * 请求重传次数
-   */
-  // retry: number = 0;
-  /**
-   * 请求重传延时(单位ms)
-   */
-  //retryDelay: number = 1000;
-  /**
-   * 防抖
-   */
-  // debounce: boolean = false;
-  /**
-   * 防抖延迟
-   */
-  //debounceDelay: number = 500;
-  /**
-   * 节流
-   */
-  //throttle: boolean = false;
-  /**
-   * 节流间隔
-   */
-  // throttleInterval: number = 1000;
-
-  /**
    * axios引用
    */
   refAxios?: AxiosInstance;
@@ -75,6 +56,12 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
    * 节流
    */
   throttle?: ThrottleConfig;
+
+  /**
+   * mock
+   */
+  mock?: MockConfig;
+
   /**
    * 请求资源相对路径
    */

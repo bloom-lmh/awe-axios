@@ -1,17 +1,11 @@
 import { AxiosInstance } from 'axios';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../validator/PropertyDecoraotrValidator';
-import {
-  ClassDecorator,
-  ComponentDecoratorConfig,
-  HttpApiDecoratorConfig,
-  InjectDecoratorConfig,
-  ParameterDecorator,
-} from './decorator';
+import { ClassDecorator, ComponentDecoratorConfig, InjectDecoratorConfig, ParameterDecorator } from './decorator';
 import { InjectDecoratorStateManager } from '../statemanager/ioc/InjectDecoratorStateManager';
 import { InjectDecoratorFactory } from './ioc/InjectDecoratorFactory';
 import { ComponentDecoratorFactory } from './ioc/ComponentDecoratorFactory';
-import { HttpApiDecoratorFactory } from './ioc/HttpApiDecoratorFactory';
+import { HttpApiDecoratorFactory } from './httpMethod/HttpApiDecoratorFactory';
 import { RefAxiosDecoratorFactory } from './httpMethod/RefAxiosDecoratorFactory';
 import { AxiosRefDecoratorFactory } from './httpMethod/AxiosRefDecoratorFactory';
 import { GetDecoratorFactory } from './httpMethod/GetDecoratorFactory';
@@ -19,6 +13,7 @@ import { HttpMethodDecoratorConfig } from './httpMethod/types/HttpMethodDecorato
 import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
+import { HttpApiDecoratorConfig } from './httpMethod/types/httpMethod';
 
 /**
  * inject 装饰器

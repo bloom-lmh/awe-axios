@@ -14,7 +14,7 @@ type DecoratedClassProto = HasClassStateManager;
 /**
  * 被装饰类
  */
-export type DecoratedClass<T = any> = (new (...args: any[]) => T) & HasClassStateManager;
+export type DecoratedClass<T = any> = new (...args: any[]) => T;
 /**
  * 被装饰类或原型
  */
@@ -118,11 +118,6 @@ export type ParamDecoratorConfig = {
   paramName: string;
   paramIndex: number;
 };
-
-/**
- * api 装饰器配置
- */
-export type HttpApiDecoratorConfig = Omit<AxiosPlusRequestConfig, 'retry' | 'debounce' | 'throttle'>;
 
 /**
  * 装饰器类型
