@@ -8,6 +8,7 @@ import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecorator
 import { Inject } from '..';
 import { PathUtils } from '@/utils/PathUtils';
 import { HttpApiDecoratorConfig } from './types/httpMethod';
+import { Axios, AxiosInstance } from 'axios';
 
 /**
  * httpApi装饰器工厂
@@ -65,7 +66,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
    * @description 需要与方法装饰器进行合并等
    */
   protected preHandleConfig(
-    config: HttpApiDecoratorConfig | string | undefined,
+    config: HttpApiDecoratorConfig | string | AxiosInstance | undefined,
     target: DecoratedClass,
   ): HttpApiDecoratorConfig {
     config = config || '';
@@ -81,6 +82,12 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
           url: config,
         };
       }
+    }
+
+    if (typeof config === 'function') {
+      config = {
+        refAxios: config,
+      };
     }
     // 与子项配置合并
     const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPAPI);
@@ -102,7 +109,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
     // 做配置合并
     httpRequestConfigs.forEach(httpConfig => {
       httpConfig = httpConfig!;
-      const { baseURL, refAxios } = httpConfig;
+      let { baseURL, refAxios, mock } = httpConfig;
       // 若方法装饰器上没有设置baseURL则统一使用类装饰上的baseURL
       if (!baseURL && config.baseURL) {
         httpConfig.setBaseURL(config.baseURL);
@@ -115,6 +122,12 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
         httpConfig.setRefAxios(config.refAxios);
       }
       // 合并mock配置
+      if (config.mock) {
+        !mock && httpConfig.setMock(config.mock);
+        if (mock) {
+          mock = { ...config.mock, ...mock };
+        }
+      }
     });
     return config;
   }
@@ -144,7 +157,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
    * 创建装饰器
    * @param config
    */
-  public createDecorator(config?: HttpApiDecoratorConfig | string): ClassDecorator {
+  public createDecorator(config?: HttpApiDecoratorConfig | string | AxiosInstance): ClassDecorator {
     return (target: DecoratedClass) => {
       // 初始化装饰器信息
       this.initDecoratorInfo();

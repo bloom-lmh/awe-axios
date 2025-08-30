@@ -1,4 +1,5 @@
 import { RetryConfig } from '../decorators/httpMethod/types/httpMethod';
+import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { Signal } from '../signal/Signal';
 
@@ -7,7 +8,7 @@ import { Signal } from '../signal/Signal';
  * @param requestExcutor
  * @returns
  */
-export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>, config: RetryConfig) {
+export function withRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: RetryConfig) {
   // 默认配置
   let defaultConfig = {
     count: 3,
@@ -33,9 +34,9 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
   }
   const { count, delay, signal } = defaultConfig;
   // 实现请求重传
-  return async (httpRequestConfig: HttpRequestConfig) => {
+  return async (config: HttpMethodDecoratorConfig) => {
     if (signal.isAborted()) {
-      return await requestFn(httpRequestConfig);
+      return await requestFn(config);
     }
     // 最后一次错误
     let lastError;
@@ -53,7 +54,7 @@ export function withRetry(requestFn: (httpRequestConfig: HttpRequestConfig) => P
         console.log(`重传执行${i + 1}次`);
 
         // 需要await才能捕获错误，否则返回拒绝的promise
-        return await requestFn(httpRequestConfig);
+        return await requestFn(config);
       } catch (error) {
         lastError = error;
         if (i >= count - 1) {

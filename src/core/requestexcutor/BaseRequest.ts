@@ -1,3 +1,4 @@
+import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import axios from 'axios';
@@ -8,16 +9,17 @@ import axios from 'axios';
  * @param config 防抖配置
  */
 export function baseRequest(): any {
-  return (config: HttpRequestConfig) => {
+  return (config: HttpMethodDecoratorConfig) => {
     const { refAxios = axios } = config;
     // 树摇配置
-    const axiosRequestConfig = DecoratorConfigHandler.treeShakingConfig(config.getOriginalConfig(), [
+    const axiosRequestConfig = DecoratorConfigHandler.treeShakingConfig(config, [
       'refAxios',
       'retry',
       'debounce',
       'throttle',
     ]);
-
+    console.log('最终baseURL:', axiosRequestConfig.baseURL);
+    console.log('最终url:', axiosRequestConfig.url);
     return refAxios(axiosRequestConfig);
   };
 }

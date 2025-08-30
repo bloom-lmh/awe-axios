@@ -74,7 +74,7 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
    * 请求方法
    * @example 'get' | 'GET' | 'post' | 'POST' | 'put' | 'PUT' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'patch' | 'PATCH'
    */
-  method?: Method | string;
+  method?: Method;
   /**
    * http请求基本路径
    */

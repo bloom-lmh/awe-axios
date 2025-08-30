@@ -18,9 +18,8 @@ import { baseRequest } from '@/core/requestexcutor/BaseRequest';
 import { withRetry } from '@/core/requestexcutor/Retry';
 import { withThrottle } from '@/core/requestexcutor/Throttle';
 import { withDebounce } from '@/core/requestexcutor/Debounce';
-import { MockAPI } from '../mock/MockAPI';
-import { http } from 'msw';
 import { withMock } from '@/core/requestexcutor/Mock';
+import { MockAPI } from '../mock/MockAPI';
 
 /**
  * Get装饰器工厂
@@ -71,7 +70,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param target 被装饰的方法所属类获取原型
    * @param propertyKey 被装饰的方法名
    */
-  protected initDecoratorInfo(target: DecoratedClassOrProto, propertyKey: string | symbol): void {
+  protected initDecoratorInfo(): void {
     this.decoratorInfo = new DecoratorInfo()
       .setName(DECORATORNAME.GET)
       .setType('httpMethod')
@@ -127,7 +126,10 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       config = { url: config };
     }
     config.method = 'get';
-
+    // 为mock设置默认值
+    if (config.mock) {
+      config.mock = { ...MockAPI.defaultConfig, ...config.mock };
+    }
     // 获取子项配置
     const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
     // 合并子项配置
@@ -135,11 +137,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       ? this.configHandler.mergeSubItemsConfig(config, subItemsConfig)
       : new HttpRequestConfig(config);
 
-    const { refAxios = axios } = httpRequestConfig;
-    // 以axios的默认路径为baseURL
-    if (refAxios.defaults.baseURL) {
-      httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
-    }
     this.decoratorConfig = httpRequestConfig;
   }
 
@@ -162,64 +159,30 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * 实现配置
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
-  protected applyConfig(): (config: HttpRequestConfig) => Promise<any> {
+  protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock } = this.decoratorConfig;
-    // 实现这些功能
+    // 基础请求
     let requestFn = baseRequest();
+    // 伴随请求重发
     if (retry) {
       requestFn = withRetry(requestFn, retry);
     }
+    // 伴随节流
     if (throttle) {
       requestFn = withThrottle(requestFn, throttle);
     }
+    // 伴随防抖
     if (debounce) {
       requestFn = withDebounce(requestFn, debounce);
     }
+    // mock请求
     if (mock) {
-      const { url, baseURL, allowAbsoluteUrls } = this.decoratorConfig;
-      requestFn = withMock(requestFn, {
-        mock,
-        url,
-        baseURL,
-        allowAbsoluteUrls,
-        id: this.decoratorInfo.id,
-      });
+      requestFn = withMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;
   }
 
-  /**
-   * 应用mock
-   */
-  /*   protected applyMock() {
-    const { mock } = this.decoratorConfig;
-    let absUrl = '';
-    // 注册handlers
-    if (mock && mock.handlers) {
-      // 获取路径
-      const { baseURL, url, allowAbsoluteUrls } = this.decoratorConfig;
-      // 获取装饰器唯一id
-      const decoratorId = this.decoratorInfo.id;
-      // 若允许url为绝对路径且url为绝对路径则采用url为绝对路径
-      if (url && allowAbsoluteUrls && PathUtils.isAbsoluteHttpUrl(url)) {
-        absUrl = url;
-      } else {
-        absUrl = baseURL + '/' + url;
-        absUrl = PathUtils.chain(absUrl).removeExtraSpace().removeExtraSlash().toResult();
-      }
-      // 是方法直接注册为默认
-      if (typeof mock.handlers === 'function') {
-        MockAPI.registerHandlers(http.get(absUrl + 'default' + '/' + decoratorId, () => {}));
-      }
-      if (typeof mock.handlers === 'object') {
-        // 遍历所有的属性作为键
-        for (let key in mock.handlers) {
-          MockAPI.registerHandlers(http.get(absUrl + key + '/' + decoratorId, mock.handlers[key]));
-        }
-      }
-    }
-  } */
   /**
    * 后处理配置
    * @param target 被装饰的类或类原型
@@ -244,6 +207,15 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     httpRequestConfig.setParams(queryParams);
     // 设置基本路径
     httpRequestConfig.setUrl(resolvedUrl);
+    // 设置baseURL
+    let { refAxios = axios, mock } = httpRequestConfig;
+
+    // 以axios的默认路径为baseURL
+    if (refAxios.defaults.baseURL) {
+      httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
+    }
+    // mock与全局配置合并
+    mock = { ...MockAPI.globalConfig, ...mock };
   }
 
   /**
@@ -253,8 +225,8 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    */
   protected postCheckConfig(): void {
     // 检查url是否合法以及是否存在refAxios,是否存在baseURL。若即不存在refAxios又不存在baseURL则报错
-    const { refAxios, baseURL } = this.decoratorConfig;
-    if (!refAxios && !baseURL) {
+    const { baseURL } = this.decoratorConfig;
+    if (!baseURL) {
       throw new Error(
         'The refAxios which is the instance of axios with baseURL or baseURL is required in the decorator config.',
       );
@@ -269,7 +241,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
   public createDecorator(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
     return (target: DecoratedClassOrProto, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
       // 初始化装饰器信息
-      this.initDecoratorInfo(target, propertyKey);
+      this.initDecoratorInfo();
       // 校验装饰器
       this.validateDecorator(target, propertyKey);
       // 前置配置检查
@@ -288,13 +260,13 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
          * @param _this 调用代理方法时的this
          * @param args 调用代理方法传入的参数
          */
-        apply: async (invoke, _this, args) => {
+        apply: (invoke, _this, args) => {
           // 后处理配置
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig();
           // 发送请求
-          return request(this.decoratorConfig);
+          return request(this.decoratorConfig.getOriginalConfig());
         },
       });
       return descriptor;

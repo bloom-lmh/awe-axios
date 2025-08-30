@@ -1,4 +1,5 @@
 import { DebounceConfig } from '../decorators/httpMethod/types/httpMethod';
+import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { Signal } from '../signal/Signal';
 
@@ -7,10 +8,7 @@ import { Signal } from '../signal/Signal';
  * @param requestFn 请求函数
  * @param config 防抖配置
  */
-export function withDebounce(
-  requestFn: (httpRequestConfig: HttpRequestConfig) => Promise<any>,
-  config: DebounceConfig,
-) {
+export function withDebounce(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: DebounceConfig) {
   // 默认配置
   let defaultConfig = {
     signal: new Signal(),
@@ -33,21 +31,21 @@ export function withDebounce(
   // 实现防抖
   let { delay, immediate, signal } = defaultConfig;
   let timer: any;
-  return async (httpRequestConfig: HttpRequestConfig) => {
+  return async (config: HttpRequestConfig) => {
     // 取消防抖
     if (signal.isAborted()) {
-      return await requestFn(httpRequestConfig);
+      return await requestFn(config);
     }
     // 立即执行
     if (immediate) {
       immediate = false;
-      return await requestFn(httpRequestConfig);
+      return await requestFn(config);
     }
     clearTimeout(timer);
     return new Promise((resolve, reject) => {
       timer = setTimeout(async () => {
         try {
-          const result = await requestFn(httpRequestConfig);
+          const result = await requestFn(config);
           resolve(result);
         } catch (error) {
           reject(error);

@@ -84,7 +84,11 @@ export type MockConfig = {
    * mock处理器
    */
   handlers?: MockHandlers;
-
+  /**
+   * 是否开启mock
+   * @description 开启后，若条件满足则所有请求都会走mock接口
+   */
+  on?: boolean;
   /**
    * 走mock的条件
    * @description 开启mock后，为了不改变原代码，我们可以设置走真实接口的条件
@@ -102,6 +106,22 @@ export type MockConfig = {
    */
   signal?: Signal;
 };
+/**
+ * http方法
+ */
+export type MockMethod = 'all' | 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch';
+
+/**
+ * withMock 方法配置
+ */
+export interface WithMockConfig {
+  mock: MockConfig;
+  url: string;
+  baseURL: string;
+  allowAbsoluteUrls: boolean;
+  method: LowerMethod;
+  id: string;
+}
 /**
  * AxiosPlus为axios请求配置增加的额外配置
  */
@@ -159,6 +179,10 @@ export type HttpApiDecoratorConfig = {
    * mock配置
    */
   mock?: {
+    /**
+     * 是否开启mock
+     */
+    on?: boolean;
     /**
      * 走mock的条件
      * @description 开启mock后，为了不改变原代码，我们可以设置走真实接口的条件

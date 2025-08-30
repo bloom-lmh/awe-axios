@@ -39,6 +39,15 @@ export class PathUtils {
   }
 
   /**
+   * concat路径
+   * @param path 要拼接的路径
+   */
+  concat(...paths: string[]) {
+    this.value = PathUtils.concat(this.value, ...paths);
+    return this;
+  }
+
+  /**
    * 转换为结果
    * @returns 处理后的结果
    */
@@ -49,7 +58,7 @@ export class PathUtils {
    * 链式入口
    * @param value 待处理的值
    */
-  static chain(value: string): PathUtils {
+  static chain(value: string = ''): PathUtils {
     return new PathUtils(value);
   }
 
@@ -99,5 +108,12 @@ export class PathUtils {
    */
   static isAbsoluteHttpUrl(url: string): boolean {
     return /^https?:\/\//.test(url);
+  }
+
+  /**
+   * concat路径
+   */
+  static concat(base: string, ...paths: string[]): string {
+    return base + '/' + paths.join('/');
   }
 }

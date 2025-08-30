@@ -35,7 +35,7 @@ export function Component(config?: ComponentDecoratorConfig) {
 /**
  * httpApi decorator
  */
-export function HttpApi(config?: HttpApiDecoratorConfig | string): ClassDecorator {
+export function HttpApi(config?: HttpApiDecoratorConfig | string | AxiosInstance): ClassDecorator {
   return new HttpApiDecoratorFactory().createDecorator(config);
 }
 
