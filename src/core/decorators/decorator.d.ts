@@ -128,6 +128,10 @@ export type DecoratorType = 'httpMethod' | 'ioc' | 'method' | 'class' | 'propert
  */
 export interface DecorationInfo {
   /**
+   * 装饰器编号
+   */
+  id: string;
+  /**
    * 装饰器信息名称
    */
   name: string | symbol;

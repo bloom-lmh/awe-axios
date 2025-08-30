@@ -163,8 +163,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
   protected applyConfig(): (config: HttpRequestConfig) => Promise<any> {
-    // 实现mock
-    this.applyMock();
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock } = this.decoratorConfig;
     // 实现这些功能
@@ -179,7 +177,14 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       requestFn = withDebounce(requestFn, debounce);
     }
     if (mock) {
-      requestFn = withMock(requestFn, mock);
+      const { url, baseURL, allowAbsoluteUrls } = this.decoratorConfig;
+      requestFn = withMock(requestFn, {
+        mock,
+        url,
+        baseURL,
+        allowAbsoluteUrls,
+        id: this.decoratorInfo.id,
+      });
     }
     return requestFn;
   }
@@ -187,7 +192,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
   /**
    * 应用mock
    */
-  protected applyMock() {
+  /*   protected applyMock() {
     const { mock } = this.decoratorConfig;
     let absUrl = '';
     // 注册handlers
@@ -214,7 +219,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
         }
       }
     }
-  }
+  } */
   /**
    * 后处理配置
    * @param target 被装饰的类或类原型
@@ -275,8 +280,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       this.setupState(target, propertyKey);
       // 实现配置
       const request = this.applyConfig();
-      // 获取mock配置
-      const { mock } = this.decoratorConfig;
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(descriptor.value, {
         /**
@@ -290,15 +293,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig();
-
-          /*   // 若开启了mock
-          if (mock) {
-            return {
-              mock: (type = 'default') => {
-                return request(this.decoratorConfig);
-              },
-            };
-          } */
           // 发送请求
           return request(this.decoratorConfig);
         },
