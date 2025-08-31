@@ -5,13 +5,68 @@ import { ObjectUtils } from '@/utils/ObjectUtils';
  */
 export class DecoratorConfigHandler {
   /**
+   * 要处理的配置项
+   */
+  protected config: any;
+
+  /**
+   * 构造器
+   */
+  constructor(config: any = {}) {
+    this.config = ObjectUtils.deepClone(config);
+  }
+  /**
+   * 实现链式编程
+   * @param config 配置
+   * @param clone 是否要克隆一份配置，不再原配置项上进行修改
+   */
+  static chain(config: any) {
+    return new this(config);
+  }
+
+  /**
+   * 若已经有对象则可通过该方法设置配置项
+   */
+  setConfig(config: any) {
+    this.config = ObjectUtils.deepClone(config);
+    return this;
+  }
+
+  /**
+   * 获取结果
+   */
+  result() {
+    return this.config;
+  }
+  /**
    * 树摇配置
    * @description 去除无用配置
    */
-  treeShakingConfig<T extends object, K extends keyof T>(config: T, keys: K[]): Omit<T, K> {
-    return DecoratorConfigHandler.treeShakingConfig(config, keys);
+  treeShakingConfig<T extends object, K extends keyof T>(keys: K[]) {
+    for (const key of keys) {
+      const desc = Object.getOwnPropertyDescriptor(this.config, key);
+      if (desc?.configurable) {
+        // 显式检查可配置性
+        Reflect.deleteProperty(this.config, key);
+      }
+    }
+    return this;
   }
-
+  /**
+   * 保留指定配置
+   * @param config 配置对象
+   * @param keys  要保留的属性
+   * @returns 保留对应属性的配置对象
+   */
+  partialConfig<T extends object, K extends keyof T>(keys: K[]) {
+    let partialConfig: Pick<T, K> = {} as Pick<T, K>;
+    for (const key of keys) {
+      if (this.config.hasOwnProperty(key)) {
+        partialConfig[key] = this.config[key];
+      }
+    }
+    return this;
+  }
   /**
    * 树摇配置
    * @description 去除无用配置
@@ -34,7 +89,7 @@ export class DecoratorConfigHandler {
    * @param keys  要保留的属性
    * @returns 保留对应属性的配置对象
    */
-  partialConfig<T extends object, K extends keyof T>(config: T, keys: K[]): Pick<T, K> {
+  static partialConfig<T extends object, K extends keyof T>(config: T, keys: K[]): Pick<T, K> {
     let partialConfig: Pick<T, K> = {} as Pick<T, K>;
     for (const key of keys) {
       if (config.hasOwnProperty(key)) {
@@ -42,12 +97,5 @@ export class DecoratorConfigHandler {
       }
     }
     return partialConfig;
-  }
-
-  /**
-   * 合并与子项配置
-   */
-  mergeSubItemsConfig(decoratorConfig: any, subItemsConfig: any): any {
-    throw new Error('method not implemented.');
   }
 }

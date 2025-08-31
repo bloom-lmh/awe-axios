@@ -6,18 +6,7 @@ import { http, HttpResponse, RequestHandler, WebSocketHandler } from 'msw';
  * mock默认全局配置
  */
 const defaultConfig: MockConfig = {
-  handlers: {
-    default: () => {
-      return HttpResponse.json({
-        message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据',
-        data: {},
-      });
-    },
-  },
   on: true,
-  condition: () => {
-    return process.env.NODE_ENV === 'test';
-  },
 };
 
 /**
@@ -33,10 +22,20 @@ class MockApi {
    */
   private config: MockConfig;
   /**
+   * 是否真实关闭
+   */
+  private isRealOff: boolean = false;
+  /**
    * 默认配置
    */
   get defaultConfig() {
     return defaultConfig;
+  }
+  /**
+   * 是否真实关闭
+   */
+  get realOff() {
+    return this.isRealOff;
   }
   /**
    * 获取mock默认配置
@@ -65,10 +64,14 @@ class MockApi {
   }
   /**
    * 关闭mock监听服务
+   * @param [isReal=true] 是否真实关闭,若真实关闭后，所有接口
    */
-  off() {
+  off(isReal: boolean = false) {
     this.config.on = false;
-    this.server.close();
+    if (isReal) {
+      this.isRealOff = true;
+      this.server.close();
+    }
   }
   /**
    * 设置走mock的条件
@@ -89,14 +92,6 @@ class MockApi {
    */
   resetHandlers() {
     this.server.resetHandlers();
-    this.registerHandlers(
-      http.all('*', () => {
-        return HttpResponse.json({
-          message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据',
-          data: {},
-        });
-      }),
-    );
   }
   /**
    * 列出所有handler
@@ -123,13 +118,4 @@ class MockApi {
  */
 const MockAPI = new MockApi();
 
-// 添加默认处理器
-MockAPI.registerHandlers(
-  http.all('*', () => {
-    return HttpResponse.json({
-      message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据',
-      data: {},
-    });
-  }),
-);
 export { MockAPI };

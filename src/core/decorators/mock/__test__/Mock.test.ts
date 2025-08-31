@@ -5,20 +5,29 @@ import { http, HttpResponse } from 'msw';
 
 beforeAll(() => {
   MockAPI.on();
-  /*   MockAPI.registerHandlers(
+  MockAPI.registerHandlers(
     ...[
       http.get('http://localhost:3000/users/:name/:id', () => {
         return HttpResponse.json({
-          data: 'http://localhost:3000/users/:name/:id',
+          message: 'http://localhost:3000/users/:name/:id/zs',
         });
       }),
     ],
-  ); */
+  );
   // 模拟测试环境
   process.env.NODE_ENV = 'test';
 });
 afterEach(() => {
   MockAPI.resetHandlers();
+  MockAPI.registerHandlers(
+    ...[
+      http.get('http://localhost:3000/users/:name/:id', () => {
+        return HttpResponse.json({
+          message: 'http://localhost:3000/users/:name/:id/zs',
+        });
+      }),
+    ],
+  );
 });
 afterAll(() => {
   MockAPI.off();
@@ -37,7 +46,6 @@ describe('1.Mock流程测试', () => {
         url: '/:name/:id',
         mock: {
           handlers: ({ params }) => {
-            console.log('aaa');
             return HttpResponse.json({
               message: 'http://localhost:3000/users/:name/:id',
             });
@@ -50,7 +58,6 @@ describe('1.Mock流程测试', () => {
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
     expect(MockAPI.listHandlers().length).toBe(2);
-    console.log(MockAPI.listHandlers());
   });
   test('1.2 能够对正常基本路径进行多个处理器注册', async () => {
     @HttpApi({
@@ -80,7 +87,7 @@ describe('1.Mock流程测试', () => {
 
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
-    expect(MockAPI.listHandlers().length).toBe(3);
+    expect(MockAPI.listHandlers().length).toBe(4);
   });
   test('1.3 能够对url为绝对路径时进行单个处理器注册', async () => {
     @HttpApi({
@@ -104,7 +111,6 @@ describe('1.Mock流程测试', () => {
 
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
-    console.log(MockAPI.listHandlers());
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
     expect(MockAPI.listHandlers().length).toBe(2);
   });
@@ -140,7 +146,7 @@ describe('1.Mock流程测试', () => {
     const { data: data2 } = await userApi.getUsers('test', 1)('success');
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
     expect(data2).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
-    expect(MockAPI.listHandlers().length).toBe(3);
+    expect(MockAPI.listHandlers().length).toBe(4);
   });
 });
 describe('2.Mock Get方法测试', () => {
@@ -156,18 +162,20 @@ describe('2.Mock Get方法测试', () => {
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
     console.log(data);
-    expect(data).toEqual({ message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据', data: {} });
+    expect(data).toEqual({ message: 'welcome to use AxiosPlusMock' });
   });
-  test('1.2 单独Get中进行mock配置，并采用单个处理器', async () => {
+  test('2.2 单独Get中进行mock配置，并采用单个处理器', async () => {
     @HttpApi(request)
     class UserApi {
       @Get({
         url: '/users/:name/:id',
         mock: {
-          handlers: ({ params }) => {
-            return HttpResponse.json({
-              message: 'http://localhost:3000/users/:name/:id',
-            });
+          handlers: {
+            default: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
           },
         },
       })
@@ -176,10 +184,9 @@ describe('2.Mock Get方法测试', () => {
 
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
-
-    /*  const { data: data2 } = await userApi.getUsers('test', 1)('default');
+    const { data: data2 } = await userApi.getUsers('test', 1)('default');
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
-    expect(data2).toEqual({ message: 'http://localhost:3000/users/:name/:id' }); */
+    expect(data2).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
   });
   test('2.3 单独Get中进行mock配置，并采用多个处理器', async () => {
     @HttpApi(request)
@@ -208,5 +215,184 @@ describe('2.Mock Get方法测试', () => {
     const { data: fail } = await userApi.getUsers('test', 1)('fail');
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id' });
+  });
+  test('2.4 方法中关闭mock，此时走真实接口', async () => {
+    @HttpApi(request)
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+        mock: {
+          on: false,
+          handlers: {
+            success: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+            fail: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+          },
+        },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
+  test('2.5 类中关闭mock，此时走真实接口（优先级高于方法）', async () => {
+    @HttpApi({
+      refAxios: request,
+      mock: {
+        on: false,
+      },
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+        mock: {
+          on: true,
+          handlers: {
+            success: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+            fail: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+          },
+        },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
+  test('2.6 方法中设置条件未达到，走真实接口', async () => {
+    @HttpApi({
+      refAxios: request,
+      mock: {
+        on: true,
+      },
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+        mock: {
+          condition: () => {
+            return false;
+          },
+          handlers: {
+            success: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+            fail: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+          },
+        },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
+  test('2.7 类中设置的条件未达到，走真实接口（优先级高于方法）', async () => {
+    @HttpApi({
+      refAxios: request,
+      mock: {
+        on: true,
+        condition: () => {
+          return false;
+        },
+      },
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+        mock: {
+          condition: () => {
+            return true;
+          },
+          handlers: {
+            success: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+            fail: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+          },
+        },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
+  test.only('2.8 全局关闭所有mock接口关闭，走真实接口（优先级高于所有）', async () => {
+    MockAPI.off();
+    @HttpApi({
+      refAxios: request,
+      mock: {
+        on: true,
+        condition: () => {
+          return true;
+        },
+      },
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+        mock: {
+          on: true,
+          condition: () => {
+            return true;
+          },
+          handlers: {
+            success: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+            fail: ({ params }) => {
+              return HttpResponse.json({
+                message: 'http://localhost:3000/users/:name/:id',
+              });
+            },
+          },
+        },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
 });

@@ -1,4 +1,4 @@
-import { DebounceConfig } from '../decorators/httpMethod/types/httpMethod';
+import { DebounceConfig, DebounceOptions } from '../decorators/httpMethod/types/httpMethod';
 import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { Signal } from '../signal/Signal';
@@ -8,28 +8,9 @@ import { Signal } from '../signal/Signal';
  * @param requestFn 请求函数
  * @param config 防抖配置
  */
-export function withDebounce(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: DebounceConfig) {
-  // 默认配置
-  let defaultConfig = {
-    signal: new Signal(),
-    immediate: false,
-    delay: 100,
-  };
-  if (!config) {
-    return requestFn;
-  }
-  // 配置处理
-  if (typeof config === 'number') {
-    defaultConfig.delay = config;
-  }
-  if (config instanceof Signal) {
-    config = { signal: config };
-  }
-  if (typeof config === 'object') {
-    defaultConfig = { ...defaultConfig, ...config };
-  }
+export function withDebounce(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: DebounceOptions) {
   // 实现防抖
-  let { delay, immediate, signal } = defaultConfig;
+  let { delay, immediate, signal } = config as Required<DebounceOptions>;
   let timer: any;
   return async (config: HttpRequestConfig) => {
     // 取消防抖

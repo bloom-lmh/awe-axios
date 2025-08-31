@@ -1,3 +1,4 @@
+import { DefaultBodyType, HttpResponseResolver, PathParams } from 'msw';
 import {
   AxiosPlusRequestConfig,
   DebounceConfig,
@@ -64,7 +65,7 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
   /**
    * mock
    */
-  mock?: MockConfig;
+  mock?: MockConfig | HttpResponseResolver<PathParams, DefaultBodyType, undefined>;
 
   /**
    * 请求资源相对路径

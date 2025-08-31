@@ -1038,4 +1038,11 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
   cloneOriginalConfig(): T {
     return ObjectUtils.deepClone(this.axiosConfig);
   }
+
+  /**
+   * 重设配置
+   */
+  setConfig(config: T) {
+    this.axiosConfig = config;
+  }
 }

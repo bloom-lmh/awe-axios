@@ -117,17 +117,14 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
       if (!allowAbsoluteUrls && !PathUtils.isAbsoluteHttpUrl(url)) {
         httpConfig.concatUrl(config.url, true);
       }
-
       // 若方法上没有设置axios实例则统一使用类装饰器上的axios实例
       if (!refAxios && config.refAxios) {
         httpConfig.setRefAxios(config.refAxios);
       }
       // 合并mock配置
-      if (config.mock) {
-        !mock && httpConfig.setMock(config.mock);
-        if (mock) {
-          mock = { ...config.mock, ...mock };
-        }
+      if (config.mock && mock) {
+        mock = { ...mock, ...config.mock };
+        httpConfig.setMock(mock);
       }
     });
     return config;

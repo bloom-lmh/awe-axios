@@ -1,4 +1,4 @@
-import { MockMethod } from './../decorators/httpMethod/types/httpMethod.d';
+import { MockHandler, MockHandlersObject, MockMethod } from './../decorators/httpMethod/types/httpMethod.d';
 import { PathUtils } from '@/utils/PathUtils';
 import { MockConfig } from '../decorators/httpMethod/types/httpMethod';
 import { MockAPI } from '../decorators/mock/MockAPI';
@@ -33,24 +33,9 @@ export function withMock(requestFn: (config: HttpMethodDecoratorConfig) => Promi
       }
 
       // 2. 注册mock
-      if (typeof handlers === 'function') {
-        let fullPath = PathUtils.chain(absUrl)
-          .concat(id, 'default', rltUrl)
-          .removeExtraSlash()
-          .removeExtraSpace()
-          .toResult();
-
-        MockAPI.registerHandlers(http[method as MockMethod](fullPath, handlers));
-      }
-      if (typeof handlers === 'object') {
-        for (const key in handlers) {
-          let fullPath = PathUtils.chain(absUrl)
-            .concat(id, key, rltUrl)
-            .removeExtraSlash()
-            .removeExtraSpace()
-            .toResult();
-          MockAPI.registerHandlers(http[method as MockMethod](fullPath, handlers[key]));
-        }
+      for (const key in handlers) {
+        let fullPath = PathUtils.chain(absUrl).concat(id, key, rltUrl).removeExtraSlash().removeExtraSpace().toResult();
+        MockAPI.registerHandlers(http[method as MockMethod](fullPath, (handlers as MockHandlersObject)[key]));
       }
 
       loaded = true;
@@ -59,13 +44,13 @@ export function withMock(requestFn: (config: HttpMethodDecoratorConfig) => Promi
     return async (type: string = 'default') => {
       let isMock = on;
       if (condition) {
-        isMock = condition();
+        isMock = isMock && condition();
       }
       if (signal) {
-        isMock = !signal.isAborted();
+        isMock = isMock && !signal.isAborted();
       }
       if (count) {
-        isMock = count > 0;
+        isMock = isMock && count > 0;
       }
 
       // 若满足条件则走mock

@@ -4,77 +4,88 @@ import { DefaultBodyType, RequestHandlerOptions } from 'msw';
 import { HttpResponseResolver, PathParams } from 'msw';
 
 /**
+ * retry选项
+ */
+export type RetryOptions = {
+  /**
+   * 请求重传次数
+   */
+  count?: number;
+  /**
+   * 请求重传延时(单位ms)
+   */
+  delay?: number;
+  /**
+   * 信号量
+   */
+  signal?: Signal;
+};
+/**
  * 请求重传配置
  */
 export type RetryConfig =
-  | {
-      /**
-       * 请求重传次数
-       */
-      count?: number;
-      /**
-       * 请求重传延时(单位ms)
-       */
-      delay?: number;
-      /**
-       * 信号量
-       */
-      signal?: Signal;
-    }
+  | RetryOptions
   | boolean // 是否开启，开启则采用默认值
   | number // 请求重传的次数
   | Signal
   | [number, number]; // 请求重传次数和延时（基础延时）
 
 /**
+ * 防抖选项
+ */
+export type DebounceOptions = {
+  /**
+   * 首次是否立即执行
+   */
+  immediate?: boolean;
+  /**
+   * 防抖延时
+   */
+  delay?: number;
+  /**
+   * 信号量
+   */
+  signal?: Signal;
+};
+/**
  * 防抖配置
  */
-export type DebounceConfig =
-  | {
-      /**
-       * 首次是否立即执行
-       */
-      immediate?: boolean;
-      /**
-       * 防抖延时
-       */
-      delay?: number;
-      /**
-       * 信号量
-       */
-      signal?: Signal;
-    }
-  | boolean
-  | number
-  | Signal;
+export type DebounceConfig = DebounceOptions | boolean | number | Signal;
 
+/**
+ * 节流选项
+ */
+export type ThrottleOptions = {
+  /**
+   * 取消节流的信号量
+   */
+  signal?: Signal;
+  /**
+   * 节流间隔
+   */
+  interval?: number;
+};
 /**
  * 节流配置
  */
-export type ThrottleConfig =
-  | {
-      /**
-       * 取消节流的信号量
-       */
-      signal?: Signal;
-      /**
-       * 节流间隔
-       */
-      interval?: number;
-    }
-  | boolean
-  | number
-  | Signal;
+export type ThrottleConfig = ThrottleOptions | boolean | number | Signal;
+
+/**
+ * 单个mockHandler函数
+ */
+export type MockHandler = HttpResponseResolver<PathParams, DefaultBodyType, undefined>;
+/**
+ * 包含多个mockhandler的对象
+ */
+export type MockHandlersObject = {
+  [key: string | symbol]: MockHandler;
+};
 
 /**
  * mockHandlers
  *  options?: RequestHandlerOptions
  */
-export type MockHandlers =
-  | {
-      [key: string | symbol]: HttpResponseResolver<PathParams, DefaultBodyType, undefined>;
-    }
-  | HttpResponseResolver<PathParams, DefaultBodyType, undefined>;
+export type MockHandlers = MockHandlersObject | MockHandler;
 
 /**
  * mock配置
@@ -112,17 +123,6 @@ export type MockConfig = {
 export type MockMethod = 'all' | 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch';
 
 /**
- * withMock 方法配置
- */
-export interface WithMockConfig {
-  mock: MockConfig;
-  url: string;
-  baseURL: string;
-  allowAbsoluteUrls: boolean;
-  method: LowerMethod;
-  id: string;
-}
-/**
  * AxiosPlus为axios请求配置增加的额外配置
  */
 export interface AxiosPlusRequestConfig {
@@ -156,7 +156,7 @@ export interface AxiosPlusRequestConfig {
   /**
    * mock 处理器
    */
-  mock?: MockConfig;
+  mock?: MockConfig | MockHandler;
 }
 
 /**

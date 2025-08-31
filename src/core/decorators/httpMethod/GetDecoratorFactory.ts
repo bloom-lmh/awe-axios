@@ -20,6 +20,7 @@ import { withThrottle } from '@/core/requestexcutor/Throttle';
 import { withDebounce } from '@/core/requestexcutor/Debounce';
 import { withMock } from '@/core/requestexcutor/Mock';
 import { MockAPI } from '../mock/MockAPI';
+import { DebounceOptions, MockConfig, RetryOptions, ThrottleOptions } from './types/httpMethod';
 
 /**
  * Get装饰器工厂
@@ -105,7 +106,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
   protected preCheckConfig(config: HttpMethodDecoratorConfig | string | undefined): void {
     // 若是对象只检测AxiosPlus的配置
     if (typeof config === 'object') {
-      config = this.configHandler.partialConfig(config, ['throttle', 'debounce', 'retry']);
+      //config = this.configHandler.partialConfig(config, ['throttle', 'debounce', 'retry']);
       // throttle和debounce不能同时存在，以及一些边界值测试
       JoiUtils.validate(axiosPlusRequestConfigSchema, config);
     }
@@ -113,31 +114,26 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
 
   /**
    * 前置处理配置
-   * @returns axiosPlusRequstConfig是在axiosRequestConfig基础上增加的额外配置需要进行检查，其余配置留给axios进行检查
-   * @returns httpRequestConfig是HttpMethodDecoratorConfig的包装配置，封装了便于操作配置的建造者方法
+   * @description 主要将AxiosPlus配置标准化以及合并子项配置
    */
   protected preHandleConfig(
     config: HttpMethodDecoratorConfig | string = '',
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ) {
-    // 标准化配置
-    if (typeof config === 'string') {
-      config = { url: config };
-    }
-    config.method = 'get';
-    // 为mock设置默认值
-    if (config.mock) {
-      config.mock = { ...MockAPI.defaultConfig, ...config.mock };
-    }
-    // 获取子项配置
-    const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
-    // 合并子项配置
-    let httpRequestConfig = subItemsConfig
-      ? this.configHandler.mergeSubItemsConfig(config, subItemsConfig)
-      : new HttpRequestConfig(config);
+    // 预处理配置项
+    config = this.configHandler
+      .setConfig(config)
+      .preHandleConfig()
+      .preHandleRetryConfig()
+      .preHandleDebounceConfig()
+      .preHandleThrottleConfig()
+      .preHandleMockConfig()
+      .result() as HttpMethodDecoratorConfig;
 
-    this.decoratorConfig = httpRequestConfig;
+    // 合并子配置项
+    const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+    this.decoratorConfig = this.configHandler.mergeSubItemsConfig(config, subItemsConfig);
   }
 
   /**
@@ -166,15 +162,15 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     let requestFn = baseRequest();
     // 伴随请求重发
     if (retry) {
-      requestFn = withRetry(requestFn, retry);
+      requestFn = withRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
-      requestFn = withThrottle(requestFn, throttle);
+      requestFn = withThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
-      requestFn = withDebounce(requestFn, debounce);
+      requestFn = withDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
@@ -209,13 +205,16 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     httpRequestConfig.setUrl(resolvedUrl);
     // 设置baseURL
     let { refAxios = axios, mock } = httpRequestConfig;
-
     // 以axios的默认路径为baseURL
     if (refAxios.defaults.baseURL) {
       httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
     }
-    // mock与全局配置合并
-    mock = { ...MockAPI.globalConfig, ...mock };
+    // 若mock存在与全局配置合并
+    if (mock) {
+      mock = { ...MockAPI.globalConfig, ...mock };
+
+      httpRequestConfig.setMock(mock);
+    }
   }
 
   /**

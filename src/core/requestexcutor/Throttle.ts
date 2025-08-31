@@ -1,29 +1,8 @@
-import { ThrottleConfig } from '../decorators/httpMethod/types/httpMethod';
+import { ThrottleConfig, ThrottleOptions } from '../decorators/httpMethod/types/httpMethod';
 import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
-import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
-import { Signal } from '../signal/Signal';
 
-export function withThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: ThrottleConfig) {
-  // 默认配置
-  let defaultConfig = {
-    interval: 100,
-    signal: new Signal(),
-  };
-  if (!config) {
-    return requestFn;
-  }
-  // 处理配置
-  if (typeof config === 'number') {
-    defaultConfig.interval = config;
-  }
-  if (config instanceof Signal) {
-    config = { signal: config };
-  }
-  if (typeof config === 'object') {
-    defaultConfig = { ...defaultConfig, ...config };
-  }
-
-  let { interval, signal } = defaultConfig;
+export function withThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: ThrottleOptions) {
+  let { interval, signal } = config as Required<ThrottleOptions>;
 
   let lastTime = 0;
   let timer: any = null;

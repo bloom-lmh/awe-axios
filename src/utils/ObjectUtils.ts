@@ -23,4 +23,11 @@ export class ObjectUtils {
     }
     return cloneObj;
   }
+
+  /**
+   * 判断对象是否为空
+   */
+  public static isEmpty(obj: any): boolean {
+    return Object.keys(obj).length === 0;
+  }
 }
