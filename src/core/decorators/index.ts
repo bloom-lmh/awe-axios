@@ -14,6 +14,7 @@ import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
 import { HttpApiDecoratorConfig } from './httpMethod/types/httpMethod';
+import { HttpResponse } from 'msw';
 
 /**
  * inject 装饰器

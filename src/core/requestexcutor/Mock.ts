@@ -9,42 +9,77 @@ import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMe
  * mock请求
  */
 export function withMock(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, id: string) {
+  // 是否加载handler
   let loaded = false;
+  let absUrl = '';
+  let rltUrl = '';
   // 实现mock
   return (config: HttpMethodDecoratorConfig) => {
     // 获取配置
     let { mock, url = '', baseURL, allowAbsoluteUrls, method } = config;
+    let { handlers, condition, on, count, signal } = mock! as MockConfig;
     // 处理配置
-    const { handlers, condition, on } = mock! as MockConfig;
-    // mock处理器没有加载则加载
     if (!loaded) {
       // 1. 处理路径
-      let absUrl = '';
+      absUrl = baseURL!;
+      rltUrl = url;
+
+      // 若url为绝对路径,且允许使用绝对路径进行发送
       if (url && allowAbsoluteUrls && PathUtils.isAbsoluteHttpUrl(url)) {
-        absUrl = PathUtils.chain(url).concat(id).toResult();
-      } else {
-        absUrl = PathUtils.chain(baseURL!).concat(url).concat(id).toResult();
+        // 应该找到以最后的路径占位符为分割点进行分割
+        let parseURL = new URL(url);
+        absUrl = parseURL.origin;
+        rltUrl = parseURL.pathname;
       }
 
       // 2. 注册mock
+      if (typeof handlers === 'function') {
+        let fullPath = PathUtils.chain(absUrl)
+          .concat(id, 'default', rltUrl)
+          .removeExtraSlash()
+          .removeExtraSpace()
+          .toResult();
+
+        MockAPI.registerHandlers(http[method as MockMethod](fullPath, handlers));
+      }
       if (typeof handlers === 'object') {
         for (const key in handlers) {
-          absUrl = PathUtils.chain(absUrl).concat(key).removeExtraSlash().removeExtraSpace().toResult();
-          MockAPI.registerHandlers(http[method as MockMethod](absUrl, handlers[key]));
+          let fullPath = PathUtils.chain(absUrl)
+            .concat(id, key, rltUrl)
+            .removeExtraSlash()
+            .removeExtraSpace()
+            .toResult();
+          MockAPI.registerHandlers(http[method as MockMethod](fullPath, handlers[key]));
         }
       }
-      if (typeof handlers === 'function') {
-        absUrl = PathUtils.chain(absUrl).concat('default').removeExtraSlash().removeExtraSpace().toResult();
-        MockAPI.registerHandlers(http[method as MockMethod](absUrl, handlers));
-      }
+
       loaded = true;
     }
 
     return async (type: string = 'default') => {
+      let isMock = on;
+      if (condition) {
+        isMock = condition();
+      }
+      if (signal) {
+        isMock = !signal.isAborted();
+      }
+      if (count) {
+        isMock = count > 0;
+      }
+
       // 若满足条件则走mock
-      if (on && condition && condition()) {
-        config.url = PathUtils.chain(config.url).concat(id, type).removeExtraSlash().removeExtraSpace().toResult();
-        return requestFn(config);
+      if (isMock) {
+        let baseURL = PathUtils.chain(absUrl).concat(id, type).removeExtraSlash().removeExtraSpace();
+        if (url && allowAbsoluteUrls && PathUtils.isAbsoluteHttpUrl(url)) {
+          config.url = baseURL.concat(rltUrl).toResult();
+        } else {
+          config.baseURL = baseURL.toResult();
+          config.url = rltUrl;
+        }
+        let result = requestFn(config);
+        if (count) count--;
+        return result;
       }
       // 否则走真实请求
       return requestFn(config);

@@ -130,7 +130,7 @@ export interface DecorationInfo {
   /**
    * 装饰器编号
    */
-  id: string;
+  id?: string;
   /**
    * 装饰器信息名称
    */

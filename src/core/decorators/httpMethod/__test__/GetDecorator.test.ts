@@ -357,6 +357,34 @@ describe('3. 与@HttpApi集成测试', () => {
       message: 'http://localhost:3000/users/list/:name/:id',
     });
   });
+  test('3.7 当url指定allowAbsoluteUrls时其它所有路径会失效', async () => {
+    @HttpApi({
+      baseURL: 'http://localhost:5000',
+      url: 'users',
+    })
+    class UserApi {
+      @Get({
+        url: 'http://localhost:4000/users/list/:name/:id',
+        allowAbsoluteUrls: true,
+        refAxios: axios.create({
+          baseURL: 'http://localhost:3000',
+        }),
+      })
+      async getUsers(
+        @PathParam('id') id: string,
+        @PathParam('name') name: string,
+        @QueryParam('ids') ids1: number,
+        @QueryParam('ids') ids2: number,
+        @QueryParam('queryObj') qo: object,
+      ): Promise<any> {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('1', 'xm', 2, 3, { age: 18 });
+    console.log(data);
+    expect(data).toEqual({
+      message: 'http://localhost:4000/users/list/:name/:id',
+    });
+  });
 });
 
 describe('4. 加入子项@AxiosRef和@RefAxios测试', () => {

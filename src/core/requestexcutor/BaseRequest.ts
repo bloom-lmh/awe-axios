@@ -18,8 +18,7 @@ export function baseRequest(): any {
       'debounce',
       'throttle',
     ]);
-    console.log('最终baseURL:', axiosRequestConfig.baseURL);
-    console.log('最终url:', axiosRequestConfig.url);
+
     return refAxios(axiosRequestConfig);
   };
 }

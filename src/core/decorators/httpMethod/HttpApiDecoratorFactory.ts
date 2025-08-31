@@ -109,13 +109,14 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
     // 做配置合并
     httpRequestConfigs.forEach(httpConfig => {
       httpConfig = httpConfig!;
-      let { baseURL, refAxios, mock } = httpConfig;
+      let { baseURL, refAxios, mock, url = '', allowAbsoluteUrls } = httpConfig;
       // 若方法装饰器上没有设置baseURL则统一使用类装饰上的baseURL
       if (!baseURL && config.baseURL) {
         httpConfig.setBaseURL(config.baseURL);
       }
-
-      httpConfig.concatUrl(config.url, true);
+      if (!allowAbsoluteUrls && !PathUtils.isAbsoluteHttpUrl(url)) {
+        httpConfig.concatUrl(config.url, true);
+      }
 
       // 若方法上没有设置axios实例则统一使用类装饰器上的axios实例
       if (!refAxios && config.refAxios) {

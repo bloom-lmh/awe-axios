@@ -1,11 +1,19 @@
 import { SetupServer, setupServer } from 'msw/node';
-import { MockConfig, MockMethod } from '../httpMethod/types/httpMethod';
+import { MockConfig, MockHandlers, MockMethod } from '../httpMethod/types/httpMethod';
 import { http, HttpResponse, RequestHandler, WebSocketHandler } from 'msw';
 
 /**
  * mock默认全局配置
  */
 const defaultConfig: MockConfig = {
+  handlers: {
+    default: () => {
+      return HttpResponse.json({
+        message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据',
+        data: {},
+      });
+    },
+  },
   on: true,
   condition: () => {
     return process.env.NODE_ENV === 'test';
@@ -68,12 +76,27 @@ class MockApi {
   setCondition(condition: () => boolean) {
     this.config.condition = condition;
   }
+
   /**
    * 注册handlers
    */
   registerHandlers(...handlers: Array<RequestHandler | WebSocketHandler>) {
     this.server.use(...handlers);
     return this;
+  }
+  /**
+   * 重置handlers
+   */
+  resetHandlers() {
+    this.server.resetHandlers();
+    this.registerHandlers(
+      http.all('*', () => {
+        return HttpResponse.json({
+          message: '欢迎开启Mock，你可以自定义拦截器完成你想要的mock数据',
+          data: {},
+        });
+      }),
+    );
   }
   /**
    * 列出所有handler
@@ -90,7 +113,7 @@ class MockApi {
   hasHandler(url: string, mtd: MockMethod) {
     return this.server.listHandlers().some(handler => {
       const { path, method } = (handler as RequestHandler).info as any;
-      return path === url && method === mtd;
+      return path === url && method === mtd.toLowerCase();
     });
   }
 }

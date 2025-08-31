@@ -114,6 +114,8 @@ export class PathUtils {
    * concat路径
    */
   static concat(base: string, ...paths: string[]): string {
-    return base + '/' + paths.join('/');
+    const endWithSlash = base.endsWith('/');
+    const startWithSlash = paths[0].startsWith('/');
+    return `${base}${endWithSlash || startWithSlash ? '' : '/'}${paths.join('/')}`;
   }
 }
