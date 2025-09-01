@@ -1,7 +1,6 @@
 import { HttpRequestConfig } from '@/core/decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../DecoratorConfigHandler';
 import { HttpMethodDecoratorConfig } from '@/core/decorators/httpMethod/types/HttpMethodDecoratorConfig';
-import { MockConfig } from '@/core/decorators/httpMethod/types/httpMethod';
 import { Method } from 'axios';
 import { HttpResponse } from 'msw';
 import { ObjectUtils } from '@/utils/ObjectUtils';
@@ -37,11 +36,13 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
           });
         },
       },
-      on: true,
     };
-    let { mock } = this.config;
+    let { mock, mockHandlers } = this.config;
     // 若没有mock配置或配置为false，表示不采用mock
-    if (!mock) return this;
+    if (!mock) {
+      this.config.mock = {};
+      return this;
+    }
     // 若配置为一个函数，则覆盖默认的handler
     if (typeof mock === 'function') {
       defaultConfig.handlers.default = mock;
@@ -59,7 +60,11 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
         defaultConfig.handlers = Object.assign(defaultHandlers, mock.handlers);
       }
     }
-
+    if (typeof mockHandlers === 'function') {
+      mockHandlers = { default: mockHandlers };
+    }
+    // 若mockhandlers存在则合并
+    defaultConfig.handlers = { ...mockHandlers, ...defaultConfig.handlers };
     this.config.mock = defaultConfig;
     return this;
   }

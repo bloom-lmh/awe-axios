@@ -123,7 +123,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
       }
       // 合并mock配置
       if (config.mock && mock) {
-        mock = { ...mock, ...config.mock };
+        mock = { ...config.mock, ...mock };
         httpConfig.setMock(mock);
       }
     });

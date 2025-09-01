@@ -17,32 +17,38 @@ class MockApi {
    * msw server
    */
   private server: SetupServer;
+
   /**
    * 默认配置
    */
   private config: MockConfig;
+
   /**
    * 是否真实关闭
    */
   private isRealOff: boolean = false;
+
   /**
    * 默认配置
    */
   get defaultConfig() {
     return defaultConfig;
   }
+
   /**
    * 是否真实关闭
    */
   get realOff() {
     return this.isRealOff;
   }
+
   /**
    * 获取mock默认配置
    */
   get globalConfig() {
     return this.config;
   }
+
   /**
    * 构造器
    */
@@ -55,6 +61,7 @@ class MockApi {
       },
     };
   }
+
   /**
    * 开启mock监听服务
    */
@@ -62,6 +69,7 @@ class MockApi {
     this.config.on = true;
     this.server.listen();
   }
+
   /**
    * 关闭mock监听服务
    * @param [isReal=true] 是否真实关闭,若真实关闭后，所有接口
@@ -73,6 +81,7 @@ class MockApi {
       this.server.close();
     }
   }
+
   /**
    * 设置走mock的条件
    */
@@ -87,18 +96,21 @@ class MockApi {
     this.server.use(...handlers);
     return this;
   }
+
   /**
    * 重置handlers
    */
   resetHandlers() {
     this.server.resetHandlers();
   }
+
   /**
    * 列出所有handler
    */
   listHandlers() {
     return this.server.listHandlers();
   }
+
   /**
    * 是否有url对应的handler
    * @param url 请求路径

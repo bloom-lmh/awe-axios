@@ -199,6 +199,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       .removeExtraSpace()
       .removeExtraSlash()
       .toResult();
+
     // 设置查询参数
     httpRequestConfig.setParams(queryParams);
     // 设置基本路径
@@ -210,11 +211,8 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
     }
     // 若mock存在与全局配置合并
-    if (mock) {
-      mock = { ...MockAPI.globalConfig, ...mock };
-
-      httpRequestConfig.setMock(mock);
-    }
+    mock = { ...MockAPI.globalConfig, ...mock };
+    httpRequestConfig.setMock(mock);
   }
 
   /**
@@ -252,6 +250,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       // 实现配置
       const request = this.applyConfig();
       // 方法替换实际调用的时候会调用descripter.value指向的方法
+      Proxy.revocable(descriptor.value, {});
       descriptor.value = new Proxy(descriptor.value, {
         /**
          * 原方法

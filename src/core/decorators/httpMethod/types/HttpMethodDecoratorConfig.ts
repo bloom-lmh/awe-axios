@@ -66,7 +66,10 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
    * mock
    */
   mock?: MockConfig | HttpResponseResolver<PathParams, DefaultBodyType, undefined>;
-
+  /**
+   * mockhandlers
+   */
+  mockHandlers?: MockHandlers;
   /**
    * 请求资源相对路径
    */

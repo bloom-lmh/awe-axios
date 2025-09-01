@@ -370,13 +370,13 @@ describe('3. 与@HttpApi集成测试', () => {
           baseURL: 'http://localhost:3000',
         }),
       })
-      async getUsers(
+      getUsers(
         @PathParam('id') id: string,
         @PathParam('name') name: string,
         @QueryParam('ids') ids1: number,
         @QueryParam('ids') ids2: number,
         @QueryParam('queryObj') qo: object,
-      ): Promise<any> {}
+      ): any {}
     }
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('1', 'xm', 2, 3, { age: 18 });

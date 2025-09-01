@@ -245,7 +245,7 @@ describe('2.Mock Get方法测试', () => {
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
-  test('2.5 类中关闭mock，此时走真实接口（优先级高于方法）', async () => {
+  test('2.5 类中关闭mock，此时走真实接口（优先级低于方法）', async () => {
     @HttpApi({
       refAxios: request,
       mock: {
@@ -256,7 +256,6 @@ describe('2.Mock Get方法测试', () => {
       @Get({
         url: '/users/:name/:id',
         mock: {
-          on: true,
           handlers: {
             success: ({ params }) => {
               return HttpResponse.json({
@@ -293,17 +292,17 @@ describe('2.Mock Get方法测试', () => {
           condition: () => {
             return false;
           },
-          handlers: {
-            success: ({ params }) => {
-              return HttpResponse.json({
-                message: 'http://localhost:3000/users/:name/:id',
-              });
-            },
-            fail: ({ params }) => {
-              return HttpResponse.json({
-                message: 'http://localhost:3000/users/:name/:id',
-              });
-            },
+        },
+        mockHandlers: {
+          success: ({ params }) => {
+            return HttpResponse.json({
+              message: 'http://localhost:3000/users/:name/:id',
+            });
+          },
+          fail: ({ params }) => {
+            return HttpResponse.json({
+              message: 'http://localhost:3000/users/:name/:id',
+            });
           },
         },
       })
@@ -315,7 +314,7 @@ describe('2.Mock Get方法测试', () => {
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
-  test('2.7 类中设置的条件未达到，走真实接口（优先级高于方法）', async () => {
+  test('2.7 类中设置的条件未达到，走真实接口（优先级低于方法）', async () => {
     @HttpApi({
       refAxios: request,
       mock: {
@@ -329,9 +328,6 @@ describe('2.Mock Get方法测试', () => {
       @Get({
         url: '/users/:name/:id',
         mock: {
-          condition: () => {
-            return true;
-          },
           handlers: {
             success: ({ params }) => {
               return HttpResponse.json({
@@ -354,25 +350,15 @@ describe('2.Mock Get方法测试', () => {
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
-  test.only('2.8 全局关闭所有mock接口关闭，走真实接口（优先级高于所有）', async () => {
+  test('2.8 全局关闭所有mock接口关闭，走真实接口（优先级低于所有）', async () => {
     MockAPI.off();
     @HttpApi({
       refAxios: request,
-      mock: {
-        on: true,
-        condition: () => {
-          return true;
-        },
-      },
     })
     class UserApi {
       @Get({
         url: '/users/:name/:id',
         mock: {
-          on: true,
-          condition: () => {
-            return true;
-          },
           handlers: {
             success: ({ params }) => {
               return HttpResponse.json({
@@ -386,6 +372,25 @@ describe('2.Mock Get方法测试', () => {
             },
           },
         },
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
+  test('2.9 全局设置条件未达到，走真实接口（优先级低于所有）', async () => {
+    MockAPI.setCondition(() => {
+      return process.env.NODE_ENV === 'development';
+    });
+    @HttpApi({
+      refAxios: request,
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
       })
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }

@@ -25,11 +25,6 @@ export class InjectDecoratorFactory extends DecoratorFactory {
   protected decoratorValidator!: PropertyDecoratorValidator;
 
   /**
-   * 装饰器配置处理器
-   */
-  protected configHandler!: DecoratorConfigHandler;
-
-  /**
    * 装饰器状态管理器
    */
   protected stateManager!: InjectDecoratorStateManager;
@@ -72,7 +67,7 @@ export class InjectDecoratorFactory extends DecoratorFactory {
   protected preHandleConfig(config: InjectDecoratorConfig): DependencyOptions {
     // 去除没用的项
     if (config && typeof config === 'object' && config.backups) {
-      return this.configHandler.treeShakingConfig(config, ['backups']);
+      return DecoratorConfigHandler.treeShakingConfig(config, ['backups']);
     }
     return config;
   }
