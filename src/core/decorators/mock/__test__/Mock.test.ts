@@ -279,6 +279,20 @@ describe('2.Mock Get方法测试', () => {
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
   test('2.6 方法中设置条件未达到，走真实接口', async () => {
+    const mockUserApi = {
+      getUsers: {
+        success: () => {
+          return HttpResponse.json({
+            message: 'http://localhost:3000/users/:name/:id',
+          });
+        },
+        fail: () => {
+          return HttpResponse.json({
+            message: 'http://localhost:3000/users/:name/:id',
+          });
+        },
+      },
+    };
     @HttpApi({
       refAxios: request,
       mock: {
@@ -293,18 +307,7 @@ describe('2.Mock Get方法测试', () => {
             return false;
           },
         },
-        mockHandlers: {
-          success: ({ params }) => {
-            return HttpResponse.json({
-              message: 'http://localhost:3000/users/:name/:id',
-            });
-          },
-          fail: ({ params }) => {
-            return HttpResponse.json({
-              message: 'http://localhost:3000/users/:name/:id',
-            });
-          },
-        },
+        mockHandlers: mockUserApi.getUsers,
       })
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }

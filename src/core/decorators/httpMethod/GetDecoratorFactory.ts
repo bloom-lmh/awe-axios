@@ -20,7 +20,7 @@ import { withThrottle } from '@/core/requestexcutor/Throttle';
 import { withDebounce } from '@/core/requestexcutor/Debounce';
 import { withMock } from '@/core/requestexcutor/Mock';
 import { MockAPI } from '../mock/MockAPI';
-import { DebounceOptions, MockConfig, RetryOptions, ThrottleOptions } from './types/httpMethod';
+import { DebounceOptions, RetryOptions, ThrottleOptions } from './types/httpMethod';
 
 /**
  * Get装饰器工厂
@@ -250,7 +250,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       // 实现配置
       const request = this.applyConfig();
       // 方法替换实际调用的时候会调用descripter.value指向的方法
-      Proxy.revocable(descriptor.value, {});
       descriptor.value = new Proxy(descriptor.value, {
         /**
          * 原方法

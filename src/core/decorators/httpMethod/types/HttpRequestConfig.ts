@@ -163,7 +163,7 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
    * @param method 请求方法 如'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch'
    * @returns HttpRequestConfig
    */
-  setMethod(method: Method | string = 'GET') {
+  setMethod(method: Method = 'GET') {
     this.axiosConfig.method = method;
     return this;
   }
