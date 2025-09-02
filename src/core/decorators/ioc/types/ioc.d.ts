@@ -1,47 +1,77 @@
 import { SubDecorationInfo } from './ioc';
 import { ctorNameOrAlias } from './../core/validators/schema/IocShema';
 import { DecoratedClass } from './decorator';
-
 /**
  * 实例数组中的项
  */
-export interface InstanceArrayItem<T = any> extends Omit<InstanceRegisterConfig<T>, 'module'> {
-  /**
-   * 构造函数名
-   */
-  ctorName: string;
+export interface InstanceItem<T = any> extends Omit<InstanceRegisterConfig<T>, 'module'> {
   /**
    * 实例
    */
   instance: T;
 }
+
 /**
  * 实例数组
  */
-export type InstanceArray = InstanceArrayItem[];
+export type InstanceItemArray = InstanceItem[];
 
 /**
  * 实例工厂map
  */
-export type InstanceMap = Map<string | symbol, InstanceArray>;
+export type InstanceItemMap = Map<string | symbol, InstanceItemArray>;
 
 /**
  * 实例注册时配置
  */
-export interface InstanceRegisterConfig<T = any> {
+export interface InstanceRegisterConfig {
   /**
    * 实例的模块命名空间，防止不同模块的实例命名冲突
    */
-  module?: string;
-  /**
-   * 实例的名称，用于在模块中获取实例
-   */
-  constructor: DecoratedClass<T>;
+  module: string;
   /**
    * 别名，用于唯一标识一个类实例
    */
-  alias?: string;
+  alias: string;
+  /**
+   * 实例的名称，用于在模块中获取实例
+   */
+  ctor: DecoratedClass;
 }
+/**
+ * 获取实例配置对象
+ */
+export type GetInstanceConfig = {
+  /**
+   * 模块名
+   */
+  module: string;
+  /**
+   * 别名
+   */
+  alias?: string;
+  /**
+   * 构造器
+   */
+  ctor?: DecoratorClass;
+  /**
+   * 创建实例模式
+   */
+  scope: InstanceScope | string;
+};
+/**
+ * 组件装饰器配置
+ */
+export type ComponentDecoratorConfig = Partial<Exclude<InstanceRegisterConfig, 'ctor'>>;
+
+/**
+ * @Component 装饰器配置
+ */
+export type ComponentDecoratorOptions =
+  | ComponentDecoratorConfig
+  | string // 表达式
+  | void;
+
 /**
  * 获取实例模式配置
  * @default SINGLETON
@@ -49,7 +79,6 @@ export interface InstanceRegisterConfig<T = any> {
 export type InstanceScope =
   /**
    * 单例模式
-   *
    */
   | 'SINGLETON'
   /**
@@ -70,33 +99,28 @@ export type InstanceScope =
   | 'PROTOTYPE';
 
 /**
- * 获取实例配置对象
+ * inject 装饰器备份列表
+ * @description 当注入失败时的备选列表
  */
-export type DependencyConfig = {
-  /**
-   * 模块名
-   */
-  module?: string;
-  /**
-   * 类名或别名
-   */
-  ctorNameOrAlias?: string;
-  /**
-   * 表达式，优先级地狱module和identifier的组合
-   */
-  expression?: string;
-  /**
-   * 创建实例模式
-   */
-  scope?: InstanceScope | string;
-};
+export type InjectBackups = DecoratedClass | Object | (DecoratedClass | Object)[];
+
 /**
- * 获取实例选项
+ * inject 装饰器配置
  */
-export type DependencyOptions =
-  | DependencyConfig
-  | string // 表达式
-  | void; // 空配置会使用类型推断
+export type InjectDecoratorConfig = Partial<GetInstanceConfig> & {
+  /**
+   * 备份列表
+   */
+  backups?: InjectBackups;
+};
+
+/**
+ * @Inject 装饰器配置
+ */
+export type InjectDecoratorOptions =
+  | InjectDecoratorConfig // 直接配置
+  | DecoratedClass // 构造器
+  | string; // 表达式
 
 /**
  * 候选实例

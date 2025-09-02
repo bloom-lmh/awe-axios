@@ -41,5 +41,6 @@ export abstract class DecoratorFactory extends DecoratorFactoryBuilder {
    */
   public abstract createDecorator(
     config: any,
+    arg: any,
   ): ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator;
 }

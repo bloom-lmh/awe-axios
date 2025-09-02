@@ -1,12 +1,11 @@
 import { JoiUtils } from '@/utils/JoiUtils';
 import { dependencyOptionsSchema, instanceRegisterConfigSchema } from '@/core/schema/ioc/InstanceFactorySchema';
-import { DecoratedClass, DecoratedClassProto } from '@/core/decorators/decorator';
+import { DecoratedClass, DecoratedClassOrProto, DecoratedClassProto } from '@/core/decorators/decorator';
 import {
   CandidateInstances,
-  DependencyConfig,
-  DependencyOptions,
-  InstanceArrayItem,
-  InstanceMap,
+  GetInstanceConfig,
+  InstanceItem,
+  InstanceItemMap,
   InstanceRegisterConfig,
   InstanceScope,
 } from './types/ioc';
@@ -22,6 +21,7 @@ import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecorator
 import { ParamDecoratorValidator } from '@/core/validator/ParamDecoratorValidator';
 import { ParamDecoratorStateManager } from '@/core/statemanager/ParamDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
+import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecoratorConfigHandler';
 
 function Init(target: DecoratedClass) {
   const libs = [
@@ -36,10 +36,11 @@ function Init(target: DecoratedClass) {
     ParamDecoratorValidator,
     DecoratorConfigHandler,
     HttpMtdDecoratorConfigHandler,
+    PointCutDecoratorConfigHandler,
   ];
   libs.forEach(lib => {
     target.registerInstance({
-      constructor: lib,
+      ctor: lib,
     });
   });
 }
@@ -51,54 +52,104 @@ export class InstanceFactory {
   /**
    * 实例工厂Map
    */
-  private static instanceMap: InstanceMap = new Map();
+  private static instanceItemMap: InstanceItemMap = new Map();
 
   /**
    * 注册实例
    */
   static registerInstance(config: InstanceRegisterConfig) {
     // 参数校验
-    config = JoiUtils.validate<InstanceRegisterConfig>(instanceRegisterConfigSchema, config);
+    //config = JoiUtils.validate<InstanceRegisterConfig>(instanceRegisterConfigSchema, config);
     // 参数处理
-    let { module = '__default__', constructor, alias = this.getDefaultAlias(constructor) } = config;
+    let { module = '__default__', ctor, alias = this.getDefaultAlias(ctor) } = config;
 
     // 实例模块不存在则创建
-    if (!InstanceFactory.instanceMap.has(module)) {
+    if (!InstanceFactory.instanceItemMap.has(module)) {
       // 创建实例
-      let instance = new constructor();
+      //let instance = new ctor();
       // 注册实例
-      this.instanceMap.set(module, [{ constructor, ctorName: constructor.name, alias, instance }]);
+      this.instanceItemMap.set(module, [{ ctor, alias, instance: undefined }]);
     } else {
       // 获取模块对应实例数组
-      let instanceArray = InstanceFactory.instanceMap.get(module) || [];
+      let instanceItemArray = InstanceFactory.instanceItemMap.get(module) || [];
 
       // 不允许同类实例重复注册
-      let hasInstance = instanceArray.some(
-        item => item.alias === alias || item.constructor === constructor || item.ctorName === constructor.name,
+      let hasInstance = instanceItemArray.some(
+        item => item.alias === alias || item.ctor === ctor || item.ctorName === ctor.name,
       );
 
       if (hasInstance) {
-        throw new Error(`Instance with alias or constructor or ctorName already exists in module ${module}`);
+        throw new Error(`Instance with alias or ctor or ctorName already exists in module ${module}`);
       }
       // 注册实例
-      instanceArray.push({ constructor, ctorName: constructor.name, alias, instance: new constructor() });
-      InstanceFactory.instanceMap.set(module, instanceArray);
+      instanceItemArray.push({ ctor, ctorName: ctor.name, alias, instance: undefined });
+      InstanceFactory.instanceItemMap.set(module, instanceItemArray);
     }
   }
+
   /**
    * 获取实例
    */
-  static getInstance(
-    target: DecoratedClass | DecoratedClassProto,
-    propertyKey: string | symbol,
-    config: DependencyOptions,
-  ) {
+  static getInstance(target: DecoratedClassOrProto, propertyKey: string | symbol, config: GetInstanceConfig) {
     // 参数校验,并处理配置
-    config = JoiUtils.validate<DependencyOptions>(dependencyOptionsSchema, config);
+    //config = JoiUtils.validate<DependencyOptions>(dependencyOptionsSchema, config);
+    // 处理配置
+    let { module = '__default__', alias, ctor, scope } = config;
 
-    // 表达式形式
+    let instanceItem = undefined;
+    // 通过模块和构造器获取实例项
+    if (ctor) {
+      instanceItem = this.getInstanceByCtor(module, ctor);
+    } else if (alias) {
+      // 通过别名获取实例项
+      instanceItem = this.getInstanceByAlias(module, alias);
+    } else {
+      // 获取属性类型
+      const type = Reflect.getMetadata('design:type', target, propertyKey);
+      // 通过类型推断获取
+      instanceItem = this.getInstanceItemByType(type, module);
+    }
+    if (!instanceItem) {
+      return undefined;
+    }
+    // 注入模式
+    scope = (scope?.toUpperCase() as InstanceScope) || 'SINGLETON';
+    // 获取实例信息
+    let { ctor: constuctor, instance } = instanceItem;
+
+    // 没有实例则创建
+    if (!instance) {
+      instance = new constuctor();
+      instanceItem.instance = instance;
+    }
+
+    // 单例模式
+    if (scope === 'SINGLETON') {
+      return instance;
+    }
+    // 瞬时模式
+    if (scope === 'TRANSIENT') {
+      return Reflect.construct(constuctor, []);
+    }
+    // 原型模式
+    if (scope === 'PROTOTYPE') {
+      return Object.create(instance);
+    }
+    // 浅克隆模式
+    if (scope === 'SHALLOWCLONE') {
+      return Object.assign(Object.create(Object.getPrototypeOf(instance)), instance);
+    }
+    // 深克隆模式
+    if (scope === 'DEEPCLONE') {
+      return ObjectUtils.deepClone(instance);
+    }
+    /* // 表达式形式
     if (typeof config === 'string') {
       return this.getInstanceItemByExpression(config)?.instance;
+    }
+    // 构造器注入
+    if (typeof config === 'function') {
+      return this.getInstanceByCtor(config)?.instance;
     }
     // 获取属性类型
     const type = Reflect.getMetadata('design:type', target, propertyKey);
@@ -115,14 +166,14 @@ export class InstanceFactory {
         return undefined;
       }
       config.scope = (config.scope?.toUpperCase() as InstanceScope) || 'SINGLETON';
-      const { constructor, instance } = instanceItem;
+      const { ctor, instance } = instanceItem;
       // 单例模式
       if (config.scope === 'SINGLETON') {
         return instance;
       }
       // 瞬时模式
       if (config.scope === 'TRANSIENT') {
-        return new constructor();
+        return new ctor();
       }
       // 原型模式
       if (config.scope === 'PROTOTYPE') {
@@ -136,14 +187,28 @@ export class InstanceFactory {
       if (config.scope === 'DEEPCLONE') {
         return ObjectUtils.deepClone(instance);
       }
-    }
+    } */
+  }
+  /**
+   * 根据构造器获取
+   */
+  static getInstanceByCtor(module: string, ctor: DecoratedClass): InstanceItem | undefined {
+    return this.instanceItemMap.get(module)?.find(item => item.ctor === ctor);
   }
 
   /**
+   * 根据构造器名或别名获取
+   * @param module 所属模块
+   * @param ctorOrName
+   */
+  static getInstanceByAlias(module: string, alias: string): InstanceItem | undefined {
+    return this.instanceItemMap.get(module)?.find(item => item.alias === alias);
+  }
+  /**
    * 根据配置选项获取实例
    */
-  static getInstanceItemByConfig(type: DecoratedClass, config: DependencyConfig): InstanceArrayItem | undefined {
-    const { module = '__default__', ctorNameOrAlias, expression } = config;
+  /* static getInstanceItemByConfig(type: DecoratedClass, config: GetInstanceConfig): InstanceItem | undefined {
+    const { module = '__default__', alias } = config;
     // 有模块和标识符，则通过模块和标识符获取实例
     if (module && ctorNameOrAlias) {
       return this.getInstanceItemByExpression(`${module}.${ctorNameOrAlias}`);
@@ -153,11 +218,11 @@ export class InstanceFactory {
     }
     // 有模块但无标识符，则通过模块和类型推断获取实例
     return this.getInstanceItemByType(type, module);
-  }
+  } */
   /**
    * 根据表达式获取实例
    */
-  static getInstanceItemByExpression(expression: string): InstanceArrayItem | undefined {
+  static getInstanceItemByExpression(expression: string): InstanceItem | undefined {
     const expressions = expression.split('.');
     let module: string = '__default__';
     let aliasOrCtorName: string = '';
@@ -170,7 +235,7 @@ export class InstanceFactory {
       module = expressions[0];
       aliasOrCtorName = expressions[1];
     }
-    return this.instanceMap
+    return this.instanceItemMap
       .get(module)
       ?.find(item => item.alias === aliasOrCtorName || item.ctorName === aliasOrCtorName);
   }
@@ -202,7 +267,7 @@ export class InstanceFactory {
    */
   static clear() {
     if (process.env.NODE_ENV === 'test') {
-      this.instanceMap.clear();
+      this.instanceItemMap.clear();
     } else {
       throw new Error('InstanceFactory cannot be cleared in production environment.');
     }
@@ -212,13 +277,13 @@ export class InstanceFactory {
    * @param [primary=false] 是否加入primary为true的条件，用来判断是否有多个同类型且primary为true的实例
    */
   private static countCandidates(type: DecoratedClass, module: string = '__default__'): CandidateInstances {
-    let instanceArray = InstanceFactory.instanceMap.get(module);
+    let instanceArray = InstanceFactory.instanceItemMap.get(module);
     if (!instanceArray) {
       return { count: 0, candidates: [], best: undefined };
     }
-    let candidates = instanceArray.filter(item => item.constructor === type || item.instance instanceof type);
+    let candidates = instanceArray.filter(item => item.ctor === type || item.instance instanceof type);
     // 判断是否有最佳的候选人
-    let best = candidates.find(item => item.constructor === type);
+    let best = candidates.find(item => item.ctor === type);
     return { count: candidates.length, candidates, best };
   }
   /**

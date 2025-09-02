@@ -1,24 +1,25 @@
+import { PointCutExpWithReturn } from './aop.d';
 /**
  * 切点表达式
  */
 export type PointCutExpression = string;
 
 /**
- * 切入点选项
+ * 切入点对象形式
  */
 export interface PointCutObj {
   /**
    * 所属模块
    */
-  module?: string;
+  module?: string | symbol;
   /**
    * 对应类
    */
-  clazz?: string;
+  ctor?: string | symbol;
   /**
    * 对应方法
    */
-  method?: string;
+  method?: string | symbol;
 }
 /**
  * 带返回值的PointCut对象
@@ -64,36 +65,56 @@ export interface PointCutExpWithThrow {
    */
   throwing: any;
 }
+
 /**
  * 切入点方法
  */
-export type PointCutMethod = (
+export type PointCutMethodWithReturnAndThrow = (
   ...args: any[]
 ) =>
   | PointCutExpression
   | PointCutObj
-  | PointCutExpWithReturn
   | PointCutObjWithReturn
-  | PointCutExpWithThrow
-  | PointCutObjWithThrow;
+  | PointCutObjWithThrow
+  | PointCutExpWithReturn
+  | PointCutExpWithThrow;
+/**
+ * 切入点方法
+ */
+export type PointCutMethod = (...args: any[]) => PointCutExpression | PointCutObj;
 /**
  * Before\After\Around 切点类型
  */
-export type BeforeConfig = PointCutExpression | PointCutObj | PointCutMethod;
-export type AfterConfig = BeforeConfig;
-export type AroundConfig = BeforeConfig;
+export type BeforeDecoratorConfig = PointCutExpression | PointCutObj | PointCutMethod;
+export type AfterDecoratorConfig = BeforeDecoratorConfig;
+export type AroundDecoratorConfig = BeforeDecoratorConfig;
 
 /**
  * AfterReturning 切点类型
  */
-export type AfterReturningConfig = PointCutExpression | PointCutExpWithReturn | PointCutObjWithReturn;
+export type AfterReturnDecoratorConfig =
+  | PointCutExpression
+  | PointCutExpWithReturn
+  | PointCutObjWithReturn
+  | PointCutMethodWithReturnAndThrow;
 
 /**
  * AfterThrowing 切点类型
  */
-export type AfterThrowingConfig = PointCutExpression | PointCutExpWithThrow | PointCutObjWithThrow;
+export type AfterThrowDecoratorConfig =
+  | PointCutExpression
+  | PointCutExpWithThrow
+  | PointCutObjWithThrow
+  | PointCutMethodWithReturnAndThrow;
 
 /**
- * 切点类型
+ * 全体类型导出
  */
-export type PointCutConfig = PointCutMethod;
+export type PointCutDecoratorConfig =
+  | PointCutExpression
+  | PointCutObj
+  | PointCutObjWithReturn
+  | PointCutObjWithThrow
+  | PointCutExpWithReturn
+  | PointCutExpWithThrow
+  | PointCutMethodWithReturnAndThrow;

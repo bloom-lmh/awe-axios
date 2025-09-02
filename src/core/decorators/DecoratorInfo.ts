@@ -15,7 +15,6 @@ export class DecoratorInfo implements DecorationInfo {
    * @default DECORATORNAME.ANONYMOUSE
    */
   name: string | symbol = DECORATORNAME.ANONYMOUSE;
-
   /**
    * 装饰器类别
    */

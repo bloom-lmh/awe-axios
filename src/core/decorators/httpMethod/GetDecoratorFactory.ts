@@ -39,31 +39,31 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
   /**
    * 方法装饰器校验器
    */
-  @Inject('methodDecoratorValidator')
+  @Inject(MethodDecoratorValidator)
   protected decoratorValidator!: MethodDecoratorValidator;
 
   /**
    * 配置处理器
    */
-  @Inject('httpMtdDecoratorConfigHandler')
+  @Inject(HttpMtdDecoratorConfigHandler)
   protected configHandler!: HttpMtdDecoratorConfigHandler;
 
   /**
    * 状态管理器
    */
-  @Inject('methodDecoratorStateManager')
+  @Inject(MethodDecoratorStateManager)
   protected stateManager!: MethodDecoratorStateManager;
 
   /**
    * 类状态管理器
    */
-  @Inject('classDecoratorStateManager')
+  @Inject(ClassDecoratorStateManager)
   protected classStateManager!: ClassDecoratorStateManager;
 
   /**
    * 参数状态管理器
    */
-  @Inject('paramDecoratorStateManager')
+  @Inject(ParamDecoratorStateManager)
   protected paramStateManager!: ParamDecoratorStateManager;
 
   /**

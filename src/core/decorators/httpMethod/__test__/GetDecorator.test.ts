@@ -213,19 +213,19 @@ describe.skip('2.Get装饰器基本功能测试', () => {
 });
 
 describe('3. 与@HttpApi集成测试', () => {
-  test('3.1 @HttpApi和@Get只指定字符串简单路径', async () => {
+  test.only('3.1 @HttpApi和@Get只指定字符串简单路径', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000',
     })
     class UserApi {
       @Get('/list/:name/:id')
-      async getUsers(
+      getUsers(
         @PathParam('id') id: string,
         @PathParam('name') name: string,
         @QueryParam('ids') ids1: number,
         @QueryParam('ids') ids2: number,
         @QueryParam('queryObj') qo: object,
-      ): Promise<any> {}
+      ): any {}
     }
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('1', 'xm', 2, 3, { age: 18 });

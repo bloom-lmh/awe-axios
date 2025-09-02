@@ -1,5 +1,6 @@
 import { METADATAKEY } from '../constant/MetaDataConstants';
-import { DecoratedClass, DecoratedClassProto } from '../decorators/decorator';
+import { DecoratedClass, DecoratedClassOrProto, DecoratedClassProto, DecorationInfo } from '../decorators/decorator';
+import { DecoratorInfo } from '../decorators/DecoratorInfo';
 import { DecoratorInfos } from '../statemanager/state';
 import { DecoratorValidator } from './DecoratorValidator';
 
@@ -7,6 +8,17 @@ import { DecoratorValidator } from './DecoratorValidator';
  * 属性装饰器校验器
  */
 export class PropertyDecoratorValidator implements DecoratorValidator {
+  /**
+   * 装饰器信息
+   */
+  private decoratorInfo!: DecoratorInfo;
+  /**
+   * 被装饰的类或类原型
+   */
+  private target!: DecoratedClassOrProto;
+  /**
+   * 被装饰的方法名
+   */
   /**
    * 单例模式
    */
@@ -19,9 +31,7 @@ export class PropertyDecoratorValidator implements DecoratorValidator {
   static getInstance(): PropertyDecoratorValidator {
     return this.instance ? this.instance : new PropertyDecoratorValidator();
   }
-  /**
-   * 校验装饰器冲突
-   */
+
   /**
    * 是否有依赖的装饰器
    * @param target 被装饰的目标对象或其原型
@@ -38,6 +48,7 @@ export class PropertyDecoratorValidator implements DecoratorValidator {
     // 判断是否有依赖的装饰器
     return dpDecorators.every(dpDecoratorName => decoratorInfos.some(info => info.name === dpDecoratorName));
   }
+
   /**
    * 判断属性上是否存在冲突的装饰器
    * @param target 被装饰的目标对象或其原型

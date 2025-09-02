@@ -1,7 +1,4 @@
-import { DependencyOptions } from './types/ioc';
-import { injectDecoratorConfigSchema } from '../../schema/ioc/InjectSchema';
-import { JoiUtils } from '@/utils/JoiUtils';
-import { DecoratedClass, DecoratedClassOrProto, InjectDecoratorConfig, PropertyDecorator } from '../decorator';
+import { DecoratedClass, DecoratedClassOrProto, PropertyDecorator } from '../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
 import { PropertyDecoratorValidator } from '@/core/validator/PropertyDecoraotrValidator';
@@ -9,6 +6,7 @@ import { InstanceFactory } from './InstanceFactory';
 import { DecoratorConfigHandler } from '@/core/handler/DecoratorConfigHandler';
 import { InjectDecoratorStateManager } from '@/core/statemanager/ioc/InjectDecoratorStateManager';
 import { DecoratorInfo } from '../DecoratorInfo';
+import { InjectDecoratorOptions, GetInstanceConfig, InjectDecoratorConfig } from './types/ioc';
 /**
  * inject装饰器工厂
  */
@@ -52,24 +50,41 @@ export class InjectDecoratorFactory extends DecoratorFactory {
       throw new Error('Conflict decorator');
     }
   }
-
   /**
    * 装饰器配置检查
    * @param config 装饰器配置
    */
-  protected preCheckConfig(config: InjectDecoratorConfig): void {
-    JoiUtils.validate(injectDecoratorConfigSchema, config);
+  protected preCheckConfig(config: InjectDecoratorOptions): void {
+    //JoiUtils.validate(injectDecoratorConfigSchema, config);
   }
   /**
    * 处理装饰器配置
    * @param config 装饰器配置
    */
-  protected preHandleConfig(config: InjectDecoratorConfig): DependencyOptions {
-    // 去除没用的项
-    if (config && typeof config === 'object' && config.backups) {
-      return DecoratorConfigHandler.treeShakingConfig(config, ['backups']);
+  protected preHandleConfig(config: InjectDecoratorOptions): GetInstanceConfig {
+    let defaultConfig: GetInstanceConfig = {
+      module: '__default__',
+      scope: 'SINGLETON',
+    };
+    // 如果是表达式
+    if (typeof config === 'string') {
+      let exps = config.split('.');
+      if (exps.length === 1) {
+        defaultConfig.alias = exps[0];
+      }
+      if (exps.length === 2) {
+        defaultConfig.module = exps[0];
+        defaultConfig.alias = exps[1];
+      }
     }
-    return config;
+    if (typeof config === 'function') {
+      defaultConfig.constructor = config;
+    }
+    if (typeof config === 'object') {
+      defaultConfig = { ...defaultConfig, ...config };
+    }
+
+    return defaultConfig;
   }
 
   /**
@@ -104,12 +119,16 @@ export class InjectDecoratorFactory extends DecoratorFactory {
    * @param propertyKey 被装饰属性的名称
    */
   protected injectInstance(
-    config: DependencyOptions,
+    config: InjectDecoratorConfig,
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ): void {
+    // 树摇配置
+    let getInstanceConfig = DecoratorConfigHandler.treeShakingConfig(config, ['backups']) as GetInstanceConfig;
+
     // 调用实例工厂获取实例
-    let instance = InstanceFactory.getInstance(target, propertyKey, config);
+    let instance = InstanceFactory.getInstance(target, propertyKey, getInstanceConfig);
+
     // 如果实例获取失败，查看是否提供了备份实例
     if (!instance) {
       const backups = this.stateManager.getInjectBackups(target, propertyKey);
@@ -147,19 +166,20 @@ export class InjectDecoratorFactory extends DecoratorFactory {
    * @param config 装饰器配置
    * @returns inject属性装饰器
    */
-  public createDecorator(config: InjectDecoratorConfig): PropertyDecorator {
-    this.initDecoratorInfo();
+  public createDecorator(config?: InjectDecoratorOptions): PropertyDecorator {
     return (target: DecoratedClassOrProto, propertyKey: string) => {
+      // 初始化装饰器信息
+      this.initDecoratorInfo();
       // 校验装饰器
       this.validateDecorator(target, propertyKey);
       // 校验装饰器配置
       this.preCheckConfig(config);
+      // 预处理配置
+      const handledConfig = this.preHandleConfig(config);
       // 设置装饰器状态
-      this.setupState(target, config, propertyKey);
-      // 预处理装饰器配置
-      let dependencyOptions: DependencyOptions = this.preHandleConfig(config);
+      this.setupState(target, handledConfig, propertyKey);
       // 执行核心逻辑
-      this.injectInstance(dependencyOptions, target, propertyKey);
+      this.injectInstance(handledConfig, target, propertyKey);
     };
   }
 }

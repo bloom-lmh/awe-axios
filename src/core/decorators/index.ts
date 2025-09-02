@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../validator/PropertyDecoraotrValidator';
-import { ClassDecorator, ComponentDecoratorConfig, InjectDecoratorConfig, ParameterDecorator } from './decorator';
+import { ClassDecorator, ParameterDecorator } from './decorator';
 import { InjectDecoratorStateManager } from '../statemanager/ioc/InjectDecoratorStateManager';
 import { InjectDecoratorFactory } from './ioc/InjectDecoratorFactory';
 import { ComponentDecoratorFactory } from './ioc/ComponentDecoratorFactory';
@@ -14,12 +14,13 @@ import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
 import { HttpApiDecoratorConfig } from './httpMethod/types/httpMethod';
-import { HttpResponse } from 'msw';
+import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/ioc';
 
 /**
  * inject 装饰器
  */
-export function Inject(config?: InjectDecoratorConfig) {
+
+export function Inject(config?: InjectDecoratorOptions) {
   return new InjectDecoratorFactory()
     .setDecoratorValidator(PropertyDecoratorValidator.getInstance())
     .setConfigHandler(new DecoratorConfigHandler())
@@ -29,7 +30,7 @@ export function Inject(config?: InjectDecoratorConfig) {
 /**
  * Component 装饰器
  */
-export function Component(config?: ComponentDecoratorConfig) {
+export function Component(config?: ComponentDecoratorOptions) {
   return new ComponentDecoratorFactory().createDecorator(config);
 }
 

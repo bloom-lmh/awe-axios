@@ -1,12 +1,12 @@
 import { ClassDecoratorValidator } from '../../validator/ClassDecoratorValidator';
-import { ClassDecorator, ComponentDecoratorConfig, DecoratedClass, DecoratedClassOrProto } from '../decorator';
+import { ClassDecorator, DecoratedClass, DecoratedClassOrProto } from '../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { InstanceFactory } from './InstanceFactory';
 import { componentDecoratorConfigSchema } from '@/core/schema/ioc/ComponentSchema';
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
 import { JoiUtils } from '@/utils/JoiUtils';
-import { InstanceRegisterConfig } from './types/ioc';
+import { ComponentDecoratorOptions, InstanceRegisterConfig } from './types/ioc';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '..';
 
@@ -62,9 +62,9 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
    * 配置前置检查
    * @param config 装饰器配置
    */
-  protected preCheckConfig(config: ComponentDecoratorConfig): void {
+  protected preCheckConfig(options: ComponentDecoratorOptions): void {
     // 若配置存在则校验
-    JoiUtils.validate(componentDecoratorConfigSchema, config);
+    // JoiUtils.validate(componentDecoratorConfigSchema, config);
   }
 
   /**
@@ -72,16 +72,16 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
    * @param config 装饰器配置
    * @description 需要将装饰器配置转换为能够注入实例工厂的配置
    */
-  protected preHandleConfig(config: ComponentDecoratorConfig, target: DecoratedClass): InstanceRegisterConfig {
+  protected preHandleConfig(options: ComponentDecoratorOptions, target: DecoratedClass): InstanceRegisterConfig {
     // 实例工厂配置
     const insRegisterConfig: InstanceRegisterConfig = {
       module: '__default__',
-      constructor: target,
+      ctor: target,
       alias: InstanceFactory.getDefaultAlias(target),
     };
     // 传入string类型配置
-    if (typeof config === 'string') {
-      const exps = config.split('.');
+    if (typeof options === 'string') {
+      const exps = options.split('.');
       if (exps.length === 1) {
         insRegisterConfig.alias = exps[0];
       }
@@ -90,9 +90,9 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
         insRegisterConfig.alias = exps[1];
       }
     }
-    if (typeof config === 'object') {
-      insRegisterConfig.module = config.module || insRegisterConfig.module;
-      insRegisterConfig.alias = config.alias || insRegisterConfig.alias;
+    if (typeof options === 'object') {
+      insRegisterConfig.module = options.module || insRegisterConfig.module;
+      insRegisterConfig.alias = options.alias || insRegisterConfig.alias;
     }
     return insRegisterConfig;
   }
@@ -124,7 +124,7 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
    * @param config 装饰器配置
    * @returns Component装饰器
    */
-  public createDecorator(config?: ComponentDecoratorConfig): ClassDecorator {
+  public createDecorator(options?: ComponentDecoratorOptions): ClassDecorator {
     // 初始化装饰器信息
     this.initDecoratorInfo();
     // 返回装饰
@@ -132,9 +132,9 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
       // 校验装饰器
       this.validateDecorator(target);
       // 配置前置检查
-      this.preCheckConfig(config);
+      this.preCheckConfig(options);
       // 预处理装饰器配置
-      const insRegisterConfig = this.preHandleConfig(config, target);
+      const insRegisterConfig = this.preHandleConfig(options, target);
       // 设置状态
       this.setupState(target, insRegisterConfig);
       // 执行装饰器核心逻辑

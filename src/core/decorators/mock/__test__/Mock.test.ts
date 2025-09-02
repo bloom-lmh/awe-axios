@@ -403,4 +403,23 @@ describe('2.Mock Get方法测试', () => {
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
+  test('3.0 不设置mock走真实接口', async () => {
+    MockAPI.setCondition(() => {
+      return process.env.NODE_ENV === 'development';
+    });
+    @HttpApi({
+      refAxios: request,
+    })
+    class UserApi {
+      @Get({
+        url: '/users/:name/:id',
+      })
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+    expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
+  });
 });

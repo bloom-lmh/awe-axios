@@ -5,6 +5,7 @@ import { DecoratedClassOrProto } from '../decorators/decorator';
  * @description 封装装饰器校验的通用方法
  */
 export interface DecoratorValidator {
+  //protected decoratorInfo:DecoratorInfo
   /**
    * 检查装饰器依赖的装饰器是否存在
    */
