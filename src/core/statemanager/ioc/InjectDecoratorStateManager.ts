@@ -1,6 +1,7 @@
-import { DecoratedClassProto, InjectBackups } from '@/core/decorators/decorator';
+import { DecoratedClassProto } from '@/core/decorators/decorator';
 import { PropertyDecoratorStateManager } from '../PropertyDecoratorStateManager';
 import { METADATAKEY } from '@/core/constant/MetaDataConstants';
+import { InjectBackups } from '@/core/decorators/ioc/types/ioc';
 
 /**
  * Inject装饰器状态管理器

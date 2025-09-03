@@ -1,16 +1,25 @@
 import { DECORATORNAME } from './../../constant/DecoratorConstants';
 import { PointCutExpression, PointCutObj } from '@/core/decorators/aop/types/aop';
 import { DecoratorConfigHandler } from '../DecoratorConfigHandler';
+import { FuncUtils } from '@/utils/FuncUtils';
 
 /**
  * 切点表达式配置处理器
  */
 export class PointCutDecoratorConfigHandler extends DecoratorConfigHandler {
   /**
+   * 可缓存的解析切点表达式函数
+   * @param expression 表达式
+   */
+  parsePointCutExpWithMemo: (expression: PointCutExpression) => PointCutObj = FuncUtils.memorizable(
+    this.parsePointCutExpression,
+  );
+
+  /**
    * 解析切点表达式为对象
    * @param expression 切点表达式
    */
-  parsePointCutExpression(expression: PointCutExpression): PointCutObj {
+  private parsePointCutExpression(expression: PointCutExpression): PointCutObj {
     let config: PointCutObj = {
       module: '*',
       ctor: '*',

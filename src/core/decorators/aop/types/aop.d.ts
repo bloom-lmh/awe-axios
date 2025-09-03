@@ -1,3 +1,4 @@
+import { Advice } from '../Advices';
 import { PointCutExpWithReturn } from './aop.d';
 /**
  * 切点表达式
@@ -118,3 +119,72 @@ export type PointCutDecoratorConfig =
   | PointCutExpWithReturn
   | PointCutExpWithThrow
   | PointCutMethodWithReturnAndThrow;
+
+/**
+ * aop上下文对象
+ */
+export interface AopContext {
+  /**
+   * 原方法
+   */
+  method: Function;
+  /**
+   * 原方法参数
+   */
+  args: any[];
+  /**
+   * 原方法this
+   */
+  target: any;
+}
+
+/**
+ * 方法拦截器
+ * @description 用于拦截方法的调用,具体的方法拦截器是
+ */
+export interface Interceptor {
+  /**
+   * 引用方法
+   * @description 在这里调用原方法和后置方法
+   */
+  invoke(context: AopContext, chain: InterceptorChain): any;
+}
+
+/**
+ * 拦截器链
+ */
+export interface InterceptorChain {
+  /**
+   * 调用拦截器链的拦截器
+   */
+  proceed(context: AopContext): any;
+}
+
+/**
+ * 通知方法
+ */
+export type BeforeAdviceMethod = (context: AopContext) => any;
+export type AfterAdviceMethod = BeforeAdviceMethod;
+export type AroundAdviceMethod = (context: AopContext, adviceChain: AdviceChain) => any;
+export type AfterReturningAdviceMethod = (context: AopContext, result: any) => any;
+export type AfterThrowingAdviceMethod = (context: AopContext, error: any) => any;
+
+/**
+ * 通知项
+ */
+export type AdviceItem = {
+  pointCut: PointCutObj;
+  advice: Advice;
+};
+/**
+ * 通知项数组
+ */
+export type AdviceItems = AdviceItem[];
+/**
+ * 通知类型
+ */
+export type AdviceType = 'around' | 'before' | 'after' | 'afterReturning' | 'afterThrowing';
+/**
+ * 元数据通知列表
+ */
+export type Advices = Partial<Record<AdviceType, AdviceItems>>;
