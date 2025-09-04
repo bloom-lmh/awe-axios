@@ -12,7 +12,7 @@ export class AspectDecoratorStateManager extends ClassDecoratorStateManager {
    * @param target 装饰器所在的类或原型对象
    */
   hasAdvices(target: DecoratedClassOrProto): boolean {
-    return Reflect.hasMetadata('advices', target);
+    return Reflect.hasMetadata(METADATAKEY.ADVICES, target);
   }
 
   /**
@@ -69,5 +69,6 @@ export class AspectDecoratorStateManager extends ClassDecoratorStateManager {
       advices[type] = [];
     }
     advices[type].push(adviceItem);
+    this.setAdvices(target, advices);
   }
 }

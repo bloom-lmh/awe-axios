@@ -1,14 +1,16 @@
+import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
 import { AdviceChain } from './AdviceChain';
 import {
+  AdviceMethod,
   AdviceType,
   AfterAdviceMethod,
   AfterReturningAdviceMethod,
   AfterThrowingAdviceMethod,
-  AopContext,
   AroundAdviceMethod,
   BeforeAdviceMethod,
   Interceptor,
 } from './types/aop';
+import { AopContext } from './AopContext';
 
 /**
  * 通知方法
@@ -37,7 +39,7 @@ export abstract class Advice<T> implements Interceptor {
 /**
  * 前置通知
  */
-export class beforeAdvice extends Advice<BeforeAdviceMethod> {
+export class BeforeAdvice extends Advice<BeforeAdviceMethod> {
   /**
    * 调用原方法和通知方法
    * @param context 上下文对象
@@ -53,7 +55,7 @@ export class beforeAdvice extends Advice<BeforeAdviceMethod> {
 /**
  * 后置通知
  */
-export class afterAdvice extends Advice<AfterAdviceMethod> {
+export class AfterAdvice extends Advice<AfterAdviceMethod> {
   /**
    * 调用原方法和通知方法
    * @param context 上下文对象
@@ -119,7 +121,27 @@ export class AfterThrowingAdvice extends Advice<AfterThrowingAdviceMethod> {
  * 通知工厂
  */
 export class AdviceFactory {
-  /* getAdvice(adviceType: AdviceType,method:): Advice<any> {
-
-  } */
+  /**
+   * 包装原始方法为Advice
+   * @param adviceType 通知类型
+   * @param method 原始方法
+   * @returns
+   */
+  static getAdvice<T extends AdviceMethod>(activeType: AdviceType, method: T) {
+    if (activeType === 'before') {
+      return new BeforeAdvice(method as BeforeAdviceMethod);
+    }
+    if (activeType === 'after') {
+      return new AfterAdvice(method as AfterAdviceMethod);
+    }
+    if (activeType === 'around') {
+      return new AroundAdvice(method as AroundAdviceMethod);
+    }
+    if (activeType === 'afterReturning') {
+      return new AfterReturningAdvice(method as AfterReturningAdviceMethod);
+    }
+    if (activeType === 'afterThrowing') {
+      return new AfterThrowingAdvice(method as AfterThrowingAdviceMethod);
+    }
+  }
 }

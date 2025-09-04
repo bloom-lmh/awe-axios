@@ -4,12 +4,16 @@ import { DecoratedClass } from './decorator';
 /**
  * 实例数组中的项
  */
-export interface InstanceItem<T = any> extends Omit<InstanceRegisterConfig<T>, 'module'> {
+export type InstanceItem<T = any> = InstanceRegisterConfig<T> & {
   /**
    * 实例
    */
   instance: T;
-}
+  /**
+   * 构造函数名
+   */
+  ctorName: string;
+};
 
 /**
  * 实例数组

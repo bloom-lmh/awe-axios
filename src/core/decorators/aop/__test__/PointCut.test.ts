@@ -1,5 +1,9 @@
-import { Advice } from '..';
-
+import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
+import { After, AfterReturning, AfterThrowing, Around, Aspect, Before } from '..';
+import { AdviceChain } from '../AdviceChain';
+import { AopContext } from '../AopContext';
+import { AopProcessor } from '../AopProcessor';
+let stateManager = new AspectDecoratorStateManager();
 describe('PointCut装饰器工厂流程测试', () => {
   test.each([
     { exp: '*' },
@@ -18,8 +22,35 @@ describe('PointCut装饰器工厂流程测试', () => {
     { exp: '*.User*.get*' },
   ])('能够正确解析表达式为表达式对象', ({ exp }) => {
     class Aop {
-      @Advice(exp)
+      @Before(exp)
       test() {}
     }
+  });
+
+  test.only('能够正确记录通知表达式对象和通知方法', () => {
+    @Aspect(1)
+    class Aop {
+      @Before('*.getUsers')
+      test(context: AopContext) {}
+
+      @Before('get*')
+      test2(context: AopContext) {}
+
+      @Around('asda')
+      test3(context: AopContext) {}
+
+      @Around('UserApi.*')
+      test4(context: AopContext, adviceChain: AdviceChain) {}
+
+      @After('UserApi.get*')
+      test5(context: AopContext) {}
+
+      @AfterReturning('*.getUsers')
+      test6(context: AopContext, result: any) {}
+
+      @AfterThrowing('get*')
+      test7(context: AopContext, tx: Error) {}
+    }
+    AopProcessor.weave();
   });
 });

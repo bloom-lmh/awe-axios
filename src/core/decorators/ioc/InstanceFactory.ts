@@ -1,6 +1,4 @@
-import { JoiUtils } from '@/utils/JoiUtils';
-import { dependencyOptionsSchema, instanceRegisterConfigSchema } from '@/core/schema/ioc/InstanceFactorySchema';
-import { DecoratedClass, DecoratedClassOrProto, DecoratedClassProto } from '@/core/decorators/decorator';
+import { DecoratedClass, DecoratedClassOrProto } from '@/core/decorators/decorator';
 import {
   CandidateInstances,
   GetInstanceConfig,
@@ -22,6 +20,8 @@ import { ParamDecoratorValidator } from '@/core/validator/ParamDecoratorValidato
 import { ParamDecoratorStateManager } from '@/core/statemanager/ParamDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecoratorConfigHandler';
+import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
+import { Advices } from '../aop/types/aop';
 
 function Init(target: DecoratedClass) {
   const libs = [
@@ -37,6 +37,7 @@ function Init(target: DecoratedClass) {
     DecoratorConfigHandler,
     HttpMtdDecoratorConfigHandler,
     PointCutDecoratorConfigHandler,
+    AspectDecoratorStateManager,
   ];
   libs.forEach(lib => {
     target.registerInstance({
@@ -55,6 +56,11 @@ export class InstanceFactory {
   private static instanceItemMap: InstanceItemMap = new Map();
 
   /**
+   * 通知信息数组
+   */
+  private static aspectAdvices: Array<{ order: number; advices: Advices }> = [];
+
+  /**
    * 注册实例
    */
   static registerInstance(config: InstanceRegisterConfig) {
@@ -68,7 +74,7 @@ export class InstanceFactory {
       // 创建实例
       //let instance = new ctor();
       // 注册实例
-      this.instanceItemMap.set(module, [{ ctor, alias, instance: undefined }]);
+      this.instanceItemMap.set(module, [{ module, ctor, ctorName: ctor.name, alias, instance: undefined }]);
     } else {
       // 获取模块对应实例数组
       let instanceItemArray = InstanceFactory.instanceItemMap.get(module) || [];
@@ -82,9 +88,25 @@ export class InstanceFactory {
         throw new Error(`Instance with alias or ctor or ctorName already exists in module ${module}`);
       }
       // 注册实例
-      instanceItemArray.push({ ctor, ctorName: ctor.name, alias, instance: undefined });
+      instanceItemArray.push({ module, ctor, ctorName: ctor.name, alias, instance: undefined });
       InstanceFactory.instanceItemMap.set(module, instanceItemArray);
     }
+  }
+
+  /**
+   * 注册切面通知
+   */
+  static registerAspectAdvices(order: number, advices: Advices) {
+    this.aspectAdvices.push({ order, advices });
+    // 排序 小于表示优先级高排在前面
+    this.aspectAdvices.sort((a, b) => a.order - b.order);
+  }
+
+  /**
+   * 获取所有切面通知
+   */
+  static getAspectAdvices(): Array<{ order: number; advices: Advices }> {
+    return this.aspectAdvices;
   }
 
   /**
@@ -99,10 +121,10 @@ export class InstanceFactory {
     let instanceItem = undefined;
     // 通过模块和构造器获取实例项
     if (ctor) {
-      instanceItem = this.getInstanceByCtor(module, ctor);
+      instanceItem = this.getInstanceItemByCtor(module, ctor);
     } else if (alias) {
       // 通过别名获取实例项
-      instanceItem = this.getInstanceByAlias(module, alias);
+      instanceItem = this.getInstanceItemByAlias(module, alias);
     } else {
       // 获取属性类型
       const type = Reflect.getMetadata('design:type', target, propertyKey);
@@ -189,10 +211,11 @@ export class InstanceFactory {
       }
     } */
   }
+
   /**
    * 根据构造器获取
    */
-  static getInstanceByCtor(module: string, ctor: DecoratedClass): InstanceItem | undefined {
+  static getInstanceItemByCtor(module: string, ctor: DecoratedClass): InstanceItem | undefined {
     return this.instanceItemMap.get(module)?.find(item => item.ctor === ctor);
   }
 
@@ -201,9 +224,19 @@ export class InstanceFactory {
    * @param module 所属模块
    * @param ctorOrName
    */
-  static getInstanceByAlias(module: string, alias: string): InstanceItem | undefined {
+  static getInstanceItemByAlias(module: string, alias: string): InstanceItem | undefined {
     return this.instanceItemMap.get(module)?.find(item => item.alias === alias);
   }
+
+  /**
+   * 获取到所有的实例信息
+   */
+  static getAllInstanceItems(): Array<InstanceItem> {
+    for (let [key, value] of this.instanceItemMap.entries()) {
+    }
+    return [];
+  }
+
   /**
    * 根据配置选项获取实例
    */
@@ -219,6 +252,7 @@ export class InstanceFactory {
     // 有模块但无标识符，则通过模块和类型推断获取实例
     return this.getInstanceItemByType(type, module);
   } */
+
   /**
    * 根据表达式获取实例
    */
@@ -239,6 +273,7 @@ export class InstanceFactory {
       .get(module)
       ?.find(item => item.alias === aliasOrCtorName || item.ctorName === aliasOrCtorName);
   }
+
   /**
    * 根据类型推断获取实例
    */
@@ -262,6 +297,7 @@ export class InstanceFactory {
       throw new Error(`Multiple instances of ${type.name} found in module ${module}, but no primary instance found.`);
     }
   }
+
   /**
    * 清空容器
    */
@@ -272,6 +308,7 @@ export class InstanceFactory {
       throw new Error('InstanceFactory cannot be cleared in production environment.');
     }
   }
+
   /**
    * 获取同类型或子类的实例个数
    * @param [primary=false] 是否加入primary为true的条件，用来判断是否有多个同类型且primary为true的实例
@@ -286,6 +323,7 @@ export class InstanceFactory {
     let best = candidates.find(item => item.ctor === type);
     return { count: candidates.length, candidates, best };
   }
+
   /**
    *
    * @param ctor 构造函数

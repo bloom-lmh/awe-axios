@@ -1,4 +1,5 @@
-import { AopContext, Interceptor, InterceptorChain } from './types/aop';
+import { AopContext } from './AopContext';
+import { Interceptor, InterceptorChain } from './types/aop';
 
 /**
  * 方法拦截器链

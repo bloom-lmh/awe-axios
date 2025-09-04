@@ -34,13 +34,13 @@ export abstract class DecoratorFactory extends DecoratorFactoryBuilder {
   /**
    * 初始化状态
    */
-  protected abstract setupState(target: DecoratedClassOrProto, config?: any, propertyKey?: string | symbol): void;
+  protected abstract setupState(target: DecoratedClassOrProto, ...args: any[]): void;
 
   /**
    * 创建装饰器
    */
   public abstract createDecorator(
     config: any,
-    arg: any,
+    ...arg: any[]
   ): ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator;
 }

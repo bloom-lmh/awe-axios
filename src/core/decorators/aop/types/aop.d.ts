@@ -121,24 +121,6 @@ export type PointCutDecoratorConfig =
   | PointCutMethodWithReturnAndThrow;
 
 /**
- * aop上下文对象
- */
-export interface AopContext {
-  /**
-   * 原方法
-   */
-  method: Function;
-  /**
-   * 原方法参数
-   */
-  args: any[];
-  /**
-   * 原方法this
-   */
-  target: any;
-}
-
-/**
  * 方法拦截器
  * @description 用于拦截方法的调用,具体的方法拦截器是
  */
@@ -168,7 +150,12 @@ export type AfterAdviceMethod = BeforeAdviceMethod;
 export type AroundAdviceMethod = (context: AopContext, adviceChain: AdviceChain) => any;
 export type AfterReturningAdviceMethod = (context: AopContext, result: any) => any;
 export type AfterThrowingAdviceMethod = (context: AopContext, error: any) => any;
-
+export type AdviceMethod =
+  | BeforeAdviceMethod
+  | AfterAdviceMethod
+  | AroundAdviceMethod
+  | AfterReturningAdviceMethod
+  | AfterThrowingAdviceMethod;
 /**
  * 通知项
  */
