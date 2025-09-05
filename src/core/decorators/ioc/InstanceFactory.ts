@@ -21,7 +21,7 @@ import { ParamDecoratorStateManager } from '@/core/statemanager/ParamDecoratorSt
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecoratorConfigHandler';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
-import { Advices } from '../aop/types/aop';
+import { AdviceItems, Advices } from '../aop/types/aop';
 
 function Init(target: DecoratedClass) {
   const libs = [
@@ -56,11 +56,6 @@ export class InstanceFactory {
   private static instanceItemMap: InstanceItemMap = new Map();
 
   /**
-   * 通知信息数组
-   */
-  private static aspectAdvices: Array<{ order: number; advices: Advices }> = [];
-
-  /**
    * 注册实例
    */
   static registerInstance(config: InstanceRegisterConfig) {
@@ -91,22 +86,6 @@ export class InstanceFactory {
       instanceItemArray.push({ module, ctor, ctorName: ctor.name, alias, instance: undefined });
       InstanceFactory.instanceItemMap.set(module, instanceItemArray);
     }
-  }
-
-  /**
-   * 注册切面通知
-   */
-  static registerAspectAdvices(order: number, advices: Advices) {
-    this.aspectAdvices.push({ order, advices });
-    // 排序 小于表示优先级高排在前面
-    this.aspectAdvices.sort((a, b) => a.order - b.order);
-  }
-
-  /**
-   * 获取所有切面通知
-   */
-  static getAspectAdvices(): Array<{ order: number; advices: Advices }> {
-    return this.aspectAdvices;
   }
 
   /**
@@ -165,51 +144,6 @@ export class InstanceFactory {
     if (scope === 'DEEPCLONE') {
       return ObjectUtils.deepClone(instance);
     }
-    /* // 表达式形式
-    if (typeof config === 'string') {
-      return this.getInstanceItemByExpression(config)?.instance;
-    }
-    // 构造器注入
-    if (typeof config === 'function') {
-      return this.getInstanceByCtor(config)?.instance;
-    }
-    // 获取属性类型
-    const type = Reflect.getMetadata('design:type', target, propertyKey);
-    // 无配置选项
-    if (typeof config === 'undefined') {
-      // 根据类型推断获取实例
-      return this.getInstanceItemByType(type)?.instance;
-    }
-    // 有配置选项
-    if (typeof config === 'object') {
-      // 根据配置选项获取实例
-      let instanceItem = this.getInstanceItemByConfig(type, config);
-      if (!instanceItem) {
-        return undefined;
-      }
-      config.scope = (config.scope?.toUpperCase() as InstanceScope) || 'SINGLETON';
-      const { ctor, instance } = instanceItem;
-      // 单例模式
-      if (config.scope === 'SINGLETON') {
-        return instance;
-      }
-      // 瞬时模式
-      if (config.scope === 'TRANSIENT') {
-        return new ctor();
-      }
-      // 原型模式
-      if (config.scope === 'PROTOTYPE') {
-        return Object.create(instance);
-      }
-      // 浅克隆模式
-      if (config.scope === 'SHALLOWCLONE') {
-        return Object.assign(Object.create(Object.getPrototypeOf(instance)), instance);
-      }
-      // 深克隆模式
-      if (config.scope === 'DEEPCLONE') {
-        return ObjectUtils.deepClone(instance);
-      }
-    } */
   }
 
   /**
@@ -232,26 +166,12 @@ export class InstanceFactory {
    * 获取到所有的实例信息
    */
   static getAllInstanceItems(): Array<InstanceItem> {
-    for (let [key, value] of this.instanceItemMap.entries()) {
+    const instanceItems: Array<InstanceItem> = [];
+    for (let items of this.instanceItemMap.values()) {
+      items.forEach(item => instanceItems.push(item));
     }
-    return [];
+    return instanceItems;
   }
-
-  /**
-   * 根据配置选项获取实例
-   */
-  /* static getInstanceItemByConfig(type: DecoratedClass, config: GetInstanceConfig): InstanceItem | undefined {
-    const { module = '__default__', alias } = config;
-    // 有模块和标识符，则通过模块和标识符获取实例
-    if (module && ctorNameOrAlias) {
-      return this.getInstanceItemByExpression(`${module}.${ctorNameOrAlias}`);
-    }
-    if (expression) {
-      return this.getInstanceItemByExpression(expression);
-    }
-    // 有模块但无标识符，则通过模块和类型推断获取实例
-    return this.getInstanceItemByType(type, module);
-  } */
 
   /**
    * 根据表达式获取实例

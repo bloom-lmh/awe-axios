@@ -54,7 +54,7 @@ export class AspectDecoratorStateManager extends ClassDecoratorStateManager {
    * @param type 通知类型
    * @param adviceItem 通知项
    */
-  setAdviceOfType<T>(target: DecoratedClassOrProto, type: AdviceType, adviceItem: AdviceItem): void {
+  setAdviceOfType(target: DecoratedClassOrProto, type: AdviceType, adviceItem: AdviceItem): void {
     let advices = this.getAdvices(target);
     // 确保该类型的数组存在
     if (!advices) {

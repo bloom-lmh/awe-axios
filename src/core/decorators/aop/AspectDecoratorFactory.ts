@@ -6,6 +6,7 @@ import { ClassDecoratorValidator } from '@/core/validator/ClassDecoratorValidato
 import { Inject } from '..';
 import { InstanceFactory } from '../ioc/InstanceFactory';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
+import { AspectFactory } from './AspectFactory';
 
 /**
  * 切面装饰器类
@@ -72,10 +73,11 @@ export class AspectDecoratorFactory extends DecoratorFactory {
    */
   protected registerAdvices(target: DecoratedClass, config: number): void {
     // 获取所有通知
-    const advices = this.stateManager.getAdvices(target);
-    if (advices && Object.keys(advices).length === 0) {
+    let advices = this.stateManager.getAdvices(target.prototype);
+
+    if (advices && Object.keys(advices).length > 0) {
       // 注册切面所有通知
-      InstanceFactory.registerAspectAdvices(config, advices);
+      AspectFactory.registerAspectAdvices(config, advices);
     }
   }
 

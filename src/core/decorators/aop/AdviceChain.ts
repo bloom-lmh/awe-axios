@@ -1,4 +1,4 @@
-import { AopContext } from './AopContext';
+import { AopContext } from './AspectContext';
 import { Interceptor, InterceptorChain } from './types/aop';
 
 /**

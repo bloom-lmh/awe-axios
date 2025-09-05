@@ -4,7 +4,14 @@ import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { MethodDecoratorValidator } from '@/core/validator/MethodDecoratorValidator';
 import { Inject } from '..';
-import { AdviceItem, AdviceMethod, AdviceType, PointCutDecoratorConfig, PointCutObj } from './types/aop';
+import {
+  AdviceItem,
+  AdviceMethod,
+  AdviceType,
+  InstancePointCut,
+  PointCutDecoratorConfig,
+  PointCutObj,
+} from './types/aop';
 import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecoratorConfigHandler';
 import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecoratorStateManager';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
@@ -91,11 +98,12 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
    */
   protected preHandleConfig(config: PointCutDecoratorConfig, target?: DecoratedClassOrProto) {
     // 默认配置
-    let defaultConfig: PointCutObj = {
-      module: '*',
-      ctor: '*',
-      method: '*',
+    let defaultConfig: InstancePointCut = {
+      module: /^.*$/,
+      ctor: /^.*$/,
+      method: /^.*$/,
     };
+    let pointCutConfig = {};
     // 是切点函数
     if (typeof config === 'function') {
       config = config();
@@ -103,7 +111,7 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
     // 是切点表达式
     if (typeof config === 'string') {
       // 解析切点表达式
-      config = this.configHandler.parsePointCutExpWithMemo(config);
+      config = this.configHandler.parsePointCutExpWithMemo(config) as any;
     }
     // 是配置对象
     if (typeof config === 'object') {
@@ -120,7 +128,7 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
       // 合并配置
       defaultConfig = {
         ...defaultConfig,
-        ...config,
+        ...(config as any),
       };
     }
     return defaultConfig;
@@ -133,7 +141,7 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
    * @param method  原始方法
    * @returns 通知项
    */
-  protected wrapAdviceMethod(pointCut: PointCutObj, activeType: AdviceType, method: AdviceMethod): AdviceItem {
+  protected wrapAdviceMethod(pointCut: InstancePointCut, activeType: AdviceType, method: AdviceMethod): AdviceItem {
     // 包装通知
     let adviceFunc = AdviceFactory.getAdvice(activeType, method);
     let adviceItem = { pointCut, advice: adviceFunc };

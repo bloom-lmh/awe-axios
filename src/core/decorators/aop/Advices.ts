@@ -10,7 +10,7 @@ import {
   BeforeAdviceMethod,
   Interceptor,
 } from './types/aop';
-import { AopContext } from './AopContext';
+import { AspectContext } from './AspectContext';
 
 /**
  * 通知方法
@@ -33,7 +33,7 @@ export abstract class Advice<T> implements Interceptor {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  abstract invoke(context: AopContext, adviceChain: AdviceChain): any;
+  abstract invoke(context: AspectContext, adviceChain: AdviceChain): any;
 }
 
 /**
@@ -45,7 +45,7 @@ export class BeforeAdvice extends Advice<BeforeAdviceMethod> {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  invoke(context: AopContext, adviceChain: AdviceChain) {
+  invoke(context: AspectContext, adviceChain: AdviceChain) {
     // 前置通知方法调用
     this.adviceFunc(context);
     return adviceChain.proceed(context);
@@ -61,7 +61,7 @@ export class AfterAdvice extends Advice<AfterAdviceMethod> {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  invoke(context: AopContext, adviceChain: AdviceChain) {
+  invoke(context: AspectContext, adviceChain: AdviceChain) {
     const result = adviceChain.proceed(context);
     this.adviceFunc(context);
     return result;
@@ -76,7 +76,7 @@ export class AroundAdvice extends Advice<AroundAdviceMethod> {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  invoke(context: AopContext, adviceChain: AdviceChain) {
+  invoke(context: AspectContext, adviceChain: AdviceChain) {
     return this.adviceFunc(context, adviceChain);
   }
 }
@@ -90,7 +90,7 @@ export class AfterReturningAdvice extends Advice<AfterReturningAdviceMethod> {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  invoke(context: AopContext, adviceChain: AdviceChain) {
+  invoke(context: AspectContext, adviceChain: AdviceChain) {
     const result = adviceChain.proceed(context);
     this.adviceFunc(context, result);
     return result;
@@ -106,7 +106,7 @@ export class AfterThrowingAdvice extends Advice<AfterThrowingAdviceMethod> {
    * @param context 上下文对象
    * @param adviceChain 通知链
    */
-  invoke(context: AopContext, adviceChain: AdviceChain) {
+  invoke(context: AspectContext, adviceChain: AdviceChain) {
     try {
       const result = adviceChain.proceed(context);
       return result;

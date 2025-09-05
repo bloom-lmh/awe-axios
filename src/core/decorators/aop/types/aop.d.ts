@@ -156,11 +156,29 @@ export type AdviceMethod =
   | AroundAdviceMethod
   | AfterReturningAdviceMethod
   | AfterThrowingAdviceMethod;
+
+/**
+ * 实例工厂的切点对象
+ */
+export interface InstancePointCut {
+  /**
+   * 所属模块
+   */
+  module: RegExp;
+  /**
+   * 对应类
+   */
+  ctor: RegExp;
+  /**
+   * 对应方法
+   */
+  method: RegExp;
+}
 /**
  * 通知项
  */
 export type AdviceItem = {
-  pointCut: PointCutObj;
+  pointCut: InstancePointCut;
   advice: Advice;
 };
 /**
@@ -171,6 +189,7 @@ export type AdviceItems = AdviceItem[];
  * 通知类型
  */
 export type AdviceType = 'around' | 'before' | 'after' | 'afterReturning' | 'afterThrowing';
+
 /**
  * 元数据通知列表
  */

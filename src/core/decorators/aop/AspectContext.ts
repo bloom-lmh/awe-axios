@@ -1,7 +1,7 @@
 /**
  * aop 上下文
  */
-export class AopContext {
+export class AspectContext {
   /**
    * 原方法
    */

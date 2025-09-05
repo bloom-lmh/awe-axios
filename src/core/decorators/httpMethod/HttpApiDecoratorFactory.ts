@@ -44,7 +44,7 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
     this.decoratorInfo = new DecoratorInfo()
       .setName(DECORATORNAME.HTTPAPI)
       .setType('ioc')
-      .setConflictList([DECORATORNAME.HTTPAPI, DECORATORNAME.COMPONENT]);
+      .setConflictList([DECORATORNAME.HTTPAPI]);
   }
 
   /**

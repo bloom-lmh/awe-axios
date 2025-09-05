@@ -42,7 +42,7 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
     this.decoratorInfo = new DecoratorInfo()
       .setName(DECORATORNAME.COMPONENT)
       .setType('ioc')
-      .setConflictList([DECORATORNAME.COMPONENT, DECORATORNAME.HTTPAPI]);
+      .setConflictList([DECORATORNAME.COMPONENT]);
   }
 
   /**

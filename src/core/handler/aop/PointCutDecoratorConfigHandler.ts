@@ -1,5 +1,5 @@
 import { DECORATORNAME } from './../../constant/DecoratorConstants';
-import { PointCutExpression, PointCutObj } from '@/core/decorators/aop/types/aop';
+import { InstancePointCut, PointCutExpression, PointCutObj } from '@/core/decorators/aop/types/aop';
 import { DecoratorConfigHandler } from '../DecoratorConfigHandler';
 import { FuncUtils } from '@/utils/FuncUtils';
 
@@ -11,7 +11,7 @@ export class PointCutDecoratorConfigHandler extends DecoratorConfigHandler {
    * 可缓存的解析切点表达式函数
    * @param expression 表达式
    */
-  parsePointCutExpWithMemo: (expression: PointCutExpression) => PointCutObj = FuncUtils.memorizable(
+  parsePointCutExpWithMemo: (expression: PointCutExpression) => InstancePointCut = FuncUtils.memorizable(
     this.parsePointCutExpression,
   );
 
@@ -19,23 +19,26 @@ export class PointCutDecoratorConfigHandler extends DecoratorConfigHandler {
    * 解析切点表达式为对象
    * @param expression 切点表达式
    */
-  private parsePointCutExpression(expression: PointCutExpression): PointCutObj {
-    let config: PointCutObj = {
-      module: '*',
-      ctor: '*',
-      method: '*',
+  private parsePointCutExpression(expression: PointCutExpression): InstancePointCut {
+    let config: InstancePointCut = {
+      module: /^.*$/,
+      ctor: /^.*$/,
+      method: /^.*$/,
     };
     let exps = expression.split('.');
+    const regexps = exps.map(exp => {
+      return new RegExp(exp.replace(/\*+/g, '.*'));
+    });
     if (exps.length === 1) {
-      config.method = exps[0];
+      config.method = regexps[0];
     }
     if (exps.length === 2) {
-      config.ctor = exps[0];
-      config.method = exps[1];
+      config.ctor = regexps[0];
+      config.method = regexps[1];
     }
     if (exps.length === 3) {
-      config.module = exps[0];
-      config.ctor = exps[1];
+      config.module = regexps[0];
+      config.ctor = regexps[1];
     }
     return config;
   }
