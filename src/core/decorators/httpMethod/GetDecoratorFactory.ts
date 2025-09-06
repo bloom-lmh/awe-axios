@@ -178,18 +178,22 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     let requestFn = baseRequest();
     // 伴随请求重发
     if (retry) {
+      console.log('retry');
       requestFn = withRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
+      console.log('throttle');
       requestFn = withThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
+      console.log('debounce');
       requestFn = withDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
+      console.log('mock');
       requestFn = withMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;
@@ -227,8 +231,10 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
     }
     // 若mock存在与全局配置合并
-    mock = { ...MockAPI.globalConfig, ...mock };
-    httpRequestConfig.setMock(mock);
+    if (mock) {
+      mock = { ...MockAPI.globalConfig, ...mock };
+      httpRequestConfig.setMock(mock);
+    }
   }
 
   /**
@@ -265,6 +271,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       this.setupState(target, propertyKey);
       // 实现配置
       const request = this.applyConfig();
+      console.log('Get代理完成');
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(descriptor.value, {
         /**
@@ -274,6 +281,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
          * @param args 调用代理方法传入的参数
          */
         apply: (invoke, _this, args) => {
+          console.log('Get代理执行');
           // 后处理配置
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查

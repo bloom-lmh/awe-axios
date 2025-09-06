@@ -4,7 +4,19 @@ import { Constructor } from '../../decorator';
 /**
  * 实例数组中的项
  */
-export type InstanceItem<T = any> = InstanceRegisterConfig<T> & {
+export type InstanceItem<T = any> = {
+  /**
+   * 实例的模块命名空间，防止不同模块的实例命名冲突
+   */
+  module: string;
+  /**
+   * 别名，用于唯一标识一个类实例
+   */
+  alias: string;
+  /**
+   * 实例的名称，用于在模块中获取实例
+   */
+  ctor: Constructor;
   /**
    * 实例
    */
@@ -13,6 +25,10 @@ export type InstanceItem<T = any> = InstanceRegisterConfig<T> & {
    * 构造函数名
    */
   ctorName: string;
+  /**
+   * 方法名
+   */
+  methodNames: string[];
 };
 
 /**
@@ -40,7 +56,7 @@ export interface InstanceRegisterConfig {
   /**
    * 实例的名称，用于在模块中获取实例
    */
-  ctor: DecoratedClass;
+  ctor: Constructor;
 }
 /**
  * 获取实例配置对象

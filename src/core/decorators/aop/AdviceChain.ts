@@ -1,4 +1,4 @@
-import { AopContext } from './AspectContext';
+import { AspectContext } from './AspectContext';
 import { Interceptor, InterceptorChain } from './types/aop';
 
 /**
@@ -31,11 +31,11 @@ export class AdviceChain implements InterceptorChain {
   /**
    * 调用拦截器链的拦截器
    */
-  proceed(context: AopContext) {
+  proceed(context: AspectContext) {
     if (this.index < this.interceptors.length) {
       let interceptor = this.interceptors[this.index];
       this.index++;
-      return interceptor!.invoke(context, this);
+      interceptor!.invoke(context, this);
     } else {
       const { target, args } = context;
       return context.method.apply(target, args);

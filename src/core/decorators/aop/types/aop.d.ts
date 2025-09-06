@@ -1,3 +1,4 @@
+import { Constructor } from '../../decorator';
 import { Advice } from '../Advices';
 import { PointCutExpWithReturn } from './aop.d';
 /**
@@ -199,7 +200,20 @@ export type Advices = Partial<Record<AdviceType, AdviceItems>>;
  * 编织时的方法项
  */
 export type MethodItem = Array<{
+  /**
+   * 模块名
+   */
   module: string;
+  /**
+   * 构造函数
+   */
+  ctor: Constructor;
+  /**
+   * 构造函数名
+   */
   ctorName: string;
-  methods: Array<{ methodName: string; method: Function }>;
+  /**
+   * 类中的方法
+   */
+  methods: Array<{ methodName: string; methodDescriptor: PropertyDescriptor }>;
 }>;

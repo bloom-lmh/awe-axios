@@ -40,7 +40,6 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     let { mock, mockHandlers } = this.config;
     // 若没有mock配置或配置为false，表示不采用mock
     if (!mock) {
-      this.config.mock = {};
       return this;
     }
     // 若配置为一个函数，则覆盖默认的handler

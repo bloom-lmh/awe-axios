@@ -1,5 +1,4 @@
 import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
-import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import axios from 'axios';
 
@@ -9,6 +8,7 @@ import axios from 'axios';
  * @param config 防抖配置
  */
 export function baseRequest(): any {
+  console.log('baseRequest');
   return (config: HttpMethodDecoratorConfig) => {
     const { refAxios = axios } = config;
     // 树摇配置

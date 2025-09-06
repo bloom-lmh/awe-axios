@@ -65,11 +65,14 @@ export class InstanceFactory {
     //config = JoiUtils.validate<InstanceRegisterConfig>(instanceRegisterConfigSchema, config);
     // 参数处理
     let { module = '__default__', ctor, alias = this.getDefaultAlias(ctor) } = config;
-
+    // 获取构造函数对应的方法信息
+    let methodNames = this.getMethodNames(ctor);
     // 实例模块不存在则创建
     if (!InstanceFactory.instanceItemMap.has(module)) {
       // 注册实例
-      this.instanceItemMap.set(module, [{ module, ctor, ctorName: ctor.name, alias, instance: undefined }]);
+      this.instanceItemMap.set(module, [
+        { module, ctor, ctorName: ctor.name, alias, instance: undefined, methodNames },
+      ]);
     } else {
       // 获取模块对应实例数组
       let instanceItemArray = InstanceFactory.instanceItemMap.get(module) || [];
@@ -83,7 +86,7 @@ export class InstanceFactory {
         throw new Error(`Instance with alias or ctor or ctorName already exists in module ${module}`);
       }
       // 注册实例
-      instanceItemArray.push({ module, ctor, ctorName: ctor.name, alias, instance: undefined });
+      instanceItemArray.push({ module, ctor, ctorName: ctor.name, alias, instance: undefined, methodNames });
       InstanceFactory.instanceItemMap.set(module, instanceItemArray);
     }
   }
@@ -117,13 +120,11 @@ export class InstanceFactory {
     scope = (scope?.toUpperCase() as InstanceScope) || 'SINGLETON';
     // 获取实例信息
     let { ctor: constuctor, instance } = instanceItem;
-
     // 没有实例则创建
     if (!instance) {
       instance = new constuctor();
       instanceItem.instance = instance;
     }
-
     // 单例模式
     if (scope === 'SINGLETON') {
       return instance;
@@ -164,37 +165,26 @@ export class InstanceFactory {
   }
 
   /**
-   * 获取到所有的实例信息
+   * 获取构造器方法名
+   */
+  private static getMethodNames(ctor: DecoratedClass): string[] {
+    let methodNames = Object.getOwnPropertyNames(ctor.prototype).filter(
+      name => typeof (ctor.prototype as any)[name] === 'function',
+    );
+    return methodNames;
+  }
+  /**
+   * 获取到所有的实例信息列表
    * @param [exludes=[]] 要排除的模块
    */
-  static getAllInstanceItems(exludedMocules: Array<string | symbol> = [SYSTEM.LIB]): Array<InstanceItem> {
+  static getInstanceItemList(exludedMocules: Array<string | symbol> = [SYSTEM.LIB]): Array<InstanceItem> {
     const instanceItems: Array<InstanceItem> = [];
     for (let [key, items] of this.instanceItemMap.entries()) {
+      // 排除不筛选的模块实例项
       if (exludedMocules.includes(key)) continue;
       items.forEach(item => instanceItems.push(item));
     }
     return instanceItems;
-  }
-
-  /**
-   * 获取所有实例方法
-   */
-  static getAllInstanceMethods(exludedMocules: Array<string | symbol> = [SYSTEM.LIB]): MethodItem {
-    let methodItems: MethodItem = [];
-    let methods: Array<{ methodName: string; method: Function }> = [];
-    let instanceItems = this.getAllInstanceItems(exludedMocules);
-    instanceItems.forEach(item => {
-      let { ctor, module, ctorName } = item;
-      methods = [];
-      let methodNames = Object.getOwnPropertyNames(ctor.prototype).filter(
-        name => typeof (ctor.prototype as any)[name] === 'function',
-      );
-      methodNames.forEach(methodName => {
-        methods.push({ methodName, method: (ctor.prototype as any)[methodName] });
-      });
-      methodItems.push({ module, ctorName, methods });
-    });
-    return methodItems;
   }
 
   /**
