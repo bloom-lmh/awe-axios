@@ -9,6 +9,7 @@ import { JoiUtils } from '@/utils/JoiUtils';
 import { ComponentDecoratorOptions, InstanceRegisterConfig } from './types/ioc';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '..';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * Component 装饰器工厂
@@ -23,13 +24,19 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
   /**
    * 装饰器校验器
    */
-  @Inject('classDecoratorValidator')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorValidator,
+  })
   protected decoratorValidator!: ClassDecoratorValidator;
 
   /**
    * 类装饰器状态管理器
    */
-  @Inject('classDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorStateManager,
+  })
   protected stateManager!: ClassDecoratorStateManager;
 
   /**

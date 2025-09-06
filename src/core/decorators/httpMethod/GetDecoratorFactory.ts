@@ -21,6 +21,7 @@ import { withDebounce } from '@/core/requestexcutor/Debounce';
 import { withMock } from '@/core/requestexcutor/Mock';
 import { MockAPI } from '../mock/MockAPI';
 import { DebounceOptions, RetryOptions, ThrottleOptions } from './types/httpMethod';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * Get装饰器工厂
@@ -39,31 +40,46 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
   /**
    * 方法装饰器校验器
    */
-  @Inject(MethodDecoratorValidator)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorValidator,
+  })
   protected decoratorValidator!: MethodDecoratorValidator;
 
   /**
    * 配置处理器
    */
-  @Inject(HttpMtdDecoratorConfigHandler)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: HttpMtdDecoratorConfigHandler,
+  })
   protected configHandler!: HttpMtdDecoratorConfigHandler;
 
   /**
    * 状态管理器
    */
-  @Inject(MethodDecoratorStateManager)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorStateManager,
+  })
   protected stateManager!: MethodDecoratorStateManager;
 
   /**
    * 类状态管理器
    */
-  @Inject(ClassDecoratorStateManager)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorStateManager,
+  })
   protected classStateManager!: ClassDecoratorStateManager;
 
   /**
    * 参数状态管理器
    */
-  @Inject(ParamDecoratorStateManager)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ParamDecoratorStateManager,
+  })
   protected paramStateManager!: ParamDecoratorStateManager;
 
   /**

@@ -7,6 +7,7 @@ import { JoiUtils } from '@/utils/JoiUtils';
 import { ParamSchema } from '@/core/schema/param/ParamSchema';
 import { ParamDecoratorStateManager } from '@/core/statemanager/ParamDecoratorStateManager';
 import { Inject } from '..';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * 路径参数装饰器
@@ -21,14 +22,21 @@ export class PathParamDecoratorFactory extends DecoratorFactory {
   /**
    * 装饰器校验器
    */
-  @Inject('paramDecoratorValidator')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ParamDecoratorValidator,
+  })
   protected decoratorValidator!: ParamDecoratorValidator;
 
   /**
    * 装饰器状态管理器
    */
-  @Inject('paramDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ParamDecoratorStateManager,
+  })
   protected stateManager!: ParamDecoratorStateManager;
+
   /**
    * 初始化装饰器信息
    */

@@ -12,20 +12,19 @@ export class AspectProcessor {
    */
   static weave() {
     // 获取到所有的实例信息
-    const instanceItems = InstanceFactory.getAllInstanceItems();
+    const methodItems = InstanceFactory.getAllInstanceMethods();
     // 获取到所有的通知
     const advices = AspectFactory.getAspectAdvices();
     const { around, before, after, afterReturning, afterThrowing } = advices;
-    // 开始编织切面
-    around!.forEach(adviceItem => {
-      const { pointCut, advice } = adviceItem;
-      console.log(pointCut);
 
-      // 匹配方法
-      /* instanceItems.forEach(instanceItem => {
-        console.log(instanceItem);
-      }); */
+    // 开始编织切面
+    methodItems.forEach(methodItem => {
+      const { module, ctorName, methods } = methodItem;
+      console.log(methodItem);
     });
+    /* around!.forEach(adviceItem => {
+      const { pointCut, advice } = adviceItem;
+    }); */
   }
 
   /**

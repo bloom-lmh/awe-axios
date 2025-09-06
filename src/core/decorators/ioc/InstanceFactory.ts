@@ -21,7 +21,8 @@ import { ParamDecoratorStateManager } from '@/core/statemanager/ParamDecoratorSt
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecoratorConfigHandler';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
-import { AdviceItems, Advices } from '../aop/types/aop';
+import { MethodItem } from '../aop/types/aop';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 function Init(target: DecoratedClass) {
   const libs = [
@@ -41,6 +42,7 @@ function Init(target: DecoratedClass) {
   ];
   libs.forEach(lib => {
     target.registerInstance({
+      module: SYSTEM.LIB,
       ctor: lib,
     });
   });
@@ -53,7 +55,7 @@ export class InstanceFactory {
   /**
    * 实例工厂Map
    */
-  private static instanceItemMap: InstanceItemMap = new Map();
+  private static instanceItemMap: InstanceItemMap = new Map().set(SYSTEM.LIB, []);
 
   /**
    * 注册实例
@@ -66,8 +68,6 @@ export class InstanceFactory {
 
     // 实例模块不存在则创建
     if (!InstanceFactory.instanceItemMap.has(module)) {
-      // 创建实例
-      //let instance = new ctor();
       // 注册实例
       this.instanceItemMap.set(module, [{ module, ctor, ctorName: ctor.name, alias, instance: undefined }]);
     } else {
@@ -149,8 +149,9 @@ export class InstanceFactory {
   /**
    * 根据构造器获取
    */
-  static getInstanceItemByCtor(module: string, ctor: DecoratedClass): InstanceItem | undefined {
-    return this.instanceItemMap.get(module)?.find(item => item.ctor === ctor);
+  static getInstanceItemByCtor(module: string | symbol, ctor: DecoratedClass): InstanceItem | undefined {
+    let result = this.instanceItemMap.get(module)?.find(item => item.ctor === ctor);
+    return result;
   }
 
   /**
@@ -158,19 +159,42 @@ export class InstanceFactory {
    * @param module 所属模块
    * @param ctorOrName
    */
-  static getInstanceItemByAlias(module: string, alias: string): InstanceItem | undefined {
+  static getInstanceItemByAlias(module: string | symbol, alias: string): InstanceItem | undefined {
     return this.instanceItemMap.get(module)?.find(item => item.alias === alias);
   }
 
   /**
    * 获取到所有的实例信息
+   * @param [exludes=[]] 要排除的模块
    */
-  static getAllInstanceItems(): Array<InstanceItem> {
+  static getAllInstanceItems(exludedMocules: Array<string | symbol> = [SYSTEM.LIB]): Array<InstanceItem> {
     const instanceItems: Array<InstanceItem> = [];
-    for (let items of this.instanceItemMap.values()) {
+    for (let [key, items] of this.instanceItemMap.entries()) {
+      if (exludedMocules.includes(key)) continue;
       items.forEach(item => instanceItems.push(item));
     }
     return instanceItems;
+  }
+
+  /**
+   * 获取所有实例方法
+   */
+  static getAllInstanceMethods(exludedMocules: Array<string | symbol> = [SYSTEM.LIB]): MethodItem {
+    let methodItems: MethodItem = [];
+    let methods: Array<{ methodName: string; method: Function }> = [];
+    let instanceItems = this.getAllInstanceItems(exludedMocules);
+    instanceItems.forEach(item => {
+      let { ctor, module, ctorName } = item;
+      methods = [];
+      let methodNames = Object.getOwnPropertyNames(ctor.prototype).filter(
+        name => typeof (ctor.prototype as any)[name] === 'function',
+      );
+      methodNames.forEach(methodName => {
+        methods.push({ methodName, method: (ctor.prototype as any)[methodName] });
+      });
+      methodItems.push({ module, ctorName, methods });
+    });
+    return methodItems;
   }
 
   /**
@@ -197,7 +221,7 @@ export class InstanceFactory {
   /**
    * 根据类型推断获取实例
    */
-  static getInstanceItemByType(type: DecoratedClass, module: string = '__default__') {
+  static getInstanceItemByType(type: DecoratedClass, module: string | symbol = '__default__') {
     if (type === undefined) {
       return undefined;
     }
@@ -214,7 +238,9 @@ export class InstanceFactory {
     // 有多个同类型或子类的实例
     if (count > 1) {
       if (best) return best;
-      throw new Error(`Multiple instances of ${type.name} found in module ${module}, but no primary instance found.`);
+      throw new Error(
+        `Multiple instances of ${type.name} found in module ${String(module)}, but no primary instance found.`,
+      );
     }
   }
 
@@ -233,7 +259,7 @@ export class InstanceFactory {
    * 获取同类型或子类的实例个数
    * @param [primary=false] 是否加入primary为true的条件，用来判断是否有多个同类型且primary为true的实例
    */
-  private static countCandidates(type: DecoratedClass, module: string = '__default__'): CandidateInstances {
+  private static countCandidates(type: DecoratedClass, module: string | symbol = '__default__'): CandidateInstances {
     let instanceArray = InstanceFactory.instanceItemMap.get(module);
     if (!instanceArray) {
       return { count: 0, candidates: [], best: undefined };

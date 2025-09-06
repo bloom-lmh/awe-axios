@@ -9,6 +9,7 @@ import { Inject } from '..';
 import { PathUtils } from '@/utils/PathUtils';
 import { HttpApiDecoratorConfig } from './types/httpMethod';
 import { Axios, AxiosInstance } from 'axios';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * httpApi装饰器工厂
@@ -22,19 +23,28 @@ export class HttpApiDecoratorFactory extends DecoratorFactory {
   /**
    * 装饰器校验器
    */
-  @Inject('classDecoratorValidator')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorValidator,
+  })
   protected decoratorValidator!: ClassDecoratorValidator;
 
   /**
    * 装饰器状态管理器
    */
-  @Inject('classDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorStateManager,
+  })
   protected stateManager!: ClassDecoratorStateManager;
 
   /**
    * 方法状态管理器
    */
-  @Inject('methodDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorStateManager,
+  })
   protected methodStateManager!: MethodDecoratorStateManager;
 
   /**

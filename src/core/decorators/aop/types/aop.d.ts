@@ -194,3 +194,12 @@ export type AdviceType = 'around' | 'before' | 'after' | 'afterReturning' | 'aft
  * 元数据通知列表
  */
 export type Advices = Partial<Record<AdviceType, AdviceItems>>;
+
+/**
+ * 编织时的方法项
+ */
+export type MethodItem = Array<{
+  module: string;
+  ctorName: string;
+  methods: Array<{ methodName: string; method: Function }>;
+}>;

@@ -166,7 +166,7 @@ export class InjectDecoratorFactory extends DecoratorFactory {
    * @param config 装饰器配置
    * @returns inject属性装饰器
    */
-  public createDecorator(config?: InjectDecoratorOptions): PropertyDecorator {
+  public createDecorator(config: InjectDecoratorOptions = {}): PropertyDecorator {
     return (target: DecoratedClassOrProto, propertyKey: string) => {
       // 初始化装饰器信息
       this.initDecoratorInfo();

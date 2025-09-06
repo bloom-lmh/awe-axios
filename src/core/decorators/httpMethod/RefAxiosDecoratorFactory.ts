@@ -6,6 +6,7 @@ import { ClassDecoratorValidator } from '@/core/validator/ClassDecoratorValidato
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';
 import { Inject } from '..';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * refAxios 装饰器
@@ -20,13 +21,19 @@ export class RefAxiosDecoratorFactory extends SubDecoratorFactory {
   /**
    * 装饰器校验器
    */
-  @Inject('classDecoratorValidator')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorValidator,
+  })
   protected decoratorValidator!: ClassDecoratorValidator;
 
   /**
    * 状态管理器
    */
-  @Inject('classDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: ClassDecoratorStateManager,
+  })
   protected stateManager!: ClassDecoratorStateManager;
 
   /**

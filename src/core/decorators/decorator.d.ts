@@ -3,6 +3,10 @@ import { AxiosPlusRequestConfig } from './httpMethod/types/httpMethod';
 import { DependencyConfig, InstanceRegisterConfig } from './ioc/types/ioc';
 
 /**
+ * 构造器
+ */
+export type Constructor<T = any> = new (...args: any[]) => T;
+/**
  * 拥有类状态管理器对象
  */
 type HasClassStateManager = {
@@ -15,7 +19,7 @@ type DecoratedClassProto = HasClassStateManager;
 /**
  * 被装饰类
  */
-export type DecoratedClass<T = any> = (new (...args: any[]) => T) & HasClassStateManager;
+export type DecoratedClass<T = any> = Constructor<T> & HasClassStateManager;
 /**
  * 被装饰类或原型
  */

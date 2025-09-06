@@ -1,6 +1,6 @@
 import { SubDecorationInfo } from './ioc';
-import { ctorNameOrAlias } from './../core/validators/schema/IocShema';
 import { DecoratedClass } from './decorator';
+import { Constructor } from '../../decorator';
 /**
  * 实例数组中的项
  */
@@ -49,7 +49,7 @@ export type GetInstanceConfig = {
   /**
    * 模块名
    */
-  module: string;
+  module: string | symbol;
   /**
    * 别名
    */
@@ -123,7 +123,7 @@ export type InjectDecoratorConfig = Partial<GetInstanceConfig> & {
  */
 export type InjectDecoratorOptions =
   | InjectDecoratorConfig // 直接配置
-  | DecoratedClass // 构造器
+  | Constructor // 构造器
   | string; // 表达式
 
 /**

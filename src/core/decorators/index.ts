@@ -19,7 +19,6 @@ import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/i
 /**
  * inject 装饰器
  */
-
 export function Inject(config?: InjectDecoratorOptions) {
   return new InjectDecoratorFactory()
     .setDecoratorValidator(PropertyDecoratorValidator.getInstance())

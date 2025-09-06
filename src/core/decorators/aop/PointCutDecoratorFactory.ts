@@ -16,6 +16,7 @@ import { PointCutDecoratorConfigHandler } from '@/core/handler/aop/PointCutDecor
 import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecoratorStateManager';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
 import { AdviceFactory } from './Advices';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * 所有切入点装饰器
@@ -34,25 +35,37 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
   /**
    * 方法装饰器校验器
    */
-  @Inject(MethodDecoratorValidator)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorValidator,
+  })
   protected decoratorValidator!: MethodDecoratorValidator;
 
   /**
    * 装饰器配置处理器
    */
-  @Inject(PointCutDecoratorConfigHandler)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: PointCutDecoratorConfigHandler,
+  })
   protected configHandler!: PointCutDecoratorConfigHandler;
 
   /**
    * 方法状态管理器
    */
-  @Inject(MethodDecoratorStateManager)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorStateManager,
+  })
   protected stateManager!: MethodDecoratorStateManager;
 
   /**
    * aspect装饰状态管理器
    */
-  @Inject(AspectDecoratorStateManager)
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: AspectDecoratorStateManager,
+  })
   protected aspectStateManager!: AspectDecoratorStateManager;
 
   /**

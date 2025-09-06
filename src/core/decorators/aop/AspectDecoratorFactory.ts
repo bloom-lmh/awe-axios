@@ -7,6 +7,7 @@ import { Inject } from '..';
 import { InstanceFactory } from '../ioc/InstanceFactory';
 import { AspectDecoratorStateManager } from '@/core/statemanager/aop/AspectDecoratorStateManager';
 import { AspectFactory } from './AspectFactory';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * 切面装饰器类
@@ -20,14 +21,15 @@ export class AspectDecoratorFactory extends DecoratorFactory {
   /**
    * 装饰器校验器
    */
-  @Inject(ClassDecoratorValidator)
+  @Inject({ module: SYSTEM.LIB, ctor: ClassDecoratorValidator })
   protected decoratorValidator!: ClassDecoratorValidator;
 
   /**
    * 类状态管理器
    */
-  @Inject(AspectDecoratorStateManager)
+  @Inject({ module: SYSTEM.LIB, ctor: AspectDecoratorStateManager })
   protected stateManager!: AspectDecoratorStateManager;
+
   /**
    * 初始化装饰器信息
    * @param config

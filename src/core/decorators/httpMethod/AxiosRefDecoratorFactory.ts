@@ -7,6 +7,7 @@ import { AxiosInstance } from 'axios';
 import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecoratorStateManager';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';
 import { Inject } from '..';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * refAxiosDecorator
@@ -20,13 +21,19 @@ export class AxiosRefDecoratorFactory extends SubDecoratorFactory {
   /**
    * 方法装饰器校验器
    */
-  @Inject('methodDecoratorValidator')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorValidator,
+  })
   protected decoratorValidator!: MethodDecoratorValidator;
 
   /**
    * 方法状态管理器
    */
-  @Inject('methodDecoratorStateManager')
+  @Inject({
+    module: SYSTEM.LIB,
+    ctor: MethodDecoratorStateManager,
+  })
   protected stateManager!: MethodDecoratorStateManager;
 
   /**
