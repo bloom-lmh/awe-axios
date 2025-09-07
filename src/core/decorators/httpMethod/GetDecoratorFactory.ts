@@ -22,6 +22,7 @@ import { withMock } from '@/core/requestexcutor/Mock';
 import { MockAPI } from '../mock/MockAPI';
 import { DebounceOptions, RetryOptions, ThrottleOptions } from './types/httpMethod';
 import { SYSTEM } from '@/core/constant/SystemConstants';
+import { ProxyFactory } from '../ioc/ProxyFactory';
 
 /**
  * Get装饰器工厂
@@ -271,9 +272,10 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       this.setupState(target, propertyKey);
       // 实现配置
       const request = this.applyConfig();
-      console.log('Get代理完成');
+      // 记录原方法
+      const invoke = descriptor.value;
       // 方法替换实际调用的时候会调用descripter.value指向的方法
-      descriptor.value = new Proxy(descriptor.value, {
+      descriptor.value = new Proxy(invoke, {
         /**
          * 原方法
          * @param invoke 原方法
@@ -281,7 +283,6 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
          * @param args 调用代理方法传入的参数
          */
         apply: (invoke, _this, args) => {
-          console.log('Get代理执行');
           // 后处理配置
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
@@ -290,6 +291,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
           return request(this.decoratorConfig.getOriginalConfig());
         },
       });
+      ProxyFactory.registerInvoke(descriptor.value, invoke);
       return descriptor;
     };
   }

@@ -39,32 +39,25 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     };
     let { mock, mockHandlers } = this.config;
     // 若没有mock配置或配置为false，表示不采用mock
-    if (!mock) {
+    if (!mock && !mockHandlers) {
       return this;
+    }
+    if (!mock && mockHandlers) {
+      mock = { handlers: mockHandlers };
     }
     // 若配置为一个函数，则覆盖默认的handler
     if (typeof mock === 'function') {
-      defaultConfig.handlers.default = mock;
-    }
-    // 若是配置对象
-    if (typeof mock === 'object' && !ObjectUtils.isEmpty(mock)) {
-      let defaultHandlers = defaultConfig.handlers;
-      // 合并配置
-      defaultConfig = Object.assign(defaultConfig, mock);
-      if (typeof mock.handlers === 'function') {
-        defaultConfig.handlers = { default: mock.handlers };
-      }
-      if (typeof mock.handlers === 'object') {
-        // 合并handlers
-        defaultConfig.handlers = Object.assign(defaultHandlers, mock.handlers);
-      }
+      mock = { handlers: { default: mock } };
     }
     if (typeof mockHandlers === 'function') {
       mockHandlers = { default: mockHandlers };
     }
-    // 若mockhandlers存在则合并
-    defaultConfig.handlers = { ...mockHandlers, ...defaultConfig.handlers };
-    this.config.mock = defaultConfig;
+    // 先合并handler
+    const handlers = { ...defaultConfig.handlers, ...mockHandlers, ...mock.handlers };
+    // 合并全部配置
+    mock = { ...defaultConfig, ...mock };
+    mock.handlers = handlers;
+    this.config.mock = mock;
     return this;
   }
 

@@ -35,10 +35,10 @@ export class AdviceChain implements InterceptorChain {
     if (this.index < this.interceptors.length) {
       let interceptor = this.interceptors[this.index];
       this.index++;
-      interceptor!.invoke(context, this);
+      return interceptor!.invoke(context, this);
     } else {
-      const { target, args } = context;
-      return context.method.apply(target, args);
+      const { target, args, method } = context;
+      return method.apply(target, args);
     }
   }
 }

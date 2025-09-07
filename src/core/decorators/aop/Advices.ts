@@ -77,7 +77,8 @@ export class AroundAdvice extends Advice<AroundAdviceMethod> {
    * @param adviceChain 通知链
    */
   invoke(context: AspectContext, adviceChain: AdviceChain) {
-    return this.adviceFunc(context, adviceChain);
+    const result = this.adviceFunc(context, adviceChain);
+    return result;
   }
 }
 

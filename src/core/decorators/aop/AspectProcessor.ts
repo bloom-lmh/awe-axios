@@ -3,22 +3,16 @@ import { InstanceFactory } from '../ioc/InstanceFactory';
 import { AdviceChain } from './AdviceChain';
 import { AspectContext } from './AspectContext';
 import { AspectFactory } from './AspectFactory';
-import { AdviceItems, Advices, InstancePointCut } from './types/aop';
+import { InstancePointCut } from './types/aop';
 import { Inject } from '..';
 import { SYSTEM } from '@/core/constant/SystemConstants';
-import { InstanceItem } from '../ioc/types/ioc';
-import { any } from 'joi';
+import { ProxyFactory } from '../ioc/ProxyFactory';
 
 /**
  * Aspect处理器
  * @description 负责编织切面
  */
 export class AspectProcessor {
-  /**
-   * 代理方法列表
-   * @description 可撤销切面代理
-   */
-  static revokeMap: WeakMap<Function, { revoke: () => void; invoke: Function }> = new WeakMap();
   /**
    * 方法状态管理器
    */
@@ -87,15 +81,16 @@ export class AspectProcessor {
         let invokeMethod = (ctor.prototype as any)[methodName];
 
         // 只代理非静态方法,并获取代理方法和revoke函数
-        const { proxy, revoke } = Proxy.revocable(invokeMethod, {
+        const proxy = new Proxy(invokeMethod, {
           apply(invoke, _this, args) {
-            console.log('调用切面代理后的方法');
-
+            // 创建切面上下文对象
+            let context = new AspectContext(invoke, _this, args);
             // 尝试获取axios配置
-            //let decoratorInfo = AspectProcessor.stateManager.getHttpMethodDecoratorInfo(_this, methodName);
-            //console.log(decoratorInfo);
-            let result = adviceChain.proceed(new AspectContext(invoke, _this, args));
-            return result;
+            let axiosConfig = AspectProcessor.stateManager.getHttpMethodDecoratorInfo(_this, methodName)?.configs[0];
+            if (axiosConfig) {
+              context.setAxiosConfig(axiosConfig);
+            }
+            return adviceChain.proceed(context);
           },
         });
         // 覆盖原方法
@@ -106,8 +101,7 @@ export class AspectProcessor {
           configurable: true,
         });
         // 记录原方法和revoke函数等用于撤销代理
-        this.revokeMap.set(proxy, { revoke, invoke: invokeMethod });
-        console.log('编织完成');
+        ProxyFactory.registerInvoke(proxy, invokeMethod);
       });
     });
   }
@@ -121,9 +115,6 @@ export class AspectProcessor {
   ): boolean {
     let { module, ctor, method } = pointCut;
     let { module: moduleName, ctorName, methodName } = methodInfo;
-    if (!module.test(moduleName) || !ctor.test(ctorName) || !method.test(methodName)) {
-      return false;
-    }
-    return true;
+    return module.test(moduleName) && ctor.test(ctorName) && method.test(methodName);
   }
 }
