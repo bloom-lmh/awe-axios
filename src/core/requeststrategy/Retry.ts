@@ -1,14 +1,12 @@
-import { RetryConfig, RetryOptions } from '../decorators/httpMethod/types/httpMethod';
+import { RetryOptions } from '../decorators/httpMethod/types/httpMethod';
 import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
-import { HttpRequestConfig } from '../decorators/httpMethod/types/HttpRequestConfig';
-import { Signal } from '../signal/Signal';
 
 /**
  * 请求重传策略
  * @param requestExcutor
  * @returns
  */
-export function withRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: RetryOptions) {
+export function useRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: RetryOptions) {
   const { count, delay, signal } = config as Required<RetryOptions>;
   // 实现请求重传
   return async (config: HttpMethodDecoratorConfig) => {
@@ -27,7 +25,6 @@ export function withRetry(requestFn: (config: HttpMethodDecoratorConfig) => Prom
           const backoffDelay = delay * Math.pow(2, i - 1);
           await new Promise(resolve => setTimeout(resolve, backoffDelay));
         }
-
         // 需要await才能捕获错误，否则返回拒绝的promise
         return await requestFn(config);
       } catch (error) {

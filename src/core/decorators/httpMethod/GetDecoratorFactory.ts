@@ -14,7 +14,7 @@ import { axiosPlusRequestConfigSchema } from '@/core/schema/httpMethod/HttpMetho
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { Inject } from '..';
-import { baseRequest } from '@/core/requestexcutor/BaseRequest';
+import { baseRequest } from '@/core/requestexcutor/Request';
 import { withRetry } from '@/core/requestexcutor/Retry';
 import { withThrottle } from '@/core/requestexcutor/Throttle';
 import { withDebounce } from '@/core/requestexcutor/Debounce';

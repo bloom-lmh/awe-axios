@@ -2,10 +2,13 @@ import { DefaultBodyType, HttpResponseResolver, PathParams } from 'msw';
 import {
   AxiosPlusRequestConfig,
   DebounceConfig,
+  DebounceRequestPolicy,
   MockConfig,
   MockHandlers,
   RetryConfig,
+  RetryRequestPolicy,
   ThrottleConfig,
+  ThrottleRequestPolicy,
 } from './httpMethod';
 import {
   AddressFamily,
@@ -51,17 +54,26 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
    * 请求重传
    */
   retry?: RetryConfig;
-
+  /**
+   * 自定义重传方式
+   */
+  customRetry?: RetryRequestPolicy;
   /**
    * 防抖
    */
   debounce?: DebounceConfig;
-
+  /**
+   * 自定义防抖
+   */
+  customDebounce?: DebounceRequestPolicy;
   /**
    * 节流
    */
   throttle?: ThrottleConfig;
-
+  /**
+   * 自定义节流
+   */
+  customThrottle?: ThrottleRequestPolicy;
   /**
    * mock
    */

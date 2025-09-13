@@ -72,18 +72,30 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
   get retry() {
     return this.axiosConfig.retry;
   }
-
+  /**
+   * 获取自定义retry函数
+   */
+  get customRetry() {
+    return this.axiosConfig.customRetry;
+  }
   /**
    * 设置防抖
    */
   setDebounce(debounceConfig: DebounceConfig) {
     this.axiosConfig.debounce = debounceConfig;
   }
+
   /**
    * 获取防抖配置
    */
   get debounce() {
     return this.axiosConfig.debounce;
+  }
+  /**
+   * 获取自定义debounce
+   */
+  get customDebounce() {
+    return this.axiosConfig.customDebounce;
   }
   /**
    * 设置节流
@@ -97,6 +109,13 @@ export class HttpRequestConfig<T extends HttpMethodDecoratorConfig<D> = HttpMeth
    */
   get throttle() {
     return this.axiosConfig.throttle;
+  }
+
+  /**
+   * 获取自定义节流器
+   */
+  get customThrottle() {
+    return this.axiosConfig.customThrottle;
   }
   /**
    * 设置mock handlers

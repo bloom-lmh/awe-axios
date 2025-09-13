@@ -14,15 +14,16 @@ import { axiosPlusRequestConfigSchema } from '@/core/schema/httpMethod/HttpMetho
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { Inject } from '..';
-import { baseRequest } from '@/core/requestexcutor/BaseRequest';
-import { withRetry } from '@/core/requestexcutor/Retry';
-import { withThrottle } from '@/core/requestexcutor/Throttle';
-import { withDebounce } from '@/core/requestexcutor/Debounce';
-import { withMock } from '@/core/requestexcutor/Mock';
+
 import { MockAPI } from '../mock/MockAPI';
 import { DebounceOptions, RetryOptions, ThrottleOptions } from './types/httpMethod';
 import { SYSTEM } from '@/core/constant/SystemConstants';
 import { ProxyFactory } from '../ioc/ProxyFactory';
+import { useRetry } from '@/core/requeststrategy/Retry';
+import { useDebounce } from '@/core/requeststrategy/Debounce';
+import { useMock } from '@/core/requeststrategy/Mock';
+import { useRequest } from '@/core/requeststrategy/Request';
+import { useThrottle } from '@/core/requeststrategy/Throttle';
 
 /**
  * HttpMethod装饰器工厂
@@ -175,28 +176,35 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    */
   protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
     // 实现防抖、节流和重传
-    const { throttle, debounce, retry, mock } = this.decoratorConfig;
+    const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
     // 基础请求
-    let requestFn = baseRequest();
+    let requestFn = useRequest();
+    // 在基础请求的基础上装饰逻辑
     // 伴随请求重发
     if (retry) {
       console.log('retry');
-      requestFn = withRetry(requestFn, retry as RetryOptions);
+      requestFn = customRetry
+        ? customRetry(requestFn, retry as RetryOptions)
+        : useRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
       console.log('throttle');
-      requestFn = withThrottle(requestFn, throttle as ThrottleOptions);
+      requestFn = customThrottle
+        ? customThrottle(requestFn, throttle as ThrottleOptions)
+        : useThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
       console.log('debounce');
-      requestFn = withDebounce(requestFn, debounce as DebounceOptions);
+      requestFn = customDebounce
+        ? customDebounce(requestFn, debounce as DebounceOptions)
+        : useDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
       console.log('mock');
-      requestFn = withMock(requestFn, this.decoratorInfo.id);
+      requestFn = useMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;
   }
@@ -211,11 +219,16 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     // 获取配置
     let httpRequestConfig = this.decoratorConfig;
     // 获取运行时路径参数和查询参数
-    const [pathParams, queryParams, bodyParams] = this.paramStateManager.getRuntimeParams(target, propertyKey, args, [
+    let [pathParams, queryParams, bodyParams] = this.paramStateManager.getRuntimeParams(target, propertyKey, args, [
       DECORATORNAME.PATHPARAM,
       DECORATORNAME.QUERYPARAM,
       DECORATORNAME.BODYPARAM,
     ]);
+    // 若bodyParams存在且为对象且只有一个属性则拍平
+    if (Object.keys(bodyParams).length === 1) {
+      const value = Object.values(bodyParams)[0];
+      bodyParams = value;
+    }
     // 解析路径参数
     let resolvedUrl = new PathUtils(httpRequestConfig.url)
       .resolvePathParams(pathParams)
@@ -299,6 +312,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
           return request(this.decoratorConfig.getOriginalConfig());
         },
       });
+      // 注册原方法
       ProxyFactory.registerInvoke(descriptor.value, invoke);
       return descriptor;
     };

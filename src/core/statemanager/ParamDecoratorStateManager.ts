@@ -24,7 +24,7 @@ export class ParamDecoratorStateManager extends PropertyDecoratorStateManager {
     // 获取元数据参数
     const metadataParams = this.getParamMetaDatas(target, propertyKey, decoratorNames);
     metadataParams.forEach(metadata => {
-      const param = ParamUtils.resolveRuntimeParams(metadata, realParams);
+      let param = ParamUtils.resolveRuntimeParams(metadata, realParams);
       params.push(param);
     });
     return params;

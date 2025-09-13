@@ -1,7 +1,7 @@
 import { ThrottleConfig, ThrottleOptions } from '../decorators/httpMethod/types/httpMethod';
 import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMethodDecoratorConfig';
 
-export function withThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: ThrottleOptions) {
+export function useThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: ThrottleOptions) {
   let { interval, signal } = config as Required<ThrottleOptions>;
 
   let lastTime = 0;

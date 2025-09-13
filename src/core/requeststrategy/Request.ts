@@ -7,7 +7,7 @@ import axios from 'axios';
  * @param requestFn 请求函数
  * @param config 防抖配置
  */
-export function baseRequest(): any {
+export function useRequest(): any {
   return (config: HttpMethodDecoratorConfig) => {
     const { refAxios = axios } = config;
     // 树摇配置
@@ -16,8 +16,8 @@ export function baseRequest(): any {
       'retry',
       'debounce',
       'throttle',
+      'mock',
     ]);
-
     return refAxios(axiosRequestConfig);
   };
 }

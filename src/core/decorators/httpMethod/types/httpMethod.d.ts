@@ -142,17 +142,26 @@ export interface AxiosPlusRequestConfig {
    * 请求重传
    */
   retry?: RetryConfig;
-
+  /**
+   * 自定义重传方式
+   */
+  customRetry?: RetryRequestPolicy;
   /**
    * 防抖
    */
   debounce?: DebounceConfig;
-
+  /**
+   * 自定义防抖
+   */
+  customDebounce?: DebounceRequestPolicy;
   /**
    * 节流
    */
   throttle?: ThrottleConfig;
-
+  /**
+   * 自定义节流
+   */
+  customThrottle?: ThrottleRequestPolicy;
   /**
    * mock 处理器
    */
@@ -190,3 +199,26 @@ export type HttpApiDecoratorConfig = {
     condition?: () => boolean;
   };
 };
+
+/**
+ * 请求策略函数
+ */
+type RequestPolicy<T> = (
+  requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>,
+  config: T,
+) => (config: HttpMethodDecoratorConfig) => Promise<any>;
+
+/**
+ * 请求重传策略
+ */
+export type RetryRequestPolicy = RequestPolicy<RetryOptions>;
+
+/**
+ * 防抖策略
+ */
+export type DebounceRequestPolicy = RequestPolicy<DebounceOptions>;
+
+/**
+ * 节流策略
+ */
+export type ThrottleRequestPolicy = RequestPolicy<ThrottleOptions>;

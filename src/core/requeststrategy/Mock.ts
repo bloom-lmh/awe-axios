@@ -8,7 +8,7 @@ import { HttpMethodDecoratorConfig } from '../decorators/httpMethod/types/HttpMe
 /**
  * mock请求
  */
-export function withMock(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, id: string) {
+export function useMock(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, id: string) {
   // 是否加载handler
   let loaded = false;
   let absUrl = '';
@@ -37,7 +37,6 @@ export function withMock(requestFn: (config: HttpMethodDecoratorConfig) => Promi
         let fullPath = PathUtils.chain(absUrl).concat(id, key, rltUrl).removeExtraSlash().removeExtraSpace().toResult();
         MockAPI.registerHandlers(http[method as MockMethod](fullPath, (handlers as MockHandlersObject)[key]));
       }
-
       loaded = true;
     }
 

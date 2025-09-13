@@ -101,7 +101,7 @@ export function AxiosRef(config: AxiosInstance): MethodDecorator {
 /**
  * Body参数装饰器
  */
-export function BodyParam(paramName: string): ParameterDecorator {
+export function BodyParam(paramName: string = ''): ParameterDecorator {
   return new BodyParamDecoratorFactory().createDecorator(paramName);
 }
 /**

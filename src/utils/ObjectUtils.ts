@@ -9,6 +9,21 @@ export class ObjectUtils {
     if (obj === null || typeof obj !== 'object') return obj;
     if (obj instanceof Date) return new Date(obj);
     if (obj instanceof RegExp) return new RegExp(obj);
+    if (obj instanceof URLSearchParams) {
+      const cloned = new URLSearchParams();
+      for (const [k, v] of obj.entries()) {
+        cloned.append(k, v);
+      }
+      return cloned;
+    }
+
+    if (obj instanceof FormData) {
+      const cloned = new FormData(); // 支持拷贝
+      for (const [k, v] of obj.entries()) {
+        cloned.append(k, v);
+      }
+      return cloned;
+    }
     if (hashMap.has(obj)) return hashMap.get(obj);
     let cloneObj = Object.create(Object.getPrototypeOf(obj));
     hashMap.set(obj, cloneObj);

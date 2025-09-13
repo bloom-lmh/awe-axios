@@ -52,6 +52,9 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     if (typeof mockHandlers === 'function') {
       mockHandlers = { default: mockHandlers };
     }
+    if (typeof mock.handlers === 'function') {
+      mock.handlers = { default: mock.handlers };
+    }
     // 先合并handler
     const handlers = { ...defaultConfig.handlers, ...mockHandlers, ...mock.handlers };
     // 合并全部配置
