@@ -9,17 +9,6 @@ import { DecoratorValidator } from './DecoratorValidator';
  */
 export class PropertyDecoratorValidator implements DecoratorValidator {
   /**
-   * 装饰器信息
-   */
-  private decoratorInfo!: DecoratorInfo;
-  /**
-   * 被装饰的类或类原型
-   */
-  private target!: DecoratedClassOrProto;
-  /**
-   * 被装饰的方法名
-   */
-  /**
    * 单例模式
    */
   private static instance: PropertyDecoratorValidator;

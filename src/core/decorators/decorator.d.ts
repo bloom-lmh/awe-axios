@@ -6,46 +6,31 @@ import { DependencyConfig, InstanceRegisterConfig } from './ioc/types/ioc';
  * 构造器
  */
 export type Constructor<T = any> = new (...args: any[]) => T;
-/**
- * 拥有类状态管理器对象
- */
-type HasClassStateManager = {
-  [key: string | symbol]: any;
-};
+
 /**
  * 被装饰类原型
  */
-type DecoratedClassProto = HasClassStateManager;
+type DecoratedClassProto = {};
+
 /**
  * 被装饰类
  */
-export type DecoratedClass<T = any> = Constructor<T> & HasClassStateManager;
+export type DecoratedClass<T = any> = Constructor<T>;
+
 /**
  * 被装饰类或原型
  */
 export type DecoratedClassOrProto = DecoratedClass | DecoratedClassProto;
-/**
- * 拥有方法状态管理器对象
- */
-type HasMethodStateManager = {
-  [key: string | symbol]: any;
-};
-/**
- * 拥有参数状态管理器对象
- */
-type HasParamStateManager = {
-  [key: string | symbol]: any;
-};
 
 /**
  * 类装饰器
  */
-type ClassDecorator = (target: DecoratedClass) => void;
+export type ClassDecorator = (target: DecoratedClass) => void;
 
 /**
  * 方法装饰器
  */
-type MethodDecorator = (
+export type MethodDecorator = (
   target: DecoratedClassOrProto,
   propertyKey: string | symbol,
   descriptor: TypedPropertyDescriptor<any>,
@@ -54,20 +39,21 @@ type MethodDecorator = (
 /**
  * 属性装饰器
  */
-type PropertyDecorator = (target: DecoratedClassOrProto, propertyKey: string) => void;
+export type PropertyDecorator = (target: DecoratedClassOrProto, propertyKey: string) => void;
 
 /**
  * 参数装饰器
  */
-type ParameterDecorator = (target: DecoratedClassOrProto, propertyKey: string | symbol, paramIndex: number) => void;
-/**
- * 参数装饰器
- */
-type ParameterDecorator = (
-  target: DecoratedClass,
-  propertyKey: string | symbol | undefined,
-  parameterIndex: number,
+export type ParameterDecorator = (
+  target: DecoratedClassOrProto,
+  propertyKey: string | symbol,
+  paramIndex: number,
 ) => void;
+
+/**
+ * 装饰器
+ */
+export type Decorator = ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator;
 
 /**
  * param 装饰器配置
@@ -81,6 +67,7 @@ export type ParamDecoratorConfig = {
  * 装饰器类型
  */
 export type DecoratorType = 'httpMethod' | 'ioc' | 'method' | 'class' | 'property' | 'parameter' | 'unknown';
+
 /**
  * 装饰器信息模板
  */

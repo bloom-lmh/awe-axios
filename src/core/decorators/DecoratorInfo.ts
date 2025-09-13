@@ -1,6 +1,6 @@
 import { IdUtils } from '@/utils/IdUtils';
 import { DECORATORNAME } from '../constant/DecoratorConstants';
-import { DecorationInfo, DecoratorType } from './decorator';
+import { DecoratedClassOrProto, DecorationInfo, DecoratorType } from './decorator';
 
 /**
  * 装饰器信息建造者
@@ -10,11 +10,13 @@ export class DecoratorInfo implements DecorationInfo {
    * 装饰器信息编号
    */
   readonly id: string = IdUtils.getUUID();
+
   /**
    * 装饰器名称
    * @default DECORATORNAME.ANONYMOUSE
    */
   name: string | symbol = DECORATORNAME.ANONYMOUSE;
+
   /**
    * 装饰器类别
    */

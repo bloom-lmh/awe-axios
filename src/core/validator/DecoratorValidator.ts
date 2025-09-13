@@ -1,26 +1,22 @@
 import { DecoratedClassOrProto } from '../decorators/decorator';
+import { DecoratorInfo } from '../decorators/DecoratorInfo';
 
 /**
  * 装饰器校验器
  * @description 封装装饰器校验的通用方法
  */
-export interface DecoratorValidator {
-  //protected decoratorInfo:DecoratorInfo
+export abstract class DecoratorValidator {
+  /**
+   * 装饰器信息
+   */
+  //protected decoratorInfo: DecoratorInfo;
+
   /**
    * 检查装饰器依赖的装饰器是否存在
    */
-  hasDependentedDecorator(
-    target: DecoratedClassOrProto,
-    dpDecorators: (string | symbol)[],
-    propertyKey?: string | symbol,
-  ): boolean;
+  abstract hasDependentedDecorator(...args: any[]): boolean;
   /**
    * 检查装饰器是否与其它装饰冲突
    */
-  isDecoratorConflict(
-    target: DecoratedClassOrProto,
-    conflictList: (string | symbol)[],
-    propertyKey?: string | symbol,
-    paramIndex?: number,
-  ): boolean;
+  abstract isDecoratorConflict(...args: any[]): boolean;
 }

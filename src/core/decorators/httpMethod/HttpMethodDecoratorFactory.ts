@@ -25,9 +25,9 @@ import { SYSTEM } from '@/core/constant/SystemConstants';
 import { ProxyFactory } from '../ioc/ProxyFactory';
 
 /**
- * Get装饰器工厂
+ * HttpMethod装饰器工厂
  */
-export class GetDecoratorFactory extends MethodDecoratorFactory {
+export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
   /**
    * 装饰器信息
    */
@@ -88,9 +88,9 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param target 被装饰的方法所属类获取原型
    * @param propertyKey 被装饰的方法名
    */
-  protected initDecoratorInfo(): void {
+  protected initDecoratorInfo(decoratorName: string | symbol): void {
     this.decoratorInfo = new DecoratorInfo()
-      .setName(DECORATORNAME.GET)
+      .setName(decoratorName)
       .setType('httpMethod')
       .setConflictList([
         DECORATORNAME.GET,
@@ -135,13 +135,14 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    */
   protected preHandleConfig(
     config: HttpMethodDecoratorConfig | string = '',
+    method: Method,
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ) {
     // 预处理配置项
     config = this.configHandler
       .setConfig(config)
-      .preHandleConfig()
+      .preHandleConfig(method)
       .preHandleRetryConfig()
       .preHandleDebounceConfig()
       .preHandleThrottleConfig()
@@ -210,9 +211,10 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     // 获取配置
     let httpRequestConfig = this.decoratorConfig;
     // 获取运行时路径参数和查询参数
-    const [pathParams, queryParams] = this.paramStateManager.getRuntimeParams(target, propertyKey, args, [
+    const [pathParams, queryParams, bodyParams] = this.paramStateManager.getRuntimeParams(target, propertyKey, args, [
       DECORATORNAME.PATHPARAM,
       DECORATORNAME.QUERYPARAM,
+      DECORATORNAME.BODYPARAM,
     ]);
     // 解析路径参数
     let resolvedUrl = new PathUtils(httpRequestConfig.url)
@@ -223,6 +225,8 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
 
     // 设置查询参数
     httpRequestConfig.setParams(queryParams);
+    // 设置body参数
+    httpRequestConfig.setData(bodyParams);
     // 设置基本路径
     httpRequestConfig.setUrl(resolvedUrl);
     // 设置baseURL
@@ -258,16 +262,20 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
    * @param config
    * @returns
    */
-  public createDecorator(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  public createDecorator(
+    config: HttpMethodDecoratorConfig | string = '',
+    decoratorName: string | symbol,
+    method: Method,
+  ): MethodDecorator {
     return (target: DecoratedClassOrProto, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
       // 初始化装饰器信息
-      this.initDecoratorInfo();
+      this.initDecoratorInfo(decoratorName);
       // 校验装饰器
       this.validateDecorator(target, propertyKey);
       // 前置配置检查
       this.preCheckConfig(config);
       // 前置处理配置
-      this.preHandleConfig(config, target, propertyKey);
+      this.preHandleConfig(config, method, target, propertyKey);
       // 设置状态
       this.setupState(target, propertyKey);
       // 实现配置

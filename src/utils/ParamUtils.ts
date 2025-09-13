@@ -20,7 +20,6 @@ export class ParamUtils {
       const paramIndex = metaParam.paramIndex;
       // 获取参数值
       let paramValue = realParams[paramIndex];
-
       // 若有属性则合并
       if (params[paramName]) {
         params[paramName] = Array.isArray(params[paramName]) ? params[paramName] : [params[paramName]];

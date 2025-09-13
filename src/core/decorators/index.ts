@@ -8,13 +8,14 @@ import { ComponentDecoratorFactory } from './ioc/ComponentDecoratorFactory';
 import { HttpApiDecoratorFactory } from './httpMethod/HttpApiDecoratorFactory';
 import { RefAxiosDecoratorFactory } from './httpMethod/RefAxiosDecoratorFactory';
 import { AxiosRefDecoratorFactory } from './httpMethod/AxiosRefDecoratorFactory';
-import { GetDecoratorFactory } from './httpMethod/GetDecoratorFactory';
 import { HttpMethodDecoratorConfig } from './httpMethod/types/HttpMethodDecoratorConfig';
 import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
 import { HttpApiDecoratorConfig } from './httpMethod/types/httpMethod';
 import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/ioc';
+import { DECORATORNAME } from '../constant/DecoratorConstants';
+import { HttpMethodDecoratorFactory } from './httpMethod/HttpMethodDecoratorFactory';
 
 /**
  * inject 装饰器
@@ -44,9 +45,45 @@ export function HttpApi(config?: HttpApiDecoratorConfig | string | AxiosInstance
  * Get装饰器
  */
 export function Get(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
-  return new GetDecoratorFactory().createDecorator(config);
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.GET, 'get');
+}
+/**
+ * Post装饰器
+ */
+export function Post(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.POST, 'post');
+}
+/**
+ * Put装饰器
+ */
+export function Put(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.PUT, 'put');
+}
+/**
+ * Patch装饰器
+ */
+export function Patch(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.PATCH, 'patch');
+}
+/**
+ * Delete装饰器
+ */
+export function Delete(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.DELETE, 'delete');
+}
+/**
+ * head装饰器
+ */
+export function Head(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.HEAD, 'head');
 }
 
+/**
+ * options装饰器
+ */
+export function Options(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
+  return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.OPTIONS, 'options');
+}
 /**
  * RefAxios装饰器
  */

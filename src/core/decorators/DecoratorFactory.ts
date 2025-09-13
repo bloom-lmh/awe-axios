@@ -1,10 +1,4 @@
-import {
-  ClassDecorator,
-  DecoratedClassOrProto,
-  MethodDecorator,
-  ParameterDecorator,
-  PropertyDecorator,
-} from './decorator';
+import { Decorator } from './decorator';
 import { DecoratorFactoryBuilder } from './DecoratorFactoryBuilder';
 
 /**
@@ -14,33 +8,25 @@ export abstract class DecoratorFactory extends DecoratorFactoryBuilder {
   /**
    * 初始化装饰器信息
    */
-  protected abstract initDecoratorInfo(config?: any): void;
+  protected abstract initDecoratorInfo(...arg: any[]): void;
   /**
    * 校验装饰器
    */
-  protected abstract validateDecorator(
-    target: DecoratedClassOrProto,
-    propertyKey?: string | symbol,
-    config?: any,
-  ): void;
+  protected abstract validateDecorator(...arg: any[]): void;
   /**
    * 配置前置处理
    */
-  protected abstract preHandleConfig(config: any, target?: DecoratedClassOrProto | any): any;
+  protected abstract preHandleConfig(...arg: any[]): any;
   /**
    * 配置项前置检查
    */
-  protected abstract preCheckConfig(config: any, target?: DecoratedClassOrProto): void;
+  protected abstract preCheckConfig(...arg: any[]): void;
   /**
    * 初始化状态
    */
-  protected abstract setupState(target: DecoratedClassOrProto, ...args: any[]): void;
-
+  protected abstract setupState(...arg: any[]): void;
   /**
    * 创建装饰器
    */
-  public abstract createDecorator(
-    config: any,
-    ...arg: any[]
-  ): ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator;
+  public abstract createDecorator(...arg: any[]): Decorator;
 }
