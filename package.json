@@ -20,6 +20,7 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "axios": "^1.11.0",
     "joi": "^18.0.0",
     "msw": "^2.10.4",

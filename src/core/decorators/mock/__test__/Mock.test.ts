@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Get, HttpApi, PathParam } from '../..';
 import { MockAPI } from '../../mock/MockAPI';
 import { http, HttpResponse } from 'msw';
+import { SignalController } from '@/core/signal/SignalController';
 
 beforeAll(() => {
   MockAPI.on();
@@ -54,7 +55,6 @@ describe('1.Mock流程测试', () => {
       })
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }
-
     const userApi = new UserApi();
     const { data } = await userApi.getUsers('test', 1)();
     expect(MockAPI.listHandlers().length).toBe(2);

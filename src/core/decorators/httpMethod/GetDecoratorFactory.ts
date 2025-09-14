@@ -14,15 +14,16 @@ import { axiosPlusRequestConfigSchema } from '@/core/schema/httpMethod/HttpMetho
 import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
 import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler';
 import { Inject } from '..';
-import { baseRequest } from '@/core/requestexcutor/Request';
-import { withRetry } from '@/core/requestexcutor/Retry';
-import { withThrottle } from '@/core/requestexcutor/Throttle';
-import { withDebounce } from '@/core/requestexcutor/Debounce';
-import { withMock } from '@/core/requestexcutor/Mock';
+
 import { MockAPI } from '../mock/MockAPI';
 import { DebounceOptions, RetryOptions, ThrottleOptions } from './types/httpMethod';
 import { SYSTEM } from '@/core/constant/SystemConstants';
 import { ProxyFactory } from '../ioc/ProxyFactory';
+import { useDebounce } from '@/core/requeststrategy/Debounce';
+import { useMock } from '@/core/requeststrategy/Mock';
+import { useRetry } from '@/core/requeststrategy/Retry';
+import { useThrottle } from '@/core/requeststrategy/Throttle';
+import { useRequest } from '@/core/requeststrategy/Request';
 
 /**
  * Get装饰器工厂
@@ -112,7 +113,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     const { conflictList } = this.decoratorInfo;
     // 校验是否存在冲突装饰器
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error('The Get decorator confilct with other decorators in the class.');
+      throw new Error('The Get decorator confilct use other decorators in the class.');
     }
   }
 
@@ -176,26 +177,26 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock } = this.decoratorConfig;
     // 基础请求
-    let requestFn = baseRequest();
+    let requestFn = useRequest();
     // 伴随请求重发
     if (retry) {
       console.log('retry');
-      requestFn = withRetry(requestFn, retry as RetryOptions);
+      requestFn = useRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
       console.log('throttle');
-      requestFn = withThrottle(requestFn, throttle as ThrottleOptions);
+      requestFn = useThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
       console.log('debounce');
-      requestFn = withDebounce(requestFn, debounce as DebounceOptions);
+      requestFn = useDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
       console.log('mock');
-      requestFn = withMock(requestFn, this.decoratorInfo.id);
+      requestFn = useMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;
   }
@@ -248,7 +249,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     const { baseURL } = this.decoratorConfig;
     if (!baseURL) {
       throw new Error(
-        'The refAxios which is the instance of axios with baseURL or baseURL is required in the decorator config.',
+        'The refAxios which is the instance of axios use baseURL or baseURL is required in the decorator config.',
       );
     }
   }
