@@ -1,3 +1,5 @@
+import { transform } from 'typescript';
+
 export default {
   // 使用 ts-jest 预设来处理 TypeScript 文件
   // 这会自动包含必要的 TypeScript 转换配置
@@ -6,7 +8,9 @@ export default {
   // 指定测试环境（Node.js 环境）
   // 如果是前端项目，可改为 'jsdom' 或 '@happy-dom/jest-environment'
   testEnvironment: 'node',
-
+  transformIgnorePatterns: [
+    'node_modules/(?!@faker-js/.*)', // 允许转译 @faker-js/faker
+  ],
   // 设置根目录为当前目录（通常是 package.json 所在目录）
   // Jest 会基于此目录解析其他路径
   rootDir: '.',

@@ -1,8 +1,7 @@
-import { DecoratedClassOrProto, MethodDecorator, PropertyDecorator } from '../decorator';
+import { DecoratedClassOrProto, PropertyDecorator } from '../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
-import { MethodDecoratorFactory } from '../MethodDecoratorFactory';
-import { DataFieldType, FakerMethodParamsType, FakerMethodPath } from './types/faker';
+import { DataFieldDecoratorOptions, FakerMethodParamsType, FakerMethodPath } from './types/faker';
 
 /**
  * 数据字段装饰器工厂
@@ -25,7 +24,7 @@ export class DataFieldDecoratorFactory<P extends FakerMethodPath> extends Decora
   }
   protected decoratorInfo!: DecoratorInfo;
 
-  public createDecorator(options: DataFieldType, args?: FakerMethodParamsType<P>): PropertyDecorator {
+  public createDecorator(options: DataFieldDecoratorOptions, args?: FakerMethodParamsType<P>): PropertyDecorator {
     return (target: DecoratedClassOrProto, propertyKey: string | symbol) => {};
   }
 }
