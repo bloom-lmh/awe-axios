@@ -20,29 +20,47 @@ class Person {
   })
   declare address: Address;
 } */
-defineModel(
-  'User',
-  {
-    id: 'number.int',
-    name: 'airline.aircraftType',
-    age: ['number.int', { min: 18, max: 65 }],
-    email: ctx => {
-      console.log(ctx);
-      return 'hello';
-    },
-    sex: () => 'M',
-    address: {
-      modelName: 'Address',
-      rule: 'list|1-3',
-    },
+defineModel('Person', {
+  type: () => 'Human',
+});
+defineModel('Department', {
+  departName: ['helpers.arrayElements', ['计算机科学与计算', '软件工程']],
+});
+defineModel('clazz', {
+  classNum: () => {
+    return '软工' + faker.number.int();
   },
-  {
-    extends: ['Base'],
+  depart: {
+    refModal: 'Department',
   },
-);
+});
+defineModel('Student', {
+  sId: 'number.bigInt',
+  books: ['helpers.arrayElements', ['物理', '英语']],
+  clazz: {
+    refModal: 'clazz',
+  },
+});
+defineModel('Address', {
+  city: 'location.city',
+});
+defineModel('User', {
+  id: 'number.int',
+  name: 'airline.aircraftType',
+  age: ['number.int', { min: 18, max: 65 }],
+  email: ctx => {
+    console.log(ctx);
+    return 'hello';
+  },
+  sex: () => 'M',
+  address: {
+    refModal: 'Address',
+    num: 1,
+  },
+});
 FakerAPI('zh_CN').useModel('User', {
-  rule: 'list|1-3',
-  deep: 1,
+  extendList: ['Person', 'Student'],
+  num: 1,
 });
 
 console.log(faker.number.int({ min: 18, max: 65 }));

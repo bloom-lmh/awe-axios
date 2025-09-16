@@ -42,8 +42,8 @@ type CustomGenerator = (ctx: Record<string | symbol, any>) => any;
  * 引用模型配置
  */
 type RefModel = {
-  modelName: string;
-  rule?: string;
+  refModal: string;
+  num?: number;
 };
 
 /**
@@ -83,14 +83,6 @@ type DataModal = {
    */
   moduleName: string | symbol;
   /**
-   * 模型规则
-   */
-  rule: string;
-  /**
-   * 继承的模型
-   */
-  extends: Array<string | symbol>;
-  /**
    * 模型字段
    */
   fields: Record<string, DataFieldType>;
@@ -100,3 +92,27 @@ type DataModal = {
  * 所有Fakers联合类型
  */
 export type AllFakers = keyof typeof allFakers;
+
+/**
+ * 使用模型配置
+ */
+type UseModelOptions = {
+  /**
+   * 生成模型对象的数量
+   * @description 如果是1个则直接返回对象，如果是1个以上则以数组形式返回
+   */
+  num?: number;
+  /**
+   * 引用模型的深度
+   */
+  deep?: boolean | number;
+  /**
+   * 继承的模型
+   */
+  extendList?: Array<string | symbol>;
+  /**
+   * 回调函数
+   * @description 对生成的数据进行后处理
+   */
+  callbacks?: Array<(data: any) => any> | ((data: any) => any);
+};
