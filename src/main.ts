@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { defineModel, FakerAPI } from './core/decorators/faker/FakerApi';
-import { DataField } from './core/decorators/faker';
 /* class Address {}
 class Person {
   @DataField('string.uuid')
@@ -41,15 +40,23 @@ defineModel('Student', {
     refModal: 'clazz',
   },
 });
+defineModel('Info', {
+  country: () => {
+    return 'cd';
+  },
+});
 defineModel('Address', {
   city: 'location.city',
+  info: {
+    refModal: 'info',
+    num: 3,
+  },
 });
 defineModel('User', {
   id: 'number.int',
   name: 'airline.aircraftType',
   age: ['number.int', { min: 18, max: 65 }],
   email: ctx => {
-    console.log(ctx);
     return 'hello';
   },
   sex: () => 'M',
@@ -57,10 +64,24 @@ defineModel('User', {
     refModal: 'Address',
     num: 1,
   },
+  children: {
+    refModal: 'user',
+    num: 1,
+  },
 });
-FakerAPI('zh_CN').useModel('User', {
+const result = FakerAPI('zh_CN').useModel('User', {
   extendList: ['Person', 'Student'],
-  num: 1,
+  num: 10,
+  deep: 2,
+  refRule: {
+    Address: {
+      Info: 1,
+    },
+    user: {
+      user: 2,
+    },
+    info: 1,
+  },
+  callbacks: result => {},
 });
-
-console.log(faker.number.int({ min: 18, max: 65 }));
+console.log(result);

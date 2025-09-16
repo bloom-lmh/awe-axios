@@ -9,8 +9,8 @@ import {
   FakerModule,
   RefModel,
   UseModelOptions,
+  UseModelRule,
 } from './types/faker';
-import { FuncUtils } from '@/utils/FuncUtils';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -23,10 +23,6 @@ class FakerApi {
   private static defaultFaker: Faker = faker;
 
   /**
-   * 默认数据上限
-   */
-
-  /**
    * 设置默认faker
    */
   static setDefaultFaker(refFaker = faker) {
@@ -37,20 +33,30 @@ class FakerApi {
    * 生成数据
    */
   static useModel(modelName: string | symbol, options?: UseModelOptions) {
+    // 规则转小写
+    if (typeof modelName === 'string') {
+      modelName = modelName.toLowerCase();
+    }
     let defaultOptions: UseModelOptions = {
       num: 1,
       deep: true,
       extendList: [],
       callbacks: [],
     };
-    options = { ...defaultOptions, ...options };
-    console.log('options', options);
-
-    let { num, deep } = options;
-    if (typeof deep === 'boolean') {
-      deep = deep ? Infinity : 0;
+    let mergedOptions: UseModelOptions & {
+      __normalized__?: boolean;
+    } = { ...defaultOptions, ...options };
+    let { num, deep, refRule } = mergedOptions;
+    // 将refRule的键转换为小写
+    if (refRule && !mergedOptions.__normalized__) {
+      mergedOptions.refRule = this.normalizeRefRule(refRule);
+      mergedOptions.__normalized__ = true;
     }
-    if (deep! < 0) {
+    if (typeof deep === 'boolean') {
+      mergedOptions.deep = deep ? Infinity : 0;
+    }
+
+    if ((mergedOptions.deep as number) < 0) {
       return null;
     }
     // 获取数据模型
@@ -59,54 +65,24 @@ class FakerApi {
     // 解析模型
     let result =
       num === 1
-        ? this.resolveModel(dataModel, options)
+        ? this.resolveModel(dataModel, mergedOptions)
         : Array.from({ length: num! }, () => {
-            return this.resolveModel(dataModel, options);
+            return this.resolveModel(dataModel, mergedOptions);
           });
-    console.log('Result', result);
 
     return result;
   }
 
-  /**
-   * 解析规则
-   */
-  /* private static parseRule(rule: string): number {
-    let cycleNum: number = 0;
-    // 动态返回策略函数
-    if (rule) {
-      let [mode, range] = rule.split('|');
-      if (mode && range) {
-        if (mode === 'list') {
-          let [min, max] = range.split('-');
-          let minInt = Math.abs(parseInt(min));
-          let maxInt = Math.abs(parseInt(max));
-          if (!minInt && !maxInt) {
-            cycleNum = 0;
-            if (!maxInt) {
-              cycleNum = minInt;
-            } else if (!minInt) {
-              cycleNum = maxInt;
-            } else {
-              cycleNum = Math.floor(Math.random() * (maxInt - minInt + 1)) + minInt;
-            }
-          }
-        }
-      }
-    }
-    return cycleNum;
-  } */
   /**
    * 解析模型生成数据
    */
   private static resolveModel(dataModel: DataModal, options: UseModelOptions) {
     // 结果
     let result: Record<string | symbol, any> = {};
-
     // 函数队列最后再来处理函数
     let fnList: Array<Record<string | symbol, CustomGenerator>> = [];
-
-    let { deep, extendList } = options;
+    let { modelName } = dataModel;
+    let { deep, extendList, refRule } = options;
     deep = deep as number;
     // 遍历字段
     for (const [key, value] of Object.entries(dataModel.fields)) {
@@ -140,8 +116,13 @@ class FakerApi {
       // 处理引用模型
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         let { refModal, num = 1 } = value;
+        // 获取生成数量
+        let refRuleNum = this.parseNum(modelName, refModal, refRule);
+        if (refRuleNum > 0) {
+          num = refRuleNum;
+        }
         // 递归解析引用模型
-        result[key] = this.useModel(refModal, { deep: --deep, num });
+        result[key] = this.useModel(refModal, { deep: --deep, num, refRule });
         continue;
       }
     }
@@ -156,6 +137,7 @@ class FakerApi {
     if (extendList && extendList.length > 0) {
       let temp;
       extendList.forEach(modalName => {
+        // 获取规则
         temp = this.useModel(modalName);
         result = Object.assign(temp || {}, result);
       });
@@ -163,10 +145,44 @@ class FakerApi {
     return result;
   }
   /**
-   * 带缓存的解析器
+   * 标准化引用规则
    */
-  //private static parseFakerMethodWithMemo = FuncUtils.memorizable(this.parseFakerMethod);
+  private static normalizeRefRule(refRule: UseModelRule): UseModelRule {
+    const normalized: UseModelRule = {};
+    for (const [k, v] of Object.entries(refRule)) {
+      const key = typeof k === 'string' ? k.toLowerCase() : k;
+      if (typeof v === 'object') {
+        normalized[key] = this.normalizeRefRule(v);
+      } else {
+        normalized[key] = v;
+      }
+    }
+    return normalized;
+  }
+  /**
+   * 解析生成数量
+   */
+  private static parseNum(modelName: string | symbol, refModel: string | symbol, refRule?: UseModelRule) {
+    if (typeof modelName === 'string') {
+      modelName = modelName.toLowerCase();
+    }
+    if (typeof refModel === 'string') {
+      refModel = refModel.toLowerCase();
+    }
+    if (!refRule) {
+      return -1;
+    }
+    let modelRule = refRule[modelName];
+    if (!modelRule) {
+      return -1;
+    }
+    let refModelRule = modelRule[refModel];
 
+    if (!refModelRule) {
+      return -1;
+    }
+    return refModelRule;
+  }
   /**
    * 解析faker方法
    */
@@ -188,7 +204,7 @@ export function defineModel<P extends FakerMethodPath>(
 ) {
   // 封装数据结构
   const dataModel: DataModal = {
-    moduleName: modelName,
+    modelName: modelName,
     fields: schema,
   };
   // 注册数据模型

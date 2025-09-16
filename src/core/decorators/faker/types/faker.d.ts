@@ -81,7 +81,7 @@ type DataModal = {
   /**
    * 模型名
    */
-  moduleName: string | symbol;
+  modelName: string | symbol;
   /**
    * 模型字段
    */
@@ -94,6 +94,12 @@ type DataModal = {
 export type AllFakers = keyof typeof allFakers;
 
 /**
+ * 规则配置
+ */
+type UseModelRule = {
+  [key: string | symbol]: number | RecursiveRecord;
+};
+/**
  * 使用模型配置
  */
 type UseModelOptions = {
@@ -102,6 +108,10 @@ type UseModelOptions = {
    * @description 如果是1个则直接返回对象，如果是1个以上则以数组形式返回
    */
   num?: number;
+  /**
+   * 数据生成规则
+   */
+  refRule?: UseModelRule;
   /**
    * 引用模型的深度
    */
