@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { defineModel, FakerAPI } from './core/decorators/faker/FakerApi';
-import { DataFaker } from './core/decorators/faker/DataFaker';
+import { DataFaker, defineModel, FakeData } from './core/decorators/faker/DataFaker';
 /* class Address {}
 class Person {
   @DataField('string.uuid')
@@ -20,13 +19,13 @@ class Person {
   })
   declare address: Address;
 } */
-defineModel('Person', {
+/* const personModel = DataFaker.defineModel({
   type: () => 'Human',
 });
-defineModel('Department', {
+DataFaker.defineModel({
   departName: ['helpers.arrayElements', ['计算机科学与计算', '软件工程']],
 });
-defineModel('clazz', {
+const studentInfoModel = DataFaker.defineModel({
   classNum: () => {
     return '软工' + faker.number.int();
   },
@@ -34,26 +33,26 @@ defineModel('clazz', {
     refModel: 'Department',
   },
 });
-defineModel('Student', {
+const studentModel = DataFaker.defineModel({
   sId: 'number.bigInt',
   books: ['helpers.arrayElements', ['物理', '英语']],
   clazz: {
     refModel: 'clazz',
   },
 });
-defineModel('Info', {
+const infoModel = DataFaker.defineModel({
   country: () => {
     return 'cd';
   },
 });
-defineModel('Address', {
+const addressModel = DataFaker.defineModel({
   city: 'location.city',
   info: {
     refModel: 'info',
     num: 3,
   },
 });
-defineModel('User', {
+const userModel = DataFaker.defineModel({
   id: 'number.int',
   name: 'airline.aircraftType',
   age: ['number.int', { min: 18, max: 65 }],
@@ -73,29 +72,59 @@ defineModel('User', {
     refModel: 'user',
     num: 1,
   },
+}); */
+const companyModel = defineModel({
+  name: 'company.name',
+  buzzPhrase: 'company.buzzPhrase',
+});
+const jobModel = defineModel({
+  type: 'person.jobType',
+  company: {
+    refModel: companyModel,
+  },
+});
+const addressModel = defineModel({
+  country: 'location.country',
+  city: 'location.city',
+});
+const userModel = defineModel({
+  id: 'number.int',
+  name: 'airline.aircraftType',
+  age: ['number.int', { min: 18, max: 65 }],
+  email: ctx => {
+    return 'hello';
+  },
+  sex: () => 'M',
+  address: () => {
+    return FakeData(addressModel);
+  },
+  job: {
+    refModel: jobModel,
+    count: 2,
+  },
+  hobby: ['helpers.arrayElements', ['篮球', '足球', '乒乓球']],
 });
 
-new DataFaker().useModel('User').setRule({
-  address: {
+const studentModel = userModel
+  .clone()
+  .setProperty('age', ['number.int', { min: 5, max: 18 }])
+  .setProperties({
+    sId: 'number.int',
+  });
+
+const userDatas = FakeData(userModel, {
+  rules: {
+    count: 5,
     deep: true,
-    num: 1,
-    info: {
-      num: 3,
+    job: {
+      count: 3,
+      company: {
+        count: 2,
+        deep: true,
+      },
     },
   },
-  children: {
-    deep: 2,
-    num: 1,
-    user: {
-      num: 3,
-    },
-  },
-  /*  refRules: {
-    address: {
-      deep: true,
-      num: 1,
-    },
-  }, */
 });
-/* const result = FakerAPI('zh_CN').useModel('User', {}); */
-/* console.log(result); */
+const studentDatas = FakeData(studentModel);
+console.log(userDatas);
+console.log(studentDatas);

@@ -1,5 +1,6 @@
 import { Faker, allFakers } from '@faker-js/faker';
 import { PropertyDecorator } from '../../decorator';
+import { DataModel } from '../DataModel';
 
 /**
  * faker模块联合类型
@@ -40,27 +41,31 @@ type FakerMethodParamsType<P extends string> = FakerMethod<P> extends (args: inf
 type CustomGenerator = (ctx: Record<string | symbol, any>) => any;
 
 /**
- * 引用模型配置
+ * 引用模型选项
  */
-type RefModel = {
+type RefModelOptions = {
   /**
    * 所引用的模型
    */
-  refModel: string | symbol;
+  refModel: DataModel;
   /**
    * 生成数量
    */
-  num?: number;
+  count?: number;
   /**
    * 递归圣都
    */
   deep?: boolean | number;
 };
+/**
+ * 引用模型配置
+ */
+type RefModel = RefModelOptions | DataModel;
 
 /**
  * 数据字段类型
  */
-type DataFieldType<P extends FakerMethodPath = FakerMethodPath> =
+type DataFieldType<P extends FakerMethodPath = string> =
   | CustomGenerator
   | RefModel
   | FakerMethodPath
@@ -88,7 +93,7 @@ type DataField = {
 /**
  * 模型数据结构
  */
-type DataModel = Record<string, DataFieldType>;
+type ModelSchema = Record<string, DataFieldType>;
 
 /**
  * 所有Fakers联合类型
@@ -98,37 +103,42 @@ export type AllFakers = keyof typeof allFakers;
 /**
  * 规则配置
  */
-type UseModelRule = {
-  [key: string | symbol]: number | RecursiveRecord;
+type DataFakeRule = {
+  /**
+   * 生成数量
+   */
+  count?: number;
+  /**
+   * 递归深度
+   */
+  deep?: boolean | number;
+  /**
+   * 规则也是递归的
+   */
+  [key: string | symbol]: number | UseModelRule;
+  [key: keyof T]: number | UseModelRule;
 };
 /**
  * 使用模型配置
  */
-type UseModelOptions = {
-  /**
-   * 默认生成模型对象的数量
-   * @description 如果是1个则直接返回对象，如果是1个以上则以数组形式返回
-   */
-  /* num?: number; */
-  /**
-   * 数据生成规则
-   */
-  /*  refRule?: UseModelRule; */
+type DataFakeOptions = {
   /**
    * 对于引用类型的规则
    */
-  rules?: any;
-  /**
-   * 默认引用模型的深度
-   */
-  /* deep?: boolean | number; */
-  /**
-   * 继承的模型
-   */
-  /* extendList?: Array<string | symbol>; */
+  rules?: DataFakeRule;
+
   /**
    * 回调函数
    * @description 对生成的数据进行后处理
    */
-  callbacks?: Array<(data: any) => any> | ((data: any) => any);
+  callbacks?: DataFakeCb;
 };
+
+/**
+ * 数据生成后的回调函数类型
+ */
+type DataFakeCb = ((data: any) => any) | Array<(data: any) => any>;
+
+/**
+ * 计算schema中对象类型参数名
+ */

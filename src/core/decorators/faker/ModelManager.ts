@@ -1,4 +1,4 @@
-import { DataFieldType, DataModel, RefModel } from './types/faker';
+import { DataFieldType } from './types/faker';
 
 /**
  * 模型管理器

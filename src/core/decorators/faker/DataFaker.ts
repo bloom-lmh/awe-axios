@@ -1,17 +1,15 @@
-import { allFakers, da, de, Faker, faker } from '@faker-js/faker';
-import { ModelManager } from './ModelManager';
+import { allFakers, Faker, faker } from '@faker-js/faker';
 import {
   AllFakers,
   CustomGenerator,
+  DataFakeCb,
+  DataFakeOptions,
+  DataFakeRule,
   DataFieldType,
-  DataModel,
-  FakerMethodParamsType,
-  FakerMethodPath,
   FakerModule,
-  RefModel,
-  UseModelOptions,
-  UseModelRule,
+  ModelSchema,
 } from './types/faker';
+import { DataModel } from './DataModel';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -21,78 +19,122 @@ export class DataFaker {
   /**
    * 当前语言
    */
-  private locale: Faker | AllFakers = faker;
+  private static locale: Faker = faker;
 
-  /**
-   * 当前使用的模型
-   */
-  private model?: Record<string, DataFieldType>;
-
-  /**
-   * 当前规则
-   */
-  private rule?: UseModelRule;
-
-  /**
-   * 当前回调函数
-   */
-  private callbacks?: Array<(data: any) => any> | ((data: any) => any);
-
-  /* constructor(locale: Faker | AllFakers) {
-    // 没有名字则采用匿名模型
-    this.locale = typeof locale === 'string' ? allFakers[locale] : locale;
-  } */
-  /**
-   * 设置语言环境
-   */
-  setLocale(locale: Faker | AllFakers) {
-    this.locale = typeof locale === 'string' ? allFakers[locale] : locale;
+  static setLocale(locale: Faker | AllFakers) {
+    locale = typeof locale === 'string' ? allFakers[locale] : locale;
     return this;
   }
 
   /**
    * 使用的模型
    */
-  useModel(model: string | symbol | Record<string, DataFieldType>) {
+  static useModel(model: DataModel, rules?: DataFakeRule) {
+    rules = rules || {};
+    rules.count = rules.count || 1;
+    rules.deep = rules.deep || true;
     // 没有名字则采用匿名模型
-    this.model = typeof model === 'object' ? model : ModelManager.getDataModel(model) || {};
-    return this;
+    let modelSchema = model.getModelSchema();
+    return this.parseScheme(modelSchema, rules);
   }
 
   /**
-   * 设置规则
+   * 解析模式
    */
-  setRule(rule: UseModelRule) {
-    this.rule = rule;
-    return this;
+  private static parseScheme(modelSchema: ModelSchema, rules: DataFakeRule): Record<string | symbol, any> | null {
+    // 没有模式返回空
+    if (!modelSchema) {
+      return null;
+    }
+    // 函数队列
+    let fnShemaList: Array<Record<string | symbol, CustomGenerator>> = [];
+    // schema执行结果
+    let result: Record<string | symbol, any> = {};
+    // 遍历modelSchema
+    for (let [key, schema] of Object.entries(modelSchema)) {
+      // 函数最后处理，先加入函数队列
+      if (typeof schema === 'function') {
+        fnShemaList.push({ [key]: schema });
+        continue;
+      }
+      // 字符串,表示是faker方法路径字符串
+      if (typeof schema === 'string') {
+        let fakerMethod = this.parsePathMethod(schema);
+        if (!fakerMethod || typeof fakerMethod !== 'function') {
+          result[key] = null;
+        } else {
+          result[key] = (fakerMethod! as Function)();
+        }
+        continue;
+      }
+      // 处理数组
+      if (Array.isArray(schema)) {
+        let [methodPath, params] = schema;
+        let fakerMethod = this.parsePathMethod(methodPath);
+        if (!fakerMethod || typeof fakerMethod !== 'function') {
+          result[key] = null;
+        } else {
+          result[key] = (fakerMethod! as Function)(params);
+        }
+        continue;
+      }
+      // 处理引用模型
+      if (typeof schema === 'object' && schema !== null && !Array.isArray(schema)) {
+        let rule = {};
+        // 是数据模型
+        if (schema instanceof DataModel) {
+        } else {
+          let { refModel, count = 1, deep = true } = schema;
+        }
+
+        // 递归解析引用模型
+        /* result[key] = useModel(refModal, { deep: --deep, num, refRule }); */
+        continue;
+      }
+    }
+    // 处理函数
+    if (fnShemaList && fnShemaList.length > 0) {
+      fnShemaList.forEach(fnItem => {
+        let [key, value] = Object.entries(fnItem!)[0];
+        result[key] = (value as Function)(result);
+      });
+    }
+    return result;
   }
 
   /**
-   * 设置回调
+   * 解析路径方法字符串
    */
-  setCallbacks(callbacks: Array<(data: any) => any> | ((data: any) => any)) {
-    this.callbacks = callbacks;
-    return this;
+  private static parsePathMethod(path: string) {
+    const [module, method] = path.split('.');
+    if (!module || !method) {
+      return null;
+    }
+    let fakerMethod = this.locale[module as FakerModule][method as keyof Faker[FakerModule]];
+    return fakerMethod;
   }
-
-  /**
-   * 生成数据
-   */
-  fake() {}
 }
-/* DataFaker.useModel({}) */
 /**
  * 定义模型
  */
-/* export function defineModel<P extends FakerMethodPath>(
-  modelName: string | symbol,
-  schema: Record<string, FakerMethodPath | [P, FakerMethodParamsType<P>] | CustomGenerator | RefModel>,
-) {
-  // 封装数据结构
-  const dataModel: DataModal = {
-    modelName: modelName,
-    fields: schema,
-  };
-  // 注册数据模型
-  ModelManager.registerDataModel(modelName, dataModel);
-} */
+export function defineModel(modelSchema: Record<string, DataFieldType>) {
+  return new DataModel(modelSchema);
+}
+
+/**
+ * 伪造数据
+ */
+export function FakeData(dataModel: DataModel, options?: DataFakeOptions) {
+  const { rules, callbacks } = options || {};
+  let data = DataFaker.useModel(dataModel, rules);
+  if (typeof callbacks === 'function') {
+    return callbacks(data);
+  }
+  if (Array.isArray(callbacks) && callbacks.length > 0) {
+    callbacks.forEach(cb => {
+      data = cb(data);
+    });
+    return data;
+  }
+  return data;
+}
