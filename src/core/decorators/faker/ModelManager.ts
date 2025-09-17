@@ -1,4 +1,4 @@
-import { DataModal, RefModel } from './types/faker';
+import { DataFieldType, DataModel, RefModel } from './types/faker';
 
 /**
  * 模型管理器
@@ -7,24 +7,23 @@ export class ModelManager {
   /**
    * 数据模型映射
    */
-  private static dataModelMap: Map<string | symbol, DataModal> = new Map();
+  private static dataModelMap: Map<string | symbol, Record<string, DataFieldType>> = new Map();
 
   /**
    * 注册数据模型
    */
-  static registerDataModel(modelName: string | symbol, dataModel: DataModal) {
-    const { fields } = dataModel;
+  static registerDataModel(modelName: string | symbol, dataModel: Record<string, DataFieldType>) {
     if (typeof modelName === 'string') {
       modelName = modelName.toLowerCase();
     }
     // 引用的模型名也转为小写
-    for (let value of Object.values(fields)) {
+    /* for (let value of Object.values(dataModel)) {
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         if (typeof value.refModel === 'string') {
-          value.refModel = value.refModal.toLowerCase();
+          value.refModel = value.refModel.toLowerCase();
         }
       }
-    }
+    } */
 
     // 不区分大小写
     if (this.hasDataModel(modelName)) {

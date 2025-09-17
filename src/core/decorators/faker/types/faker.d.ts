@@ -38,18 +38,29 @@ type FakerMethodParamsType<P extends string> = FakerMethod<P> extends (args: inf
  * 自定义数据生成器
  */
 type CustomGenerator = (ctx: Record<string | symbol, any>) => any;
+
 /**
  * 引用模型配置
  */
 type RefModel = {
-  refModal: string;
+  /**
+   * 所引用的模型
+   */
+  refModel: string | symbol;
+  /**
+   * 生成数量
+   */
   num?: number;
+  /**
+   * 递归圣都
+   */
+  deep?: boolean | number;
 };
 
 /**
  * 数据字段类型
  */
-type DataFieldType<P extends FakerMethodPath> =
+type DataFieldType<P extends FakerMethodPath = FakerMethodPath> =
   | CustomGenerator
   | RefModel
   | FakerMethodPath
@@ -77,16 +88,7 @@ type DataField = {
 /**
  * 模型数据结构
  */
-type DataModal = {
-  /**
-   * 模型名
-   */
-  modelName: string | symbol;
-  /**
-   * 模型字段
-   */
-  fields: Record<string, DataFieldType>;
-};
+type DataModel = Record<string, DataFieldType>;
 
 /**
  * 所有Fakers联合类型
@@ -104,22 +106,26 @@ type UseModelRule = {
  */
 type UseModelOptions = {
   /**
-   * 生成模型对象的数量
+   * 默认生成模型对象的数量
    * @description 如果是1个则直接返回对象，如果是1个以上则以数组形式返回
    */
-  num?: number;
+  /* num?: number; */
   /**
    * 数据生成规则
    */
-  refRule?: UseModelRule;
+  /*  refRule?: UseModelRule; */
   /**
-   * 引用模型的深度
+   * 对于引用类型的规则
    */
-  deep?: boolean | number;
+  rules?: any;
+  /**
+   * 默认引用模型的深度
+   */
+  /* deep?: boolean | number; */
   /**
    * 继承的模型
    */
-  extendList?: Array<string | symbol>;
+  /* extendList?: Array<string | symbol>; */
   /**
    * 回调函数
    * @description 对生成的数据进行后处理

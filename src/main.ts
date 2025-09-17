@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { defineModel, FakerAPI } from './core/decorators/faker/FakerApi';
+import { DataFaker } from './core/decorators/faker/DataFaker';
 /* class Address {}
 class Person {
   @DataField('string.uuid')
@@ -30,14 +31,14 @@ defineModel('clazz', {
     return '软工' + faker.number.int();
   },
   depart: {
-    refModal: 'Department',
+    refModel: 'Department',
   },
 });
 defineModel('Student', {
   sId: 'number.bigInt',
   books: ['helpers.arrayElements', ['物理', '英语']],
   clazz: {
-    refModal: 'clazz',
+    refModel: 'clazz',
   },
 });
 defineModel('Info', {
@@ -48,7 +49,7 @@ defineModel('Info', {
 defineModel('Address', {
   city: 'location.city',
   info: {
-    refModal: 'info',
+    refModel: 'info',
     num: 3,
   },
 });
@@ -60,28 +61,41 @@ defineModel('User', {
     return 'hello';
   },
   sex: () => 'M',
+  self: () => {
+    return new DataFaker().setRule({}).fake();
+  },
   address: {
-    refModal: 'Address',
+    refModel: 'Address',
     num: 1,
+  },
+
+  children: {
+    refModel: 'user',
+    num: 1,
+  },
+});
+
+new DataFaker().useModel('User').setRule({
+  address: {
+    deep: true,
+    num: 1,
+    info: {
+      num: 3,
+    },
   },
   children: {
-    refModal: 'user',
+    deep: 2,
     num: 1,
-  },
-});
-const result = FakerAPI('zh_CN').useModel('User', {
-  extendList: ['Person', 'Student'],
-  num: 10,
-  deep: 2,
-  refRule: {
-    Address: {
-      Info: 1,
-    },
     user: {
-      user: 2,
+      num: 3,
     },
-    info: 1,
   },
-  callbacks: result => {},
+  /*  refRules: {
+    address: {
+      deep: true,
+      num: 1,
+    },
+  }, */
 });
-console.log(result);
+/* const result = FakerAPI('zh_CN').useModel('User', {}); */
+/* console.log(result); */

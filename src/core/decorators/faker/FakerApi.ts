@@ -28,9 +28,25 @@ class FakerApi {
   static setDefaultFaker(refFaker = faker) {
     FakerApi.defaultFaker = refFaker;
   }
-
   /**
    * 生成数据
+   */
+  static generateData(modelName: string | symbol, options?: UseModelOptions) {
+    let result = this.useModel(modelName, options);
+    if (options && options.callbacks) {
+      if (typeof options.callbacks === 'function') {
+        result = options.callbacks(result);
+      } else if (typeof options.callbacks === 'object' && Array.isArray(options.callbacks)) {
+        options.callbacks.forEach(callback => {
+          result = callback(result);
+        });
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 使用模型
    */
   static useModel(modelName: string | symbol, options?: UseModelOptions) {
     // 规则转小写
@@ -144,6 +160,7 @@ class FakerApi {
     }
     return result;
   }
+
   /**
    * 标准化引用规则
    */
@@ -159,6 +176,7 @@ class FakerApi {
     }
     return normalized;
   }
+
   /**
    * 解析生成数量
    */
@@ -195,6 +213,7 @@ class FakerApi {
     return fakerMethod;
   }
 }
+
 /**
  * 定义模型
  */
