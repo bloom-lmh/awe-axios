@@ -9,9 +9,9 @@ import {
   FakerModule,
   ModelSchema,
   RefModelOptions,
-  RefRule,
 } from './types/faker';
 import { DataModel } from './DataModel';
+import { ModelManager } from './ModelManager';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -31,25 +31,38 @@ export class DataFaker {
   /**
    * 使用的模型
    */
-  static parseModel(model: DataModel, rules?: DataFakeRule) {
+  static parseModel(dataModel: DataModel | string | symbol, rules?: DataFakeRule) {
+    let model = dataModel instanceof DataModel ? dataModel : ModelManager.getDataModel(dataModel);
+    if (!model) {
+      return null;
+    }
+    let modelSchema = model.getModelSchema();
+    // 首次解析一级引用属性
+    /*  if (!rules) {
+      for (let [key, schema] of Object.entries(rules)) {
+        if (typeof schema === 'object' && schema !== null) {
+          console.log(key);
+        }
+      }
+    } */
     rules = rules || {};
     rules.count = rules.count || 1;
-    if (rules.deep === undefined || rules.deep === null) {
+
+    /*  if (rules.deep === undefined || rules.deep === null) {
       rules.deep = 0;
     } else if (typeof rules.deep === 'boolean') {
       rules.deep = rules.deep ? Infinity : 0;
-    }
+    } */
     //rules.deep = typeof rules.deep === 'boolean' ? (rules.deep ? Infinity : 0) : rules.deep || 1;
     /*   if (rules.deep < 0) {
       return null;
     }
     --rules.deep; */
     /*   --rules.deep; */
-    let modelSchema = model.getModelSchema();
-    if (rules.count === 1) {
-      return this.parseScheme(modelSchema, rules);
-    }
-    return Array.from({ length: rules.count }).map(() => this.parseScheme(modelSchema, rules));
+
+    return rules.count === 1
+      ? this.parseScheme(modelSchema, rules)
+      : Array.from({ length: rules.count }).map(() => this.parseScheme(modelSchema, rules));
   }
 
   /**
@@ -94,26 +107,29 @@ export class DataFaker {
       }
       // 处理引用模型
       if (typeof schema === 'object' && schema !== null) {
-        let rls = (rules[key] as RefRule) || {};
+        /* let rls = (rules[key] as RefRule) || {};
         let dataModel;
         // 若是模型
         if (!(schema instanceof DataModel)) {
           // 合并模型自身配置和传入配置
           const { refModel, count, deep } = schema as RefModelOptions;
           if (typeof rls === 'number') {
-            /*   rls = {
-              count: 1,
-              deep: true,
-            }; */
           }
-          /*    rls = { count, deep, ...rules[key] }; */
           console.log(key, rls);
           dataModel = refModel;
         } else {
           dataModel = schema;
+        } */
+        let refModel;
+        let rls = {};
+        if (schema instanceof DataModel) {
+          refModel = schema;
+        } else {
+          refModel = schema.refModel;
         }
+        const { count, deep } = schema as RefModelOptions;
         // 递归解析引用模型
-        //result[key] = this.parseModel(dataModel, rls);
+        result[key] = this.parseModel(refModel, {});
         continue;
       }
     }
@@ -142,14 +158,20 @@ export class DataFaker {
 /**
  * 定义模型
  */
-export function defineModel(modelSchema: Record<string, DataFieldType>) {
-  return new DataModel(modelSchema);
+export function defineModel(modelName: string | symbol, model: Record<string, DataFieldType> | DataModel) {
+  // 创建数据模型对象
+  let dataModel = model instanceof DataModel ? model : new DataModel(model);
+  // 注册模型到工厂
+  ModelManager.registerDataModel(modelName, dataModel);
+  // 返回一个可修改的模型对象
+  return dataModel;
 }
 
 /**
  * 伪造数据
  */
-export function FakeData(dataModel: DataModel, options?: DataFakeOptions) {
+export function FakeData(dataModel: DataModel | string | symbol, options?: DataFakeOptions) {
+  // 获取生成数据规则和回调
   const { rules, callbacks } = options || {};
   let data = DataFaker.parseModel(dataModel, rules);
   if (typeof callbacks === 'function') {

@@ -18,22 +18,29 @@ export class DataModel {
    */
   clone() {
     this.modelSchema = ObjectUtils.deepClone(this.modelSchema);
-    return this;
+    return new DataModel(this.modelSchema);
   }
   /**
    * 添加属性
    */
-  setProperty(name: string, type: DataFieldType) {
+  withProperty(name: string, type: DataFieldType) {
     this.modelSchema[name] = type;
     return this;
   }
   /**
    * 添加多个属性
    */
-  setProperties(properties: Record<string, DataFieldType>) {
+  withProperties(properties: Record<string, DataFieldType>) {
     for (const [name, type] of Object.entries(properties)) {
-      this.setProperty(name, type);
+      this.withProperty(name, type);
     }
+    return this;
+  }
+  /**
+   * 排除属性
+   */
+  excludeProperty(name: string | symbol) {
+    delete this.modelSchema[name];
     return this;
   }
   /**
@@ -43,7 +50,9 @@ export class DataModel {
     for (const name of excluedes) {
       delete this.modelSchema[name];
     }
+    return this;
   }
+
   /**
    * 获取模板
    */

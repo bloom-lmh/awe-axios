@@ -1,3 +1,4 @@
+import { DataModel } from './DataModel';
 import { DataFieldType } from './types/faker';
 
 /**
@@ -7,12 +8,12 @@ export class ModelManager {
   /**
    * 数据模型映射
    */
-  private static dataModelMap: Map<string | symbol, Record<string, DataFieldType>> = new Map();
+  private static dataModelMap: Map<string | symbol, DataModel> = new Map();
 
   /**
    * 注册数据模型
    */
-  static registerDataModel(modelName: string | symbol, dataModel: Record<string, DataFieldType>) {
+  static registerDataModel(modelName: string | symbol, dataModel: DataModel) {
     if (typeof modelName === 'string') {
       modelName = modelName.toLowerCase();
     }

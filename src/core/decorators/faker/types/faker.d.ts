@@ -47,7 +47,7 @@ type RefModelOptions = {
   /**
    * 所引用的模型
    */
-  refModel: DataModel;
+  refModel: DataModel | string | symbol;
   /**
    * 生成数量
    */

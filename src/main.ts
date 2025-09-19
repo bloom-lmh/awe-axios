@@ -73,21 +73,21 @@ const userModel = DataFaker.defineModel({
     num: 1,
   },
 }); */
-const companyModel = defineModel({
+const companyModel = defineModel('company', {
   name: 'company.name',
   buzzPhrase: 'company.buzzPhrase',
 });
-const jobModel = defineModel({
+const jobModel = defineModel('job', {
   type: 'person.jobType',
   company: {
     refModel: companyModel,
   },
 });
-const addressModel = defineModel({
+const addressModel = defineModel('address', {
   country: 'location.country',
   city: 'location.city',
 });
-const userModel = defineModel({
+const userModel = defineModel('user', {
   id: 'number.int',
   name: 'airline.aircraftType',
   age: ['number.int', { min: 18, max: 65 }],
@@ -103,21 +103,31 @@ const userModel = defineModel({
     refModel: jobModel,
     count: 2,
   },
+  job2: jobModel,
 });
-
 const userDatas = FakeData(userModel, {
   rules: {
     count: 1,
     job: {
       count: 3,
       deep: 3,
-      address: {
+      company: {
         count: 2,
       },
     },
   },
 });
 console.log(userDatas);
+
+/* defineModel(
+  'student',
+  userModel
+    .clone()
+    .withProperty('age', ['number.int', { min: 5, max: 18 }])
+    .withProperties({
+      sId: 'number.int',
+    }),
+); */
 /* 
 const studentModel = userModel
   .clone()
