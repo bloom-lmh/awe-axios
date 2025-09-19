@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { faker, de } from '@faker-js/faker';
 import { DataFaker, defineModel, FakeData } from './core/decorators/faker/DataFaker';
 /* class Address {}
 class Person {
@@ -91,6 +91,7 @@ const userModel = defineModel({
   id: 'number.int',
   name: 'airline.aircraftType',
   age: ['number.int', { min: 18, max: 65 }],
+  hobby: ['helpers.arrayElements', ['篮球', '足球', '乒乓球']],
   email: ctx => {
     return 'hello';
   },
@@ -102,9 +103,22 @@ const userModel = defineModel({
     refModel: jobModel,
     count: 2,
   },
-  hobby: ['helpers.arrayElements', ['篮球', '足球', '乒乓球']],
 });
 
+const userDatas = FakeData(userModel, {
+  rules: {
+    count: 1,
+    job: {
+      count: 3,
+      deep: 3,
+      address: {
+        count: 2,
+      },
+    },
+  },
+});
+console.log(userDatas);
+/* 
 const studentModel = userModel
   .clone()
   .setProperty('age', ['number.int', { min: 5, max: 18 }])
@@ -112,19 +126,5 @@ const studentModel = userModel
     sId: 'number.int',
   });
 
-const userDatas = FakeData(userModel, {
-  rules: {
-    count: 5,
-    deep: true,
-    job: {
-      count: 3,
-      company: {
-        count: 2,
-        deep: true,
-      },
-    },
-  },
-});
 const studentDatas = FakeData(studentModel);
-console.log(userDatas);
-console.log(studentDatas);
+console.log(studentDatas); */

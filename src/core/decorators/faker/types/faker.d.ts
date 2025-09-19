@@ -53,7 +53,7 @@ type RefModelOptions = {
    */
   count?: number;
   /**
-   * 递归圣都
+   * 递归深度
    */
   deep?: boolean | number;
 };
@@ -84,6 +84,7 @@ type DataField = {
    * 类型
    */
   fieldSchema: FakerMethodPath | CustomGenerator | RefModel;
+
   /**
    * 参数
    */
@@ -108,16 +109,13 @@ type DataFakeRule = {
    * 生成数量
    */
   count?: number;
-  /**
-   * 递归深度
-   */
-  deep?: boolean | number;
+
   /**
    * 规则也是递归的
    */
-  [key: string | symbol]: number | UseModelRule;
-  [key: keyof T]: number | UseModelRule;
+  [key: string | symbol]: number | DataFakeRule;
 };
+
 /**
  * 使用模型配置
  */
@@ -138,7 +136,3 @@ type DataFakeOptions = {
  * 数据生成后的回调函数类型
  */
 type DataFakeCb = ((data: any) => any) | Array<(data: any) => any>;
-
-/**
- * 计算schema中对象类型参数名
- */

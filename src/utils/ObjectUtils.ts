@@ -24,6 +24,15 @@ export class ObjectUtils {
       }
       return cloned;
     }
+    if (Array.isArray(obj)) {
+      if (hashMap.has(obj)) return hashMap.get(obj);
+      const cloneArr: any[] = [];
+      hashMap.set(obj, cloneArr);
+      for (let i = 0; i < obj.length; i++) {
+        cloneArr[i] = this.deepClone(obj[i], hashMap);
+      }
+      return cloneArr;
+    }
     if (hashMap.has(obj)) return hashMap.get(obj);
     let cloneObj = Object.create(Object.getPrototypeOf(obj));
     hashMap.set(obj, cloneObj);

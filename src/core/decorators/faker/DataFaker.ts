@@ -8,6 +8,8 @@ import {
   DataFieldType,
   FakerModule,
   ModelSchema,
+  RefModelOptions,
+  RefRule,
 } from './types/faker';
 import { DataModel } from './DataModel';
 /**
@@ -29,13 +31,25 @@ export class DataFaker {
   /**
    * 使用的模型
    */
-  static useModel(model: DataModel, rules?: DataFakeRule) {
+  static parseModel(model: DataModel, rules?: DataFakeRule) {
     rules = rules || {};
     rules.count = rules.count || 1;
-    rules.deep = rules.deep || true;
-    // 没有名字则采用匿名模型
+    if (rules.deep === undefined || rules.deep === null) {
+      rules.deep = 0;
+    } else if (typeof rules.deep === 'boolean') {
+      rules.deep = rules.deep ? Infinity : 0;
+    }
+    //rules.deep = typeof rules.deep === 'boolean' ? (rules.deep ? Infinity : 0) : rules.deep || 1;
+    /*   if (rules.deep < 0) {
+      return null;
+    }
+    --rules.deep; */
+    /*   --rules.deep; */
     let modelSchema = model.getModelSchema();
-    return this.parseScheme(modelSchema, rules);
+    if (rules.count === 1) {
+      return this.parseScheme(modelSchema, rules);
+    }
+    return Array.from({ length: rules.count }).map(() => this.parseScheme(modelSchema, rules));
   }
 
   /**
@@ -79,16 +93,27 @@ export class DataFaker {
         continue;
       }
       // 处理引用模型
-      if (typeof schema === 'object' && schema !== null && !Array.isArray(schema)) {
-        let rule = {};
-        // 是数据模型
-        if (schema instanceof DataModel) {
+      if (typeof schema === 'object' && schema !== null) {
+        let rls = (rules[key] as RefRule) || {};
+        let dataModel;
+        // 若是模型
+        if (!(schema instanceof DataModel)) {
+          // 合并模型自身配置和传入配置
+          const { refModel, count, deep } = schema as RefModelOptions;
+          if (typeof rls === 'number') {
+            /*   rls = {
+              count: 1,
+              deep: true,
+            }; */
+          }
+          /*    rls = { count, deep, ...rules[key] }; */
+          console.log(key, rls);
+          dataModel = refModel;
         } else {
-          let { refModel, count = 1, deep = true } = schema;
+          dataModel = schema;
         }
-
         // 递归解析引用模型
-        /* result[key] = useModel(refModal, { deep: --deep, num, refRule }); */
+        //result[key] = this.parseModel(dataModel, rls);
         continue;
       }
     }
@@ -126,7 +151,7 @@ export function defineModel(modelSchema: Record<string, DataFieldType>) {
  */
 export function FakeData(dataModel: DataModel, options?: DataFakeOptions) {
   const { rules, callbacks } = options || {};
-  let data = DataFaker.useModel(dataModel, rules);
+  let data = DataFaker.parseModel(dataModel, rules);
   if (typeof callbacks === 'function') {
     return callbacks(data);
   }
