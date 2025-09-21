@@ -1,5 +1,6 @@
 import { faker, de } from '@faker-js/faker';
 import { DataFaker, defineModel, FakeData } from './core/decorators/faker/DataFaker';
+import { COUNT, DEEP } from './core/constant/DataFakerConstants';
 /* class Address {}
 class Person {
   @DataField('string.uuid')
@@ -101,20 +102,24 @@ const userModel = defineModel('user', {
   },
   job: {
     refModel: jobModel,
-    count: 2,
+    [COUNT]: 2,
   },
   job2: jobModel,
+  children: {
+    refModel: 'user',
+    [COUNT]: 1,
+    [DEEP]: 2,
+  },
 });
 const userDatas = FakeData(userModel, {
   rules: {
-    count: 1,
+    [COUNT]: 1,
+    [DEEP]: 2,
     job: {
-      count: 3,
-      deep: 3,
-      company: {
-        count: 2,
-      },
+      [COUNT]: 3,
+      company: 0,
     },
+    job2: 0,
   },
 });
 console.log(userDatas);

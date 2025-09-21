@@ -12,6 +12,7 @@ import {
 } from './types/faker';
 import { DataModel } from './DataModel';
 import { ModelManager } from './ModelManager';
+import { COUNT } from '@/core/constant/DataFakerConstants';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -36,33 +37,17 @@ export class DataFaker {
     if (!model) {
       return null;
     }
+    // 记录当前正在处理的模型
     let modelSchema = model.getModelSchema();
-    // 首次解析一级引用属性
-    /*  if (!rules) {
-      for (let [key, schema] of Object.entries(rules)) {
-        if (typeof schema === 'object' && schema !== null) {
-          console.log(key);
-        }
-      }
-    } */
     rules = rules || {};
-    rules.count = rules.count || 1;
-
-    /*  if (rules.deep === undefined || rules.deep === null) {
-      rules.deep = 0;
-    } else if (typeof rules.deep === 'boolean') {
-      rules.deep = rules.deep ? Infinity : 0;
-    } */
-    //rules.deep = typeof rules.deep === 'boolean' ? (rules.deep ? Infinity : 0) : rules.deep || 1;
-    /*   if (rules.deep < 0) {
+    rules[COUNT] = rules[COUNT] === undefined || rules[COUNT] === null ? 1 : rules[COUNT];
+    if (rules[COUNT] <= 0) {
       return null;
+    } else if (rules[COUNT] === 1) {
+      return this.parseScheme(modelSchema, rules);
+    } else {
+      return Array.from({ length: rules[COUNT] }).map(() => this.parseScheme(modelSchema, rules));
     }
-    --rules.deep; */
-    /*   --rules.deep; */
-
-    return rules.count === 1
-      ? this.parseScheme(modelSchema, rules)
-      : Array.from({ length: rules.count }).map(() => this.parseScheme(modelSchema, rules));
   }
 
   /**
@@ -107,29 +92,19 @@ export class DataFaker {
       }
       // 处理引用模型
       if (typeof schema === 'object' && schema !== null) {
-        /* let rls = (rules[key] as RefRule) || {};
-        let dataModel;
-        // 若是模型
-        if (!(schema instanceof DataModel)) {
-          // 合并模型自身配置和传入配置
-          const { refModel, count, deep } = schema as RefModelOptions;
-          if (typeof rls === 'number') {
-          }
-          console.log(key, rls);
-          dataModel = refModel;
-        } else {
-          dataModel = schema;
-        } */
         let refModel;
-        let rls = {};
+        let rls = rules[key] === undefined || rules[key] === null ? {} : rules[key];
+        if (typeof rls === 'number') {
+          rls = { [COUNT]: rls };
+        }
         if (schema instanceof DataModel) {
           refModel = schema;
         } else {
           refModel = schema.refModel;
+          rls[COUNT] = rls[COUNT] === undefined || rls[COUNT] === null ? schema[COUNT] : rls[COUNT];
         }
-        const { count, deep } = schema as RefModelOptions;
         // 递归解析引用模型
-        result[key] = this.parseModel(refModel, {});
+        result[key] = refModel ? this.parseModel(refModel, rls) : null;
         continue;
       }
     }

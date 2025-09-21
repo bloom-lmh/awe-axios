@@ -1,3 +1,4 @@
+import { COUNT, DEEP } from './../../../constant/DataFakerConstants';
 import { Faker, allFakers } from '@faker-js/faker';
 import { PropertyDecorator } from '../../decorator';
 import { DataModel } from '../DataModel';
@@ -51,11 +52,11 @@ type RefModelOptions = {
   /**
    * 生成数量
    */
-  count?: number;
+  [COUNT]?: number;
   /**
-   * 递归深度
+   * 引用自身时的递归深度
    */
-  deep?: boolean | number;
+  [DEEP]?: number;
 };
 /**
  * 引用模型配置
@@ -100,20 +101,26 @@ type ModelSchema = Record<string, DataFieldType>;
  * 所有Fakers联合类型
  */
 export type AllFakers = keyof typeof allFakers;
+/* 
+type DataFakeRuleBase = {
+  [COUNT]?: number;
+  [DEEP]?: number;
+  [key: string | symbol]: number | DataFakeRuleBase;
+}; */
 
-/**
- * 规则配置
- */
 type DataFakeRule = {
   /**
    * 生成数量
    */
-  count?: number;
-
+  [COUNT]?: number;
   /**
-   * 规则也是递归的
+   * 引用自身时的递归深度
    */
-  [key: string | symbol]: number | DataFakeRule;
+  [DEEP]?: number;
+  /**
+   * 结构递归
+   */
+  [key: string | symbol]: number | DataFakeRuleBase;
 };
 
 /**
