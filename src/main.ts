@@ -1,7 +1,7 @@
 import { defineModel, FakeData } from './core/decorators/faker/DataFaker';
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
 
-const companyModel = defineModel('company', {
+/* const companyModel = defineModel('company', {
   name: 'company.name',
   buzzPhrase: 'company.buzzPhrase',
 });
@@ -32,7 +32,6 @@ const userModel = defineModel('user', {
   },
   job: {
     refModel: jobModel,
-    [COUNT]: 4,
   },
   job2: jobModel,
   job3: {
@@ -41,28 +40,49 @@ const userModel = defineModel('user', {
   },
   children: {
     refModel: 'user',
-    [COUNT]: 1,
+    [COUNT]: 2,
   },
 });
 const userDatas = FakeData(userModel, {
   rules: {
     [COUNT]: 1,
     job: {
-      [COUNT]: 3,
-      children: {
-        [DEEP]: 2,
-      },
+      [COUNT]: 1,
+      [DEEP]: 2,
+      children: { [COUNT]: 1, [DEEP]: 3 },
       company: 0,
     },
-    job2: 0,
+    job2: 1,
     job3: [1, 2],
     children: {
-      [DEEP]: 3,
+      [DEEP]: 2,
     },
   },
 });
 console.log(userDatas);
-const user2 = userModel.clone('user2');
+const user2 = userModel.clone('user2'); */
+
+const animalModel = defineModel('animal', {
+  name: 'animal.bird',
+  type: ctx => {
+    return `aa--${ctx.name}`;
+  },
+  children: {
+    refModel: 'animal',
+    [DEEP]: 1,
+  },
+});
+const animalDatas = FakeData(animalModel, {
+  rules: {
+    [COUNT]: 2,
+  },
+  callbacks: data => {
+    data['type'] = 'aa';
+    return data;
+  },
+});
+console.log(animalDatas);
+
 /* defineModel(
   'student',
   userModel

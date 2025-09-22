@@ -60,22 +60,20 @@ export class DataFaker {
     modelSchema: ModelSchema,
     rules: DataFakeRule,
     path: Set<string | symbol> = new Set(),
-    depth: number = 0,
+    currentDepth: number = 0,
   ): Record<string | symbol, any> | null {
     // 没有模式返回空
     if (!modelSchema) {
       return null;
     }
-    if (rules[DEEP] && depth >= rules[DEEP]) {
-      depth = 0;
-      return null;
-    }
+    // 检查深度限制
+    const maxDepth = rules[DEEP] ?? Infinity;
+    if (currentDepth > maxDepth) return null;
     // 函数队列
     let fnShemaList: Array<Record<string | symbol, CustomGenerator>> = [];
     // schema执行结果
     let result: Record<string | symbol, any> = {};
-    if (rules[DEEP]) {
-    }
+
     // 遍历modelSchema
     for (let [key, schema] of Object.entries(modelSchema)) {
       // 函数最后处理，先加入函数队列
@@ -107,48 +105,54 @@ export class DataFaker {
       // 处理引用模型
       if (typeof schema === 'object' && schema !== null) {
         let refModel;
-        // 解析配置
         let rls = rules[key] === undefined || rules[key] === null ? {} : rules[key];
+
+        // 处理规则格式
         if (typeof rls === 'number') {
-          rls = { [COUNT]: rls, [DEEP]: 1 };
+          rls = { [COUNT]: rls };
         }
         if (Array.isArray(rls)) {
-          if (rls.length < 2) {
-            throw new Error('数组规则格式错误');
-          }
+          if (rls.length < 2) throw new Error('数组规则格式错误');
           rls = { [COUNT]: rls[0], [DEEP]: rls[1] };
         }
+
+        // 获取引用模型
         if (schema instanceof DataModel) {
           refModel = schema;
         } else {
           refModel =
             schema.refModel instanceof DataModel ? schema.refModel : ModelManager.getDataModel(schema.refModel);
-          rls[COUNT] = rls[COUNT] === undefined || rls[COUNT] === null ? schema[COUNT] : rls[COUNT];
-          rls[DEEP] = rls[DEEP] === undefined || rls[DEEP] === null ? schema[DEEP] : rls[DEEP];
+          // 合并默认值
+          rls[COUNT] = rls[COUNT] ?? schema[COUNT] ?? 1;
+          // 后续配置优先级高于前面
+          rls[DEEP] = rls[DEEP] ?? schema[DEEP] ?? rules[DEEP];
         }
+
         if (!refModel) {
-          return null;
+          result[key] = null;
+          continue;
         }
-        const modelSchema = refModel.getModelSchema();
+
         const modelName = refModel.getModelName();
-        // 如果路径中有循环依赖则使用deep控制递归深度
-        if (path.has(modelName)) {
-          console.log(rls);
-          rls[DEEP] = 4;
-          console.log(depth);
+        const isCircular = path.has(modelName);
+
+        // 自动处理循环引用
+        if (isCircular) {
+          rls[DEEP] = rls[DEEP] ?? 4; // 默认循环引用深度限制
         }
+
+        // 克隆path以避免污染
+        const newPath = new Set(path).add(modelName);
+
         if (rls[COUNT] <= 0) {
           result[key] = null;
         } else if (rls[COUNT] === 1) {
-          result[key] = this.parseScheme(modelSchema, rls, path.add(modelName), depth + 1);
+          result[key] = this.parseScheme(refModel.getModelSchema(), rls, newPath, isCircular ? currentDepth + 1 : 0);
         } else {
-          result[key] = Array.from({ length: rls[COUNT] }, () => {
-            return this.parseScheme(modelSchema, rls, path.add(modelName), depth + 1);
-          });
+          result[key] = Array.from({ length: rls[COUNT] }, () =>
+            this.parseScheme(refModel.getModelSchema(), rls, newPath, isCircular ? currentDepth + 1 : 0),
+          );
         }
-        let firstModelName = [...path][0];
-        path.clear();
-        path.add(firstModelName);
         continue;
       }
     }
