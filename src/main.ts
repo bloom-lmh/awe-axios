@@ -1,5 +1,6 @@
 import { defineModel, FakeData } from './core/decorators/faker/DataFaker';
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
+import { ar, az, faker, LocaleDefinition } from '@faker-js/faker';
 
 /* const companyModel = defineModel('company', {
   name: 'company.name',
@@ -82,6 +83,20 @@ const animalDatas = FakeData(animalModel, {
   },
 });
 console.log(animalDatas);
+
+const birdModel = animalModel.clone('bird').withProperties({
+  age: ['number.int', { min: 1, max: 100 }],
+});
+
+const customLocale: LocaleDefinition = {
+  internet: {
+    domainSuffix: ['test'],
+  },
+};
+const birdDatas = FakeData(birdModel, {
+  locale: [customLocale, 'zh_CN', 'en_AU'],
+});
+console.log(birdDatas);
 
 /* defineModel(
   'student',

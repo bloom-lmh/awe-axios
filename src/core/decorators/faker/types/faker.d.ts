@@ -1,5 +1,5 @@
 import { COUNT, DEEP } from './../../../constant/DataFakerConstants';
-import { Faker, allFakers } from '@faker-js/faker';
+import { Faker, allFakers, LocaleDefinition } from '@faker-js/faker';
 import { PropertyDecorator } from '../../decorator';
 import { DataModel } from '../DataModel';
 
@@ -101,13 +101,14 @@ type ModelSchema = Record<string, DataFieldType>;
  * 所有Fakers联合类型
  */
 export type AllFakers = keyof typeof allFakers;
-/* 
-type DataFakeRuleBase = {
-  [COUNT]?: number;
-  [DEEP]?: number;
-  [key: string | symbol]: number | DataFakeRuleBase;
-}; */
 
+/**
+ * 语言环境类型
+ */
+type LocaleType = AllFakers | Array<LocaleDefinition | AllFakers> | Faker;
+/**
+ * Fake数据规则
+ */
 type DataFakeRule = {
   /**
    * 生成数量
@@ -137,6 +138,10 @@ type DataFakeOptions = {
    * @description 对生成的数据进行后处理
    */
   callbacks?: DataFakeCb;
+  /**
+   * 语言环境
+   */
+  locale?: LocaleType;
 };
 
 /**

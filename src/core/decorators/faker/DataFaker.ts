@@ -1,4 +1,4 @@
-import { allFakers, Faker, faker } from '@faker-js/faker';
+import { allFakers, allLocales, Faker, faker, LocaleDefinition } from '@faker-js/faker';
 import {
   AllFakers,
   CustomGenerator,
@@ -6,6 +6,7 @@ import {
   DataFakeRule,
   DataFieldType,
   FakerModule,
+  LocaleType,
   ModelSchema,
 } from './types/faker';
 import { DataModel } from './DataModel';
@@ -21,13 +22,46 @@ export class DataFaker {
    * 当前语言
    */
   private static locale: Faker = faker;
-
+  /**
+   * faker缓存
+   */
+  private static fakerCache = new Map<string, Faker>();
   /**
    * 设置当前语言环境
    * @param locale 语言环境
    */
-  static setLocale(locale: Faker | AllFakers) {
-    locale = typeof locale === 'string' ? allFakers[locale] : locale;
+  static setLocale(locale?: LocaleType) {
+    let localeFaker;
+    // 字符串单语言
+    if (typeof locale === 'string') {
+      localeFaker = allFakers[locale];
+    }
+    // 直接faker
+    else if (locale instanceof Faker) {
+      localeFaker = locale;
+    }
+    // 多语言
+    else if (Array.isArray(locale)) {
+      let fakerLocale = locale
+        .map(lc => {
+          if (typeof lc === 'string') {
+            return allLocales[lc];
+          }
+          return lc;
+        })
+        .filter(f => f);
+
+      const key = locale.join('-');
+      if (this.fakerCache.has(key)) {
+        localeFaker = this.fakerCache.get(key);
+      } else {
+        localeFaker = new Faker({
+          locale: fakerLocale as LocaleDefinition[],
+        });
+        this.fakerCache.set(key, localeFaker);
+      }
+    }
+    this.locale = localeFaker || faker;
     return this;
   }
 
@@ -143,7 +177,6 @@ export class DataFaker {
 
         // 克隆path以避免污染
         const newPath = new Set(path).add(modelName);
-
         if (rls[COUNT] <= 0) {
           result[key] = null;
         } else if (rls[COUNT] === 1) {
@@ -193,9 +226,9 @@ export function defineModel(modelName: string | symbol, model: Record<string, Da
  */
 export function FakeData(dataModel: DataModel | string | symbol, options?: DataFakeOptions) {
   // 获取生成数据规则和回调
-  const { rules, callbacks } = options || {};
+  const { rules, callbacks, locale } = options || {};
+  DataFaker.setLocale(locale);
   let data = DataFaker.parseModel(dataModel, rules);
-
   if (typeof callbacks === 'function') {
     return callbacks(data);
   }
