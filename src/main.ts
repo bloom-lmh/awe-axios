@@ -1,79 +1,6 @@
-import { faker, de } from '@faker-js/faker';
-import { DataFaker, defineModel, FakeData } from './core/decorators/faker/DataFaker';
+import { defineModel, FakeData } from './core/decorators/faker/DataFaker';
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
-/* class Address {}
-class Person {
-  @DataField('string.uuid')
-  declare id: number;
-  @DataField('airline.aircraftType')
-  declare name: string;
-  @DataField(['number.int', { min: 12, max: 25 }])
-  declare age: number;
-  @DataField(ctx => {
-    console.log(ctx);
-    return 'hello';
-  })
-  declare email: string;
-  private sex: number = 1;
-  @DataField({
-    modelName: 'aaa',
-  })
-  declare address: Address;
-} */
-/* const personModel = DataFaker.defineModel({
-  type: () => 'Human',
-});
-DataFaker.defineModel({
-  departName: ['helpers.arrayElements', ['计算机科学与计算', '软件工程']],
-});
-const studentInfoModel = DataFaker.defineModel({
-  classNum: () => {
-    return '软工' + faker.number.int();
-  },
-  depart: {
-    refModel: 'Department',
-  },
-});
-const studentModel = DataFaker.defineModel({
-  sId: 'number.bigInt',
-  books: ['helpers.arrayElements', ['物理', '英语']],
-  clazz: {
-    refModel: 'clazz',
-  },
-});
-const infoModel = DataFaker.defineModel({
-  country: () => {
-    return 'cd';
-  },
-});
-const addressModel = DataFaker.defineModel({
-  city: 'location.city',
-  info: {
-    refModel: 'info',
-    num: 3,
-  },
-});
-const userModel = DataFaker.defineModel({
-  id: 'number.int',
-  name: 'airline.aircraftType',
-  age: ['number.int', { min: 18, max: 65 }],
-  email: ctx => {
-    return 'hello';
-  },
-  sex: () => 'M',
-  self: () => {
-    return new DataFaker().setRule({}).fake();
-  },
-  address: {
-    refModel: 'Address',
-    num: 1,
-  },
 
-  children: {
-    refModel: 'user',
-    num: 1,
-  },
-}); */
 const companyModel = defineModel('company', {
   name: 'company.name',
   buzzPhrase: 'company.buzzPhrase',
@@ -82,6 +9,9 @@ const jobModel = defineModel('job', {
   type: 'person.jobType',
   company: {
     refModel: companyModel,
+  },
+  children: {
+    refModel: 'job',
   },
 });
 const addressModel = defineModel('address', {
@@ -102,28 +32,37 @@ const userModel = defineModel('user', {
   },
   job: {
     refModel: jobModel,
-    [COUNT]: 2,
+    [COUNT]: 4,
   },
   job2: jobModel,
+  job3: {
+    refModel: 'job',
+    [DEEP]: 3,
+  },
   children: {
     refModel: 'user',
     [COUNT]: 1,
-    [DEEP]: 2,
   },
 });
 const userDatas = FakeData(userModel, {
   rules: {
     [COUNT]: 1,
-    [DEEP]: 2,
     job: {
       [COUNT]: 3,
+      children: {
+        [DEEP]: 2,
+      },
       company: 0,
     },
     job2: 0,
+    job3: [1, 2],
+    children: {
+      [DEEP]: 3,
+    },
   },
 });
 console.log(userDatas);
-
+const user2 = userModel.clone('user2');
 /* defineModel(
   'student',
   userModel

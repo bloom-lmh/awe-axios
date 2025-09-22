@@ -1,5 +1,6 @@
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import { DataFieldType, ModelSchema } from './types/faker';
+import { ModelManager } from './ModelManager';
 
 /**
  * 数据模型
@@ -10,15 +11,23 @@ export class DataModel {
    */
   private modelSchema!: Record<string | symbol, DataFieldType>;
 
-  constructor(modelSchema: Record<string | symbol, DataFieldType>) {
+  /**
+   * 模型别名
+   */
+  private modelName: string | symbol;
+
+  constructor(modelName: string | symbol, modelSchema: Record<string | symbol, DataFieldType>) {
+    this.modelName = modelName;
     this.modelSchema = modelSchema;
+    // 注入工厂
+    ModelManager.registerDataModel(modelName, this);
   }
   /**
    * 克隆模型
    */
-  clone() {
+  clone(modelName: string | symbol) {
     this.modelSchema = ObjectUtils.deepClone(this.modelSchema);
-    return new DataModel(this.modelSchema);
+    return new DataModel(modelName, this.modelSchema);
   }
   /**
    * 添加属性
@@ -58,5 +67,12 @@ export class DataModel {
    */
   getModelSchema(): ModelSchema {
     return this.modelSchema;
+  }
+
+  /**
+   * 获取模型名
+   */
+  getModelName(): string | symbol {
+    return this.modelName;
   }
 }

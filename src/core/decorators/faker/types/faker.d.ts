@@ -120,7 +120,7 @@ type DataFakeRule = {
   /**
    * 结构递归
    */
-  [key: string | symbol]: number | DataFakeRuleBase;
+  [key: string | symbol]: number | DataFakeRuleBase | [number, number];
 };
 
 /**
