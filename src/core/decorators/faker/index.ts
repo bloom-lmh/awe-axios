@@ -1,4 +1,5 @@
 import { DataFieldDecoratorFactory } from './DataFieldDecoratorFactory';
+import { DataModelDecoratorFactory } from './DataModelDecoratorFactory';
 import { CustomGenerator, FakerMethodParamsType, FakerMethodPath, RefModel } from './types/faker';
 
 /**
@@ -7,5 +8,12 @@ import { CustomGenerator, FakerMethodParamsType, FakerMethodPath, RefModel } fro
 export function DataField<P extends FakerMethodPath>(
   options: FakerMethodPath | [P, FakerMethodParamsType<P>] | CustomGenerator | RefModel,
 ) {
-  return new DataFieldDecoratorFactory<P>().createDecorator(options);
+  return new DataFieldDecoratorFactory().createDecorator(options);
+}
+
+/**
+ * 数据模型装饰器
+ */
+export function DataModel(modelName: string | symbol) {
+  return new DataModelDecoratorFactory().createDecorator(modelName);
 }

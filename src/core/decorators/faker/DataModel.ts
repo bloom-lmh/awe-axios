@@ -1,11 +1,9 @@
-import { ObjectUtils } from '@/utils/ObjectUtils';
 import { DataFieldType, ModelSchema } from './types/faker';
-import { ModelManager } from './ModelManager';
 
 /**
  * 数据模型
  */
-export class DataModel {
+export class DModel {
   /**
    * 模型模板
    */
@@ -19,16 +17,8 @@ export class DataModel {
   constructor(modelName: string | symbol, modelSchema: Record<string | symbol, DataFieldType>) {
     this.modelName = modelName;
     this.modelSchema = modelSchema;
-    // 注入工厂
-    ModelManager.registerDataModel(modelName, this);
   }
-  /**
-   * 克隆模型
-   */
-  clone(modelName: string | symbol) {
-    this.modelSchema = ObjectUtils.deepClone(this.modelSchema);
-    return new DataModel(modelName, this.modelSchema);
-  }
+
   /**
    * 添加属性
    */

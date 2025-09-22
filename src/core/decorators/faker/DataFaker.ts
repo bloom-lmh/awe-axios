@@ -9,9 +9,10 @@ import {
   LocaleType,
   ModelSchema,
 } from './types/faker';
-import { DataModel } from './DataModel';
 import { ModelManager } from './ModelManager';
 import { COUNT, DEEP } from '@/core/constant/DataFakerConstants';
+import { ObjectUtils } from '@/utils/ObjectUtils';
+import { DModel } from './DataModel';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -68,8 +69,8 @@ export class DataFaker {
   /**
    * 使用的模型
    */
-  static parseModel(dataModel: DataModel | string | symbol, rules?: DataFakeRule) {
-    let model = dataModel instanceof DataModel ? dataModel : ModelManager.getDataModel(dataModel);
+  static parseModel(dataModel: DModel | string | symbol, rules?: DataFakeRule) {
+    let model = dataModel instanceof DModel ? dataModel : ModelManager.getDataModel(dataModel);
     if (!model) {
       return null;
     }
@@ -151,11 +152,10 @@ export class DataFaker {
         }
 
         // 获取引用模型
-        if (schema instanceof DataModel) {
+        if (schema instanceof DModel) {
           refModel = schema;
         } else {
-          refModel =
-            schema.refModel instanceof DataModel ? schema.refModel : ModelManager.getDataModel(schema.refModel);
+          refModel = schema.refModel instanceof DModel ? schema.refModel : ModelManager.getDataModel(schema.refModel);
           // 合并默认值
           rls[COUNT] = rls[COUNT] ?? schema[COUNT] ?? 1;
           // 后续配置优先级高于前面
@@ -214,17 +214,27 @@ export class DataFaker {
 /**
  * 定义模型
  */
-export function defineModel(modelName: string | symbol, model: Record<string, DataFieldType> | DataModel) {
+export function defineModel(modelName: string | symbol, modelSchema: Record<string, DataFieldType>) {
   // 创建数据模型对象
-  let dataModel = model instanceof DataModel ? model : new DataModel(modelName, model);
+  let dataModel = new DModel(modelName, modelSchema);
+  // 注入工厂
+  ModelManager.registerDataModel(modelName, dataModel);
   // 返回一个可修改的模型对象
   return dataModel;
 }
-
+/**
+ * 克隆模型
+ */
+export function cloneModel(newModelName: string | symbol, dataModel: DModel) {
+  // 获取模型Schema
+  const modelSchema = dataModel.getModelSchema();
+  let newModelSchema = ObjectUtils.deepClone(modelSchema);
+  return new DModel(newModelName, newModelSchema);
+}
 /**
  * 伪造数据
  */
-export function FakeData(dataModel: DataModel | string | symbol, options?: DataFakeOptions) {
+export function FakeData(dataModel: DModel | string | symbol, options?: DataFakeOptions) {
   // 获取生成数据规则和回调
   const { rules, callbacks, locale } = options || {};
   DataFaker.setLocale(locale);

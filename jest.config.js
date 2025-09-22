@@ -8,6 +8,10 @@ export default {
   // 指定测试环境（Node.js 环境）
   // 如果是前端项目，可改为 'jsdom' 或 '@happy-dom/jest-environment'
   testEnvironment: 'node',
+  transform: {
+    '^.+\\.(ts|tsx)?$': 'ts-jest',
+    '^.+\\.(js|jsx)$': 'babel-jest',
+  },
   transformIgnorePatterns: [
     'node_modules/(?!@faker-js/.*)', // 允许转译 @faker-js/faker
   ],

@@ -398,8 +398,8 @@ describe('2.Mock Get方法测试', () => {
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }
     const userApi = new UserApi();
-    const { data } = await userApi.getUsers('test', 1)('success');
-    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    const { data } = await userApi.getUsers('test', 1);
+    const { data: fail } = await userApi.getUsers('test', 1);
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
@@ -417,8 +417,8 @@ describe('2.Mock Get方法测试', () => {
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }
     const userApi = new UserApi();
-    const { data } = await userApi.getUsers('test', 1)('success');
-    const { data: fail } = await userApi.getUsers('test', 1)('fail');
+    const { data } = await userApi.getUsers('test', 1);
+    const { data: fail } = await userApi.getUsers('test', 1);
     expect(data).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });

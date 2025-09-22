@@ -1,6 +1,6 @@
-import { defineModel, FakeData } from './core/decorators/faker/DataFaker';
+import { cloneModel, defineModel, FakeData } from './core/decorators/faker/DataFaker';
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
-import { ar, az, faker, LocaleDefinition } from '@faker-js/faker';
+import { LocaleDefinition } from '@faker-js/faker';
 
 /* const companyModel = defineModel('company', {
   name: 'company.name',
@@ -62,6 +62,11 @@ const userDatas = FakeData(userModel, {
 });
 console.log(userDatas);
 const user2 = userModel.clone('user2'); */
+/* @DataModel('user')
+class User {
+  @DataField('airline.aircraftType')
+  declare id: number;
+} */
 
 const animalModel = defineModel('animal', {
   name: 'animal.bird',
@@ -84,7 +89,7 @@ const animalDatas = FakeData(animalModel, {
 });
 console.log(animalDatas);
 
-const birdModel = animalModel.clone('bird').withProperties({
+const birdModel = cloneModel('bird', animalModel).withProperties({
   age: ['number.int', { min: 1, max: 100 }],
 });
 
@@ -97,23 +102,3 @@ const birdDatas = FakeData(birdModel, {
   locale: [customLocale, 'zh_CN', 'en_AU'],
 });
 console.log(birdDatas);
-
-/* defineModel(
-  'student',
-  userModel
-    .clone()
-    .withProperty('age', ['number.int', { min: 5, max: 18 }])
-    .withProperties({
-      sId: 'number.int',
-    }),
-); */
-/* 
-const studentModel = userModel
-  .clone()
-  .setProperty('age', ['number.int', { min: 5, max: 18 }])
-  .setProperties({
-    sId: 'number.int',
-  });
-
-const studentDatas = FakeData(studentModel);
-console.log(studentDatas); */

@@ -1,29 +1,80 @@
-import { Decorator } from '../decorator';
+import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
+import { ClassDecorator, DecoratedClass, Decorator } from '../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
+import { Inject } from '..';
+import { ClassDecoratorValidator } from '@/core/validator/ClassDecoratorValidator';
+import { defineModel } from './DataFaker';
 
 /**
  * 数据模型装饰器工厂类
  */
 export class DataModelDecoratorFactory extends DecoratorFactory {
+  /**
+   * 装饰器信息
+   */
   protected decoratorInfo!: DecoratorInfo;
+  /**
+   * 装饰器校验器
+   */
+  @Inject({
+    ctor: ClassDecoratorValidator,
+    backups: [new ClassDecoratorValidator()],
+  })
+  protected decoratorValidator!: ClassDecoratorValidator;
 
-  protected initDecoratorInfo(...arg: any[]): void {
-    throw new Error('Method not implemented.');
+  /**
+   * 初始化装饰器信息
+   */
+  protected initDecoratorInfo(): void {
+    this.decoratorInfo = new DecoratorInfo()
+      .setName(DECORATORNAME.DATAMODEL)
+      .setConflictList([DECORATORNAME.DATAMODEL]);
   }
-  protected validateDecorator(...arg: any[]): void {
-    throw new Error('Method not implemented.');
+  /**
+   * 校验装饰器
+   */
+  protected validateDecorator(target: DecoratedClass): void {
+    const { conflictList } = this.decoratorInfo;
+    if (this.decoratorValidator.isDecoratorConflict(target, conflictList)) {
+      throw new Error('装饰器冲突');
+    }
   }
-  protected preHandleConfig(...arg: any[]) {
-    throw new Error('Method not implemented.');
+  /**
+   *
+   */
+  protected preCheckConfig(config: string | symbol): void {}
+  /**
+   * 处理配置
+   * @description 将模型注入模型管理器
+   */
+  protected preHandleConfig(target: DecoratedClass, modelName: string | symbol) {}
+
+  /**
+   * 获取模型并注入工厂
+   * @param target 被装饰的类
+   * @param modelName 模型名
+   */
+  protected setupState(target: DecoratedClass, modelName: string | symbol): void {
+    // 获取模型Schema
+    const modelSchema =
+      Reflect.getMetadata('modelSchema', target) || Reflect.getMetadata('modelSchema', target.prototype);
+    console.log(modelSchema);
+
+    // 创建数据模型对象
+    defineModel(modelName, modelSchema);
   }
-  protected preCheckConfig(...arg: any[]): void {
-    throw new Error('Method not implemented.');
-  }
-  protected setupState(...arg: any[]): void {
-    throw new Error('Method not implemented.');
-  }
-  public createDecorator(...arg: any[]): Decorator {
-    throw new Error('Method not implemented.');
+  /**
+   * 创建装饰器
+   * @param modelName 模型名
+   */
+  public createDecorator(modelName: string | symbol): ClassDecorator {
+    return (target: DecoratedClass) => {
+      this.initDecoratorInfo();
+      this.validateDecorator(target);
+      this.preHandleConfig(target, modelName);
+      this.preCheckConfig(modelName);
+      this.setupState(target, modelName);
+    };
   }
 }

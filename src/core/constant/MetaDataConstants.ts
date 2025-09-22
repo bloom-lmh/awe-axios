@@ -5,4 +5,5 @@ export const METADATAKEY = {
   BACKUPS: Symbol('backups'), // 注入备份信息列表,
   SUBDECORATORCONFIGS: Symbol('subDecoratorConfigs'), // 子装饰器配置信息列表,
   ADVICES: Symbol('advices'), // 切面信息列表,
+  MODELSCHEMA: Symbol('modelSchema'), // 模型结构信息,
 };

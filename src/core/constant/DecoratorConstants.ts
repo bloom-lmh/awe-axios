@@ -35,6 +35,10 @@ export const DECORATORNAME = {
   POINTCUT: Symbol('@Pointcut'), // @Pointcut装饰器
   ASPECT: Symbol('@Aspect'), // @Aspect装饰器
 
+  // dataFaker
+  DATAMODEL: Symbol('@DataModel'), // @DataModel装饰器
+  DATAFIELD: Symbol('@DataField'), // @DataField装饰器
+
   // type
   HTTPMETHOD: Symbol('@HttpMethod'), // @HttpMethod装饰器
 };

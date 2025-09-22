@@ -1,6 +1,6 @@
+import { RequestHandler, WebSocketHandler } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
-import { MockConfig, MockHandlers, MockMethod } from '../httpMethod/types/httpMethod';
-import { http, HttpResponse, RequestHandler, WebSocketHandler } from 'msw';
+import { MockConfig, MockMethod } from '../httpMethod/types/httpMethod';
 
 /**
  * mock默认全局配置

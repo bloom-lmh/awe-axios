@@ -1,7 +1,7 @@
 import { COUNT, DEEP } from './../../../constant/DataFakerConstants';
 import { Faker, allFakers, LocaleDefinition } from '@faker-js/faker';
 import { PropertyDecorator } from '../../decorator';
-import { DataModel } from '../DataModel';
+import { DModel } from '../DModel';
 
 /**
  * faker模块联合类型
@@ -48,7 +48,7 @@ type RefModelOptions = {
   /**
    * 所引用的模型
    */
-  refModel: DataModel | string | symbol;
+  refModel: DModel | string | symbol;
   /**
    * 生成数量
    */
@@ -61,7 +61,7 @@ type RefModelOptions = {
 /**
  * 引用模型配置
  */
-type RefModel = RefModelOptions | DataModel;
+type RefModel = RefModelOptions | DModel;
 
 /**
  * 数据字段类型
