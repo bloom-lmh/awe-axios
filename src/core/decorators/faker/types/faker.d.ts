@@ -1,11 +1,10 @@
 import { COUNT, DEEP } from './../../../constant/DataFakerConstants';
 import { Faker, allFakers, LocaleDefinition } from '@faker-js/faker';
 import { PropertyDecorator } from '../../decorator';
-import { DModel } from '../DModel';
+import { DModel } from '../DataModel';
 
 /**
  * faker模块联合类型
- * @example book ,animal等
  */
 type FakerModule = keyof Faker;
 
@@ -71,7 +70,11 @@ type DataFieldType<P extends FakerMethodPath = string> =
   | RefModel
   | FakerMethodPath
   | [P, FakerMethodParamsType<P>];
-
+/* type DataFieldType<P extends MethodPath = MethodPath> =
+  | MethodPath
+  | [P, FakerMethodParamsType<P>]
+  | CustomGenerator
+  | RefModel; */
 /**
  * 字段装饰器配置类型
  */

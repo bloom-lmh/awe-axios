@@ -1,8 +1,9 @@
 import { cloneModel, defineModel, FakeData } from './core/decorators/faker/DataFaker';
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
 import { LocaleDefinition } from '@faker-js/faker';
+import { DataField, DataModel } from './core/decorators/faker';
 
-/* const companyModel = defineModel('company', {
+const companyModel = defineModel('company', {
   name: 'company.name',
   buzzPhrase: 'company.buzzPhrase',
 });
@@ -28,8 +29,10 @@ const userModel = defineModel('user', {
     return 'hello';
   },
   sex: () => 'M',
-  address: () => {
-    return FakeData(addressModel);
+  address: ctx => {
+    // ctx是上面已生成的数据的上下文对象
+    console.log(ctx);
+    return ctx.name;
   },
   job: {
     refModel: jobModel,
@@ -42,11 +45,12 @@ const userModel = defineModel('user', {
   children: {
     refModel: 'user',
     [COUNT]: 2,
+    [DEEP]: 3,
   },
 });
 const userDatas = FakeData(userModel, {
   rules: {
-    [COUNT]: 1,
+    [COUNT]: 5,
     job: {
       [COUNT]: 1,
       [DEEP]: 2,
@@ -59,46 +63,24 @@ const userDatas = FakeData(userModel, {
       [DEEP]: 2,
     },
   },
-});
-console.log(userDatas);
-const user2 = userModel.clone('user2'); */
-/* @DataModel('user')
-class User {
-  @DataField('airline.aircraftType')
-  declare id: number;
-} */
-
-const animalModel = defineModel('animal', {
-  name: 'animal.bird',
-  type: ctx => {
-    return `aa--${ctx.name}`;
-  },
-  children: {
-    refModel: 'animal',
-    [DEEP]: 1,
-  },
-});
-const animalDatas = FakeData(animalModel, {
-  rules: {
-    [COUNT]: 2,
-  },
+  // 对生成的数据进行后处理
   callbacks: data => {
-    data['type'] = 'aa';
     return data;
   },
+  // 中文环境
+  locale: 'zh_CN',
 });
-console.log(animalDatas);
+console.log(userDatas);
 
-const birdModel = cloneModel('bird', animalModel).withProperties({
-  age: ['number.int', { min: 1, max: 100 }],
-});
+// 克隆,设置新的属性或排除属性
+let studentModel = cloneModel('student', userModel)
+  .withProperties({
+    field2: 'commerce.department',
+  })
+  .excludeProperty('job2');
 
-const customLocale: LocaleDefinition = {
-  internet: {
-    domainSuffix: ['test'],
-  },
-};
-const birdDatas = FakeData(birdModel, {
-  locale: [customLocale, 'zh_CN', 'en_AU'],
-});
-console.log(birdDatas);
+@DataModel('demo')
+class Demo {
+  @DataField('airline.airport')
+  declare airport: string;
+}

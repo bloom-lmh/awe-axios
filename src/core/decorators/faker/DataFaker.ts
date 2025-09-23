@@ -13,6 +13,9 @@ import { ModelManager } from './ModelManager';
 import { COUNT, DEEP } from '@/core/constant/DataFakerConstants';
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import { DModel } from './DataModel';
+import { DecoratedClass } from '../decorator';
+import { ClassDecoratorStateManager } from '@/core/statemanager/ClassDecoratorStateManager';
+import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
 /**
  * FakerApi类
  * 提供定义模型的方法
@@ -230,6 +233,24 @@ export function cloneModel(newModelName: string | symbol, dataModel: DModel) {
   const modelSchema = dataModel.getModelSchema();
   let newModelSchema = ObjectUtils.deepClone(modelSchema);
   return new DModel(newModelName, newModelSchema);
+}
+
+/**
+ * 使用模型
+ */
+export function useModel(target: DecoratedClass | string | symbol) {
+  let modelName;
+  if (typeof target === 'function') {
+    // 获取装饰器配置
+    const decoratorInfo = ClassDecoratorStateManager.getInstance().getDecoratorInfo(
+      target.prototype,
+      DECORATORNAME.DATAMODEL,
+    );
+    modelName = decoratorInfo?.configs[0];
+  } else {
+    modelName = target;
+  }
+  return modelName ? ModelManager.getDataModel(modelName) : null;
 }
 /**
  * 伪造数据
