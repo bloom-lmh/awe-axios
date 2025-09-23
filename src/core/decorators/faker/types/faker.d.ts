@@ -33,7 +33,7 @@ type FakerMethod<P extends string> = P extends `${infer M extends FakerModule}.$
 /**
  * faker方法参数类型
  */
-type FakerMethodParamsType<P extends string> = FakerMethod<P> extends (args: infer A) => any ? A : never;
+type FakerMethodParamsType<P> = FakerMethod<P> extends (args: infer A) => any ? A : never;
 
 /**
  * 自定义数据生成器
@@ -47,7 +47,7 @@ type RefModelOptions = {
   /**
    * 所引用的模型
    */
-  refModel: DModel | string | symbol;
+  refModel: string | symbol | DModel;
   /**
    * 生成数量
    */

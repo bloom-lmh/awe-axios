@@ -1,10 +1,10 @@
 import { allFakers, allLocales, Faker, faker, LocaleDefinition } from '@faker-js/faker';
 import {
-  AllFakers,
   CustomGenerator,
   DataFakeOptions,
   DataFakeRule,
   DataFieldType,
+  FakerMethodPath,
   FakerModule,
   LocaleType,
   ModelSchema,
@@ -21,7 +21,7 @@ import { DECORATORNAME } from '@/core/constant/DecoratorConstants';
  * 提供定义模型的方法
  */
 
-export class DataFaker {
+class DataFaker {
   /**
    * 当前语言
    */
@@ -66,7 +66,6 @@ export class DataFaker {
       }
     }
     this.locale = localeFaker || faker;
-    return this;
   }
 
   /**
@@ -175,7 +174,7 @@ export class DataFaker {
 
         // 自动处理循环引用
         if (isCircular) {
-          rls[DEEP] = rls[DEEP] ?? 4; // 默认循环引用深度限制
+          rls[DEEP] = rls[DEEP] ?? 1;
         }
 
         // 克隆path以避免污染
@@ -217,7 +216,10 @@ export class DataFaker {
 /**
  * 定义模型
  */
-export function defineModel(modelName: string | symbol, modelSchema: Record<string, DataFieldType>) {
+export function defineModel<T extends FakerMethodPath>(
+  modelName: string | symbol,
+  modelSchema: Record<string, DataFieldType<T>>,
+) {
   // 创建数据模型对象
   let dataModel = new DModel(modelName, modelSchema);
   // 注入工厂

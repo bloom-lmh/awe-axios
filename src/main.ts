@@ -22,7 +22,7 @@ const addressModel = defineModel('address', {
 });
 const userModel = defineModel('user', {
   id: 'number.int',
-  name: 'airline.aircraftType',
+  name: 'person.fullName',
   age: ['number.int', { min: 18, max: 65 }],
   hobby: ['helpers.arrayElements', ['篮球', '足球', '乒乓球']],
   email: ctx => {
@@ -31,7 +31,6 @@ const userModel = defineModel('user', {
   sex: () => 'M',
   address: ctx => {
     // ctx是上面已生成的数据的上下文对象
-    console.log(ctx);
     return ctx.name;
   },
   job: {
@@ -71,16 +70,3 @@ const userDatas = FakeData(userModel, {
   locale: 'zh_CN',
 });
 console.log(userDatas);
-
-// 克隆,设置新的属性或排除属性
-let studentModel = cloneModel('student', userModel)
-  .withProperties({
-    field2: 'commerce.department',
-  })
-  .excludeProperty('job2');
-
-@DataModel('demo')
-class Demo {
-  @DataField('airline.airport')
-  declare airport: string;
-}

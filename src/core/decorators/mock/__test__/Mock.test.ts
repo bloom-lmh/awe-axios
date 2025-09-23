@@ -1,10 +1,10 @@
 import { url } from 'inspector';
 import axios from 'axios';
-import { Get, HttpApi, PathParam } from '../..';
+import { Get, HttpApi, PathParam, Post } from '../..';
 import { MockAPI } from '../../mock/MockAPI';
 import { http, HttpResponse } from 'msw';
 import { SignalController } from '@/core/signal/SignalController';
-import { FakeData } from '../../faker/DataFaker';
+import { defineModel, FakeData } from '../../faker/DataFaker';
 
 beforeAll(() => {
   MockAPI.on();
@@ -425,27 +425,21 @@ describe('2.Mock Get方法测试', () => {
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
 
-  test.only('3.1 结合Signal进行mock', async () => {
+  test.only('3.1 大文件分片上传模拟', async () => {
+    const userModel = defineModel('user', {
+      id: 'number.int',
+      name: 'person.fullName',
+      sex: 'person.sex',
+      hobby: ['number.int', { min: 1, max: 10 }],
+    });
     @HttpApi('http://localhost:3000/users')
     class UserApi {
-      @Get({
+      @Post({
         url: '/:name/:id',
-        mock: {
-          condition: () => {
-            return process.env.NODE_ENV === 'test';
-          },
-          handlers: {
-            success: ({ params }) => {
-              return HttpResponse.json({
-                data: 'mock data',
-              });
-            },
-            fail: () => {
-              return HttpResponse.json({
-                message: 'http://localhost:3000/users/:name/:id',
-              });
-            },
-          },
+        mockHandlers: () => {
+          return HttpResponse.json({
+            /*   data: FakeData(), */
+          });
         },
       })
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}

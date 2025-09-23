@@ -1,4 +1,4 @@
-import { DataFieldType, ModelSchema } from './types/faker';
+import { DataFieldType, FakerMethodPath, ModelSchema } from './types/faker';
 
 /**
  * 数据模型
