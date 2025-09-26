@@ -6,6 +6,7 @@ import { DecoratorInfo } from '../DecoratorInfo';
 import { DataFieldDecoratorOptions, DataFieldType, FakerMethodParamsType, FakerMethodPath } from './types/faker';
 import { MethodDecoratorValidator } from '@/core/validator/MethodDecoratorValidator';
 import { Inject } from '..';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * 数据字段装饰器工厂
@@ -19,8 +20,8 @@ export class DataFieldDecoratorFactory extends DecoratorFactory {
    * 装饰器校验器
    */
   @Inject({
+    module: SYSTEM.LIB,
     ctor: MethodDecoratorValidator,
-    backups: [new MethodDecoratorValidator()],
   })
   protected decoratorValidator!: MethodDecoratorValidator;
   /**

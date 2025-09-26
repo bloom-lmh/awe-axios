@@ -12,10 +12,13 @@ import { HttpMethodDecoratorConfig } from './httpMethod/types/HttpMethodDecorato
 import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
-import { HttpApiDecoratorConfig } from './httpMethod/types/httpMethod';
+import { HttpApiDecoratorConfig, MockConfig, MockHandlers } from './httpMethod/types/httpMethod';
 import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/ioc';
 import { DECORATORNAME } from '../constant/DecoratorConstants';
 import { HttpMethodDecoratorFactory } from './httpMethod/HttpMethodDecoratorFactory';
+import { MockDecoratorFactory } from './httpMethod/SubDecorators';
+import { HttpResponse } from 'msw';
+import { defineModel, FakeData } from './faker/DataFaker';
 
 /**
  * inject 装饰器
@@ -115,4 +118,16 @@ export function PathParam(paramName: string) {
  */
 export function QueryParam(paramName: string): ParameterDecorator {
   return new QueryParamDecoratorFactory().createDecorator(paramName);
+}
+
+/**
+ * mock装饰器
+ */
+export function Mock(handlers: MockHandlers, mockConfig?: Omit<MockConfig, 'handlers'>): MethodDecorator {
+  let config: MockConfig = {};
+  config = {
+    handlers: typeof handlers === 'function' ? { default: handlers } : handlers,
+    ...mockConfig,
+  };
+  return new MockDecoratorFactory().createDecorator(DECORATORNAME.MOCK, config);
 }

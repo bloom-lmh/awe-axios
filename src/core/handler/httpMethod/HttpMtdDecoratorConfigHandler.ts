@@ -5,6 +5,8 @@ import { Method } from 'axios';
 import { HttpResponse } from 'msw';
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import { Signal } from '@/core/signal/Signal';
+import { HttpSubDecoratorConfigHandler } from './HttpSubDecoratorConfigHandler';
+import { MockConfig } from '@/core/decorators/httpMethod/types/httpMethod';
 
 /**
  * http方法装饰器配置处理器
@@ -161,13 +163,11 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     subItemsConfig: HttpMethodDecoratorConfig = {},
   ): HttpRequestConfig {
     // 要追加的项
-    const { transformRequest, transformResponse } = subItemsConfig;
-    // 覆盖配置
-    decoratorConfig = { ...subItemsConfig, ...decoratorConfig };
-    // 重新设置合并后的配置
-    let httpRequestConfig = new HttpRequestConfig(decoratorConfig);
-    // 追加配置项
-    httpRequestConfig.appendTransformRequest(transformRequest).appendTransformResponse(transformResponse);
+    const { transformRequest, transformResponse, mock } = subItemsConfig;
+    let httpRequestConfig = HttpSubDecoratorConfigHandler.chain(decoratorConfig)
+      .mergeMockConfig(mock as MockConfig)
+      .mergeOthers(subItemsConfig)
+      .getHttpRequestConfig();
     // 返回包装后的配置
     return httpRequestConfig;
   }

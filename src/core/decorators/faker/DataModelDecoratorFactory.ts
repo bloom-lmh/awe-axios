@@ -6,6 +6,7 @@ import { Inject } from '..';
 import { ClassDecoratorValidator } from '@/core/validator/ClassDecoratorValidator';
 import { defineModel } from './DataFaker';
 import { DataFieldType } from './types/faker';
+import { SYSTEM } from '@/core/constant/SystemConstants';
 
 /**
  * 数据模型装饰器工厂类
@@ -19,8 +20,8 @@ export class DataModelDecoratorFactory extends DecoratorFactory {
    * 装饰器校验器
    */
   @Inject({
+    module: SYSTEM.LIB,
     ctor: ClassDecoratorValidator,
-    backups: [new ClassDecoratorValidator()],
   })
   protected decoratorValidator!: ClassDecoratorValidator;
 

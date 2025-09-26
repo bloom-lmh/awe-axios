@@ -1,9 +1,8 @@
-import { url } from 'inspector';
+import { COUNT } from './../../../constant/DataFakerConstants';
 import axios from 'axios';
-import { Get, HttpApi, PathParam, Post } from '../..';
+import { Get, HttpApi, Mock, PathParam, Post } from '../..';
 import { MockAPI } from '../../mock/MockAPI';
 import { http, HttpResponse } from 'msw';
-import { SignalController } from '@/core/signal/SignalController';
 import { defineModel, FakeData } from '../../faker/DataFaker';
 
 beforeAll(() => {
@@ -432,16 +431,28 @@ describe('2.Mock Get方法测试', () => {
       sex: 'person.sex',
       hobby: ['number.int', { min: 1, max: 10 }],
     });
-    @HttpApi('http://localhost:3000/users')
-    class UserApi {
-      @Post({
-        url: '/:name/:id',
-        mockHandlers: () => {
+
+    function MockUsers(on: boolean = true) {
+      let handlers = {
+        success: () => {
           return HttpResponse.json({
-            /*   data: FakeData(), */
+            data: FakeData(userModel, {
+              rules: {
+                [COUNT]: 3,
+              },
+            }),
           });
         },
-      })
+      };
+      return Mock(handlers, {
+        on,
+      });
+    }
+    let mockOn = true;
+    @HttpApi('http://localhost:3000/users')
+    class UserApi {
+      @Post('/:name/:id')
+      @MockUsers(mockOn)
       getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
     }
     const userApi = new UserApi();
