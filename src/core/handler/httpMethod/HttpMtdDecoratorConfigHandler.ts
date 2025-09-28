@@ -166,6 +166,7 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     const { transformRequest, transformResponse, mock } = subItemsConfig;
     let httpRequestConfig = HttpSubDecoratorConfigHandler.chain(decoratorConfig)
       .mergeMockConfig(mock as MockConfig)
+      .mergeTransformRequest(transformRequest)
       .mergeOthers(subItemsConfig)
       .getHttpRequestConfig();
     // 返回包装后的配置

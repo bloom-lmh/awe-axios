@@ -26,6 +26,8 @@ export const DECORATORNAME = {
   REFAXIOS: Symbol('@RefAxios'), // @RefAxios装饰器
   AXIOSREF: Symbol('@AxiosRef'), // @AxiosRef装饰器
   MOCK: Symbol('@Mock'), // @Mock装饰器
+  TRANSFORMREQUEST: Symbol('@TransformRequest'), // @TransformRequest装饰器
+  TRANSFORMRESPONSE: Symbol('@TransformResponse'), // @TransformResponse装饰器
 
   // aop
   BEFORE: Symbol('@Before'), // @Before装饰器

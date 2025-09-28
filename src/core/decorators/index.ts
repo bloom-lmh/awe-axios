@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
 import { DecoratorConfigHandler } from '../handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../validator/PropertyDecoraotrValidator';
 import { ClassDecorator, ParameterDecorator } from './decorator';
@@ -16,9 +16,11 @@ import { HttpApiDecoratorConfig, MockConfig, MockHandlers } from './httpMethod/t
 import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/ioc';
 import { DECORATORNAME } from '../constant/DecoratorConstants';
 import { HttpMethodDecoratorFactory } from './httpMethod/HttpMethodDecoratorFactory';
-import { MockDecoratorFactory } from './httpMethod/SubDecorators';
-import { HttpResponse } from 'msw';
-import { defineModel, FakeData } from './faker/DataFaker';
+import {
+  MockDecoratorFactory,
+  TransformRequestDecoratorFactory,
+  TransformResponseDecoratorFactory,
+} from './httpMethod/SubDecorators';
 
 /**
  * inject 装饰器
@@ -130,4 +132,24 @@ export function Mock(handlers: MockHandlers, mockConfig?: Omit<MockConfig, 'hand
     ...mockConfig,
   };
   return new MockDecoratorFactory().createDecorator(DECORATORNAME.MOCK, config);
+}
+
+/**
+ * transformResquest装饰器
+ */
+export function TransformRequest(
+  transformRequest: AxiosRequestTransformer | AxiosRequestTransformer[],
+): MethodDecorator {
+  // todo 直接传入装饰器信息
+  return new TransformRequestDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMREQUEST, transformRequest);
+}
+
+/**
+ * transformResponse装饰器
+ */
+export function TransformResponse(
+  transformResponse: AxiosResponseTransformer | AxiosResponseTransformer[],
+): MethodDecorator {
+  // todo 直接传入装饰器信息
+  return new TransformResponseDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMRESPONSE, transformResponse);
 }

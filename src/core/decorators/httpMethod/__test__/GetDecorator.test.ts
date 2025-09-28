@@ -3,7 +3,7 @@ import { MethodDecoratorStateManager } from '@/core/statemanager/MethodDecorator
 import axios from 'axios';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { Get, PathParam, QueryParam, HttpApi, AxiosRef, RefAxios } from '../..';
+import { Get, PathParam, QueryParam, HttpApi, AxiosRef, RefAxios, Mock } from '../..';
 import { DecoratorInfo } from '../../DecoratorInfo';
 
 const mdsm = new MethodDecoratorStateManager();
@@ -213,7 +213,7 @@ describe.skip('2.Get装饰器基本功能测试', () => {
 });
 
 describe('3. 与@HttpApi集成测试', () => {
-  test.only('3.1 @HttpApi和@Get只指定字符串简单路径', async () => {
+  test('3.1 @HttpApi和@Get只指定字符串简单路径', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000',
     })

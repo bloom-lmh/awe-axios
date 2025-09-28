@@ -1,6 +1,6 @@
 import { COUNT } from './../../../constant/DataFakerConstants';
 import axios from 'axios';
-import { Get, HttpApi, Mock, PathParam, Post } from '../..';
+import { BodyParam, Get, HttpApi, Mock, PathParam, Post, TransformRequest, TransformResponse } from '../..';
 import { MockAPI } from '../../mock/MockAPI';
 import { http, HttpResponse } from 'msw';
 import { defineModel, FakeData } from '../../faker/DataFaker';
@@ -433,16 +433,17 @@ describe('2.Mock Get方法测试', () => {
     });
 
     function MockUsers(on: boolean = true) {
+      let success = () => {
+        return HttpResponse.json({
+          data: FakeData(userModel, {
+            rules: {
+              [COUNT]: 3,
+            },
+          }),
+        });
+      };
       let handlers = {
-        success: () => {
-          return HttpResponse.json({
-            data: FakeData(userModel, {
-              rules: {
-                [COUNT]: 3,
-              },
-            }),
-          });
-        },
+        success,
       };
       return Mock(handlers, {
         on,
@@ -451,12 +452,35 @@ describe('2.Mock Get方法测试', () => {
     let mockOn = true;
     @HttpApi('http://localhost:3000/users')
     class UserApi {
+      @TransformRequest(data => {
+        data['token'] = '123456';
+        console.log(data);
+        return data;
+      })
+      @TransformRequest(data => {
+        data['password'] = '123456';
+        console.log(data);
+        return JSON.stringify(data);
+      })
+      @TransformResponse(data => {
+        data['messsge'] = 'success';
+        console.log(data);
+        return data;
+      })
+      @TransformResponse(data => {
+        data = JSON.parse(data);
+        data['status'] = 200;
+        console.log(data);
+        return data;
+      })
       @Post('/:name/:id')
       @MockUsers(mockOn)
-      getUsers(@PathParam('name') name: string, @PathParam('id') id: number): any {}
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number, @BodyParam() data: any): any {}
     }
     const userApi = new UserApi();
-    const { data } = await userApi.getUsers('test', 1)('success');
+    const { data } = await userApi.getUsers('test', 1, {
+      username: 'test',
+    })('success');
     console.log(data);
   });
 });

@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
 import { HttpMtdSubDecoratorFactory } from './HttpMtdSubDecoratorFactory.ts';
 import { DecoratedClassOrProto } from '../decorator';
 import { DECORATORNAME } from '@/core/constant/DecoratorConstants.ts';
@@ -47,6 +47,92 @@ export class MockDecoratorFactory extends HttpMtdSubDecoratorFactory<MockConfig>
       // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
       const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
       subDecoratorConfig && (subDecoratorConfig['mock'] = config);
+    }
+  }
+}
+
+/**
+ * transformRequest装饰器工厂
+ */
+export class TransformRequestDecoratorFactory extends HttpMtdSubDecoratorFactory<
+  AxiosRequestTransformer | AxiosRequestTransformer[]
+> {
+  // 允许多个装饰器
+  protected validateDecorator(target: DecoratedClassOrProto, propertyKey: string | symbol): void {}
+  protected handleConfig(
+    target: DecoratedClassOrProto,
+    config: AxiosRequestTransformer | AxiosRequestTransformer[],
+    propertyKey: string | symbol,
+  ): void {
+    // 尝试获取HttpApi类型的装饰器信息
+    const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
+    // 如果存在直接在信息上进行设置
+    if (httpMethodDecoratorInfo) {
+      const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
+      // 若没有mock信息则设置
+      if (httpMethodConfig) {
+        // 没有mock信息则设置
+        let transformRequest = HttpSubDecoratorConfigHandler.mergeTransformRequest(
+          config,
+          httpMethodConfig.transformRequest,
+        );
+        if (transformRequest) {
+          httpMethodConfig.setTransformRequest(transformRequest);
+        }
+      }
+    } else {
+      // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
+      const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+      if (subDecoratorConfig) {
+        if (!subDecoratorConfig['transformRequest']) {
+          subDecoratorConfig['transformRequest'] = [config];
+        } else {
+          subDecoratorConfig['transformRequest'].unshift(config);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * transformResponse装饰器工厂
+ */
+export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactory<
+  AxiosResponseTransformer | AxiosResponseTransformer[]
+> {
+  // 允许多个装饰器
+  protected validateDecorator(target: DecoratedClassOrProto, propertyKey: string | symbol): void {}
+  protected handleConfig(
+    target: DecoratedClassOrProto,
+    config: AxiosResponseTransformer | AxiosResponseTransformer[],
+    propertyKey: string | symbol,
+  ) {
+    // 尝试获取HttpApi类型的装饰器信息
+    const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
+    // 如果存在直接在信息上进行设置
+    if (httpMethodDecoratorInfo) {
+      const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
+      // 若没有mock信息则设置
+      if (httpMethodConfig) {
+        // 没有mock信息则设置
+        let transformResponse = HttpSubDecoratorConfigHandler.mergeTransformResponse(
+          httpMethodConfig.transformResponse,
+          config,
+        );
+        if (transformResponse) {
+          httpMethodConfig.setTransformResponse(transformResponse);
+        }
+      }
+    } else {
+      // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
+      const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+      if (subDecoratorConfig) {
+        if (!subDecoratorConfig['transformResponse']) {
+          subDecoratorConfig['transformResponse'] = [config];
+        } else {
+          subDecoratorConfig['transformResponse'].push(config);
+        }
+      }
     }
   }
 }
