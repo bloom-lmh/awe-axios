@@ -10,7 +10,7 @@ export function useRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promi
   const { count, delay, signal } = config as Required<RetryOptions>;
   // 实现请求重传
   return async (config: HttpMethodDecoratorConfig) => {
-    if (signal.isAborted()) {
+    if (signal && signal.isAborted()) {
       return await requestFn(config);
     }
     // 最后一次错误

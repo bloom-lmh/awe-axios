@@ -2,6 +2,7 @@ import { cloneModel, defineModel, FakeData } from './core/decorators/faker/DataF
 import { COUNT, DEEP } from './core/constant/DataFakerConstants';
 import { LocaleDefinition } from '@faker-js/faker';
 import { DataField, DataModel } from './core/decorators/faker';
+import { DModel } from './core/decorators/faker/DataModel';
 
 const companyModel = defineModel('company', {
   name: 'company.name',

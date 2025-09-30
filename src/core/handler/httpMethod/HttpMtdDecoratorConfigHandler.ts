@@ -6,7 +6,15 @@ import { HttpResponse } from 'msw';
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import { Signal } from '@/core/signal/Signal';
 import { HttpSubDecoratorConfigHandler } from './HttpSubDecoratorConfigHandler';
-import { MockConfig } from '@/core/decorators/httpMethod/types/httpMethod';
+import {
+  DebounceConfig,
+  DebounceOptions,
+  MockConfig,
+  RetryConfig,
+  RetryOptions,
+  ThrottleConfig,
+  ThrottleOptions,
+} from '@/core/decorators/httpMethod/types/httpMethod';
 
 /**
  * http方法装饰器配置处理器
@@ -65,23 +73,16 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     this.config.mock = mock;
     return this;
   }
-
   /**
-   * 预处理retry配置
+   * retryConfig处理
    */
-  preHandleRetryConfig() {
-    if (!this.config) return this;
-    let { retry } = this.config;
+  static handleRetryConfig(retry: RetryConfig): RetryOptions {
     // 默认配置
     let defaultConfig = {
       count: 3,
       delay: 100,
       signal: new Signal(),
     };
-    // 处理配置
-    if (!retry) {
-      return this;
-    }
     if (typeof retry === 'number') {
       defaultConfig.count = retry;
     }
@@ -95,23 +96,33 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
       defaultConfig.count = retry[0] || defaultConfig.count;
       defaultConfig.delay = retry[1] || defaultConfig.delay;
     }
-    this.config.retry = defaultConfig;
+    return defaultConfig;
+  }
+  /**
+   * 预处理retry配置
+   */
+  preHandleRetryConfig() {
+    if (!this.config) return this;
+    let { retry } = this.config;
+
+    if (!retry) {
+      return this;
+    }
+
+    // 默认配置
+    this.config.retry = HttpMtdDecoratorConfigHandler.handleRetryConfig(retry);
     return this;
   }
-
   /**
-   * 预处理节流配置
+   * 处理节流
    */
-  preHandleThrottleConfig() {
+  static handleThrottleConfig(throttle: ThrottleConfig) {
     // 默认配置
     let defaultConfig = {
       interval: 100,
       signal: new Signal(),
     };
-    let { throttle } = this.config;
-    if (!throttle) {
-      return this;
-    }
+
     // 处理配置
     if (typeof throttle === 'number') {
       defaultConfig.interval = throttle;
@@ -122,24 +133,34 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     if (typeof throttle === 'object') {
       defaultConfig = { ...defaultConfig, ...throttle };
     }
-    this.config.throttle = defaultConfig;
+    return defaultConfig;
+  }
+  /**
+   * 预处理节流配置
+   */
+  preHandleThrottleConfig() {
+    if (!this.config) return this;
+    let { throttle } = this.config;
+
+    if (!throttle) {
+      return this;
+    }
+
+    this.config.throttle = HttpMtdDecoratorConfigHandler.handleThrottleConfig(throttle);
     return this;
   }
 
   /**
-   * 预处理防抖配置
+   * 处理防抖
    */
-  preHandleDebounceConfig() {
+  static handleDebounceConfig(debounce: DebounceConfig) {
     // 默认配置
     let defaultConfig = {
       signal: new Signal(),
       immediate: false,
       delay: 100,
     };
-    let { debounce } = this.config;
-    if (!debounce) {
-      return this;
-    }
+
     // 配置处理
     if (typeof debounce === 'number') {
       defaultConfig.delay = debounce;
@@ -150,7 +171,18 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     if (typeof debounce === 'object') {
       defaultConfig = { ...defaultConfig, ...debounce };
     }
-    this.config.debounce = defaultConfig;
+    return defaultConfig;
+  }
+  /**
+   * 预处理防抖配置
+   */
+  preHandleDebounceConfig() {
+    if (!this.config) return this;
+    let { debounce } = this.config;
+    if (!debounce) {
+      return this;
+    }
+    this.config.debounce = HttpMtdDecoratorConfigHandler.handleDebounceConfig(debounce);
     return this;
   }
 
@@ -163,10 +195,15 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
     subItemsConfig: HttpMethodDecoratorConfig = {},
   ): HttpRequestConfig {
     // 要追加的项
-    const { transformRequest, transformResponse, mock } = subItemsConfig;
+    const { transformRequest, transformResponse, mock, retry, throttle, debounce } = subItemsConfig;
+
     let httpRequestConfig = HttpSubDecoratorConfigHandler.chain(decoratorConfig)
       .mergeMockConfig(mock as MockConfig)
       .mergeTransformRequest(transformRequest)
+      .mergeTransformResponse(transformResponse)
+      .mergeRetryConfig(retry as RetryOptions)
+      .mergeDebounceConfig(debounce as DebounceOptions)
+      .mergeThrottleConfig(throttle as ThrottleOptions)
       .mergeOthers(subItemsConfig)
       .getHttpRequestConfig();
     // 返回包装后的配置

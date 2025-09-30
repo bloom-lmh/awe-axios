@@ -261,7 +261,7 @@ describe('1. 加入防抖节流等功能进行测试', () => {
     data = await userApi.getUsers('1', 'xm');
     expect(data).toEqual(mockResponse);
   });
-  test('1.8 启用防抖功能，并立即先执行一次', async () => {
+  test.only('1.8 启用防抖功能，并立即先执行一次', async () => {
     const mockResponse = { message: 'http://localhost:8000/list/xm/1' };
     // 模拟：失败、失败、成功
     mockedAxios
@@ -449,7 +449,7 @@ describe('1. 加入防抖节流等功能进行测试', () => {
   });
 });
 
-describe.only('2. 防抖、节流分别与请求重试组合', () => {
+describe('2. 防抖、节流分别与请求重试组合', () => {
   test('2.1 防抖和请求重试组合', async () => {
     const mockResponse = { message: 'http://localhost:8000/list/xm/1' };
 
@@ -485,7 +485,7 @@ describe.only('2. 防抖、节流分别与请求重试组合', () => {
     expect(result).toEqual(mockResponse);
   }, 20_000);
 
-  test.only('2.2 节流和请求重试组合', async () => {
+  test('2.2 节流和请求重试组合', async () => {
     const mockResponse = { message: 'http://localhost:8000/list/xm/1' };
 
     // 模拟：失败、失败、成功

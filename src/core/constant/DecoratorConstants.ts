@@ -28,6 +28,9 @@ export const DECORATORNAME = {
   MOCK: Symbol('@Mock'), // @Mock装饰器
   TRANSFORMREQUEST: Symbol('@TransformRequest'), // @TransformRequest装饰器
   TRANSFORMRESPONSE: Symbol('@TransformResponse'), // @TransformResponse装饰器
+  RETRY: Symbol('@Retry'), // @Retry装饰器
+  THROTTLE: Symbol('@Throttle'), // @Throttle装饰器
+  DEBOUNCE: Symbol('@Debounce'), // @Debounce装饰器
 
   // aop
   BEFORE: Symbol('@Before'), // @Before装饰器

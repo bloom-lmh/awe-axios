@@ -1,6 +1,18 @@
 import { COUNT } from './../../../constant/DataFakerConstants';
 import axios from 'axios';
-import { BodyParam, Get, HttpApi, Mock, PathParam, Post, TransformRequest, TransformResponse } from '../..';
+import {
+  BodyParam,
+  Debounce,
+  Get,
+  HttpApi,
+  Mock,
+  PathParam,
+  Post,
+  Retry,
+  Throttle,
+  TransformRequest,
+  TransformResponse,
+} from '../..';
 import { MockAPI } from '../../mock/MockAPI';
 import { http, HttpResponse } from 'msw';
 import { defineModel, FakeData } from '../../faker/DataFaker';
@@ -424,7 +436,7 @@ describe('2.Mock Get方法测试', () => {
     expect(fail).toEqual({ message: 'http://localhost:3000/users/:name/:id/zs' });
   });
 
-  test.only('3.1 大文件分片上传模拟', async () => {
+  test('3.2 @TransformRequest装饰器', async () => {
     const userModel = defineModel('user', {
       id: 'number.int',
       name: 'person.fullName',
@@ -481,6 +493,62 @@ describe('2.Mock Get方法测试', () => {
     const { data } = await userApi.getUsers('test', 1, {
       username: 'test',
     })('success');
+    console.log(data);
+  });
+
+  test.only('3.3 @Retry装饰器', async () => {
+    const userModel = defineModel('user', {
+      id: 'number.int',
+      name: 'person.fullName',
+      sex: 'person.sex',
+      hobby: ['number.int', { min: 1, max: 10 }],
+    });
+    let count = 0;
+    function MockUsers(on: boolean = true) {
+      let success = () => {
+        return HttpResponse.json({
+          data: FakeData(userModel, {
+            rules: {
+              [COUNT]: 3,
+            },
+          }),
+        });
+      };
+      let error = () => {
+        console.log('error');
+        count++;
+        if (count > 2) {
+          return HttpResponse.json({
+            data: FakeData(userModel, {
+              rules: {
+                [COUNT]: 3,
+              },
+            }),
+          });
+        }
+        return HttpResponse.error();
+      };
+      let handlers = {
+        success,
+        error,
+      };
+      return Mock(handlers, {
+        on,
+      });
+    }
+    let mockOn = true;
+    @HttpApi('http://localhost:3000/users')
+    class UserApi {
+      @Retry(3)
+      @Post('/:name/:id')
+      @Debounce(true)
+      @MockUsers(mockOn)
+      getUsers(@PathParam('name') name: string, @PathParam('id') id: number, @BodyParam() data: any): any {}
+    }
+    const userApi = new UserApi();
+    const { data } = await userApi.getUsers('test', 1, {
+      username: 'test',
+    })('error');
     console.log(data);
   });
 });

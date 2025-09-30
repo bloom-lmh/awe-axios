@@ -152,6 +152,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
 
     // 合并子配置项
     const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+    console.log('subItemConfig', subItemsConfig);
     this.decoratorConfig = this.configHandler.mergeSubItemsConfig(config, subItemsConfig);
   }
 
@@ -175,6 +176,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
   protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
+    console.log(this.decoratorConfig);
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
     // 基础请求
@@ -292,7 +294,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
       // 设置状态
       this.setupState(target, propertyKey);
       // 实现配置
-      const request = this.applyConfig();
+      let request: (config: HttpMethodDecoratorConfig<any>) => Promise<any>;
       // 记录原方法
       const invoke = descriptor.value;
       // 方法替换实际调用的时候会调用descripter.value指向的方法
@@ -304,6 +306,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
          * @param args 调用代理方法传入的参数
          */
         apply: (invoke, _this, args) => {
+          !request && (request = this.applyConfig());
           // 后处理配置
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查

@@ -12,15 +12,25 @@ import { HttpMethodDecoratorConfig } from './httpMethod/types/HttpMethodDecorato
 import { BodyParamDecoratorFactory } from './params/BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './params/PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './params/QueryParamDecoratorFactory';
-import { HttpApiDecoratorConfig, MockConfig, MockHandlers } from './httpMethod/types/httpMethod';
+import {
+  DebounceConfig,
+  HttpApiDecoratorConfig,
+  MockConfig,
+  MockHandlers,
+  RetryConfig,
+} from './httpMethod/types/httpMethod';
 import { ComponentDecoratorOptions, InjectDecoratorOptions } from './ioc/types/ioc';
 import { DECORATORNAME } from '../constant/DecoratorConstants';
 import { HttpMethodDecoratorFactory } from './httpMethod/HttpMethodDecoratorFactory';
 import {
+  DebounceDecoratorFactory,
   MockDecoratorFactory,
+  RetryDecoratorFactory,
+  ThrottleDecoratorFactory,
   TransformRequestDecoratorFactory,
   TransformResponseDecoratorFactory,
 } from './httpMethod/SubDecorators';
+import { HttpMtdDecoratorConfigHandler } from '../handler/httpMethod/HttpMtdDecoratorConfigHandler';
 
 /**
  * inject 装饰器
@@ -152,4 +162,28 @@ export function TransformResponse(
 ): MethodDecorator {
   // todo 直接传入装饰器信息
   return new TransformResponseDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMRESPONSE, transformResponse);
+}
+
+/**
+ * retry装饰器
+ */
+export function Retry(config: RetryConfig): MethodDecorator {
+  const retryOptions = HttpMtdDecoratorConfigHandler.handleRetryConfig(config);
+  return new RetryDecoratorFactory().createDecorator(DECORATORNAME.RETRY, retryOptions);
+}
+
+/**
+ * debounce装饰器
+ */
+export function Debounce(config: DebounceConfig): MethodDecorator {
+  let debounceOptions = HttpMtdDecoratorConfigHandler.handleDebounceConfig(config);
+  return new DebounceDecoratorFactory().createDecorator(DECORATORNAME.DEBOUNCE, debounceOptions);
+}
+
+/**
+ * throttle装饰器
+ */
+export function Throttle(config: DebounceConfig): MethodDecorator {
+  let throttleOptions = HttpMtdDecoratorConfigHandler.handleThrottleConfig(config);
+  return new ThrottleDecoratorFactory().createDecorator(DECORATORNAME.THROTTLE, throttleOptions);
 }

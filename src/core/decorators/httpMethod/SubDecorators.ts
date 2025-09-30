@@ -3,8 +3,10 @@ import { HttpMtdSubDecoratorFactory } from './HttpMtdSubDecoratorFactory.ts';
 import { DecoratedClassOrProto } from '../decorator';
 import { DECORATORNAME } from '@/core/constant/DecoratorConstants.ts';
 import { HttpRequestConfig } from './types/HttpRequestConfig.ts';
-import { MockConfig } from './types/httpMethod';
+import { MockConfig, RetryConfig, RetryOptions, ThrottleOptions } from './types/httpMethod';
 import { HttpSubDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpSubDecoratorConfigHandler.ts';
+import { DecoratorInfo } from '../DecoratorInfo.ts';
+import { HttpMtdDecoratorConfigHandler } from '@/core/handler/httpMethod/HttpMtdDecoratorConfigHandler.ts';
 
 /**
  * AxiosRef装饰工厂
@@ -34,10 +36,8 @@ export class MockDecoratorFactory extends HttpMtdSubDecoratorFactory<MockConfig>
   protected handleConfig(target: DecoratedClassOrProto, config: MockConfig, propertyKey: string | symbol): void {
     // 尝试获取HttpApi类型的装饰器信息
     const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
-    // 如果存在直接在信息上进行设置
     if (httpMethodDecoratorInfo) {
       const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
-      // 若没有mock信息则设置
       if (httpMethodConfig) {
         // 没有mock信息则设置
         let mock = HttpSubDecoratorConfigHandler.mergeMockConfig(httpMethodConfig.mock as MockConfig, config);
@@ -69,9 +69,7 @@ export class TransformRequestDecoratorFactory extends HttpMtdSubDecoratorFactory
     // 如果存在直接在信息上进行设置
     if (httpMethodDecoratorInfo) {
       const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
-      // 若没有mock信息则设置
       if (httpMethodConfig) {
-        // 没有mock信息则设置
         let transformRequest = HttpSubDecoratorConfigHandler.mergeTransformRequest(
           config,
           httpMethodConfig.transformRequest,
@@ -112,9 +110,7 @@ export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactor
     // 如果存在直接在信息上进行设置
     if (httpMethodDecoratorInfo) {
       const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
-      // 若没有mock信息则设置
       if (httpMethodConfig) {
-        // 没有mock信息则设置
         let transformResponse = HttpSubDecoratorConfigHandler.mergeTransformResponse(
           httpMethodConfig.transformResponse,
           config,
@@ -133,6 +129,106 @@ export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactor
           subDecoratorConfig['transformResponse'].push(config);
         }
       }
+    }
+  }
+}
+
+/**
+ * Retry装饰工厂
+ */
+export class RetryDecoratorFactory extends HttpMtdSubDecoratorFactory<RetryOptions> {
+  protected handleConfig(target: DecoratedClassOrProto, config: RetryOptions, propertyKey: string | symbol): void {
+    // 尝试获取HttpApi类型的装饰器信息
+    const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
+    // 如果存在直接在信息上进行设置
+    if (httpMethodDecoratorInfo) {
+      const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
+      if (httpMethodConfig) {
+        let retry = HttpSubDecoratorConfigHandler.mergeRetryConfig(httpMethodConfig.retry as RetryOptions, config);
+        console.log(retry);
+
+        httpMethodConfig.setRetry(retry);
+      }
+    } else {
+      // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
+      const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+      subDecoratorConfig && (subDecoratorConfig['retry'] = config);
+    }
+  }
+}
+
+/**
+ * Throttle装饰工厂
+ */
+export class ThrottleDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
+  /**
+   * 初始化装饰器信息
+   * @param config
+   */
+  protected initDecoratorInfo(decoratorName: string | symbol): void {
+    this.decoratorInfo = new DecoratorInfo()
+      .setName(decoratorName)
+      .setConflictList([decoratorName, DECORATORNAME.DEBOUNCE]);
+  }
+
+  // 允许多个装饰器
+  protected handleConfig(target: DecoratedClassOrProto, config: RetryOptions, propertyKey: string | symbol): void {
+    // 尝试获取HttpApi类型的装饰器信息
+    const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
+    // 如果存在直接在信息上进行设置
+    if (httpMethodDecoratorInfo) {
+      const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
+      // 若没有mock信息则设置
+      if (httpMethodConfig) {
+        // 没有mock信息则设置
+        let throttle = HttpSubDecoratorConfigHandler.mergeRetryConfig(
+          httpMethodConfig.throttle as ThrottleOptions,
+          config,
+        );
+        httpMethodConfig.setThrottle(throttle);
+      }
+    } else {
+      // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
+      const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+      subDecoratorConfig && (subDecoratorConfig['throttle'] = config);
+    }
+  }
+}
+
+/**
+ * Debounce装饰工厂
+ */
+export class DebounceDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
+  /**
+   * 初始化装饰器信息
+   * @param config
+   */
+  protected initDecoratorInfo(decoratorName: string | symbol): void {
+    this.decoratorInfo = new DecoratorInfo()
+      .setName(decoratorName)
+      .setConflictList([decoratorName, DECORATORNAME.THROTTLE]);
+  }
+
+  // 允许多个装饰器
+  protected handleConfig(target: DecoratedClassOrProto, config: RetryOptions, propertyKey: string | symbol): void {
+    // 尝试获取HttpApi类型的装饰器信息
+    const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
+    // 如果存在直接在信息上进行设置
+    if (httpMethodDecoratorInfo) {
+      const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
+      // 若没有mock信息则设置
+      if (httpMethodConfig) {
+        // 没有mock信息则设置
+        let debounce = HttpSubDecoratorConfigHandler.mergeRetryConfig(
+          httpMethodConfig.debounce as ThrottleOptions,
+          config,
+        );
+        httpMethodConfig.setDebounce(debounce);
+      }
+    } else {
+      // 如没有HttpApi装饰器的信息,表示子装饰器信息出现在父装饰器信息之前，则在子装饰器配置项中进行设置
+      const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
+      subDecoratorConfig && (subDecoratorConfig['debounce'] = config);
     }
   }
 }

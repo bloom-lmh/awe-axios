@@ -1,4 +1,9 @@
-import { MockConfig } from '@/core/decorators/httpMethod/types/httpMethod';
+import {
+  DebounceOptions,
+  MockConfig,
+  RetryOptions,
+  ThrottleOptions,
+} from '@/core/decorators/httpMethod/types/httpMethod';
 import { HttpMethodDecoratorConfig } from '@/core/decorators/httpMethod/types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '@/core/decorators/httpMethod/types/HttpRequestConfig';
 import { AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
@@ -19,7 +24,6 @@ export class HttpSubDecoratorConfigHandler {
   static chain(httpConfig: HttpMethodDecoratorConfig) {
     return new HttpSubDecoratorConfigHandler(httpConfig);
   }
-
   /**
    * 处理mock子项
    */
@@ -33,22 +37,62 @@ export class HttpSubDecoratorConfigHandler {
    */
   mergeTransformRequest(transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[]) {
     const { transformRequest: httpTransformRequest } = this.httpConfig;
-    this.httpConfig.transformRequest = HttpSubDecoratorConfigHandler.mergeTransformRequest(
-      httpTransformRequest,
-      transformRequest,
-    );
+    if (transformRequest) {
+      this.httpConfig.transformRequest = HttpSubDecoratorConfigHandler.mergeTransformRequest(
+        httpTransformRequest,
+        transformRequest,
+      );
+    }
+
     return this;
   }
-
   /**
    * 处理transformResponse数组
    */
   mergeTransformResponse(transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[]) {
     const { transformResponse: httpTransformResponse } = this.httpConfig;
-    this.httpConfig.transformResponse = HttpSubDecoratorConfigHandler.mergeTransformResponse(
-      httpTransformResponse,
-      transformResponse,
-    );
+    if (transformResponse) {
+      this.httpConfig.transformResponse = HttpSubDecoratorConfigHandler.mergeTransformResponse(
+        httpTransformResponse,
+        transformResponse,
+      );
+    }
+    return this;
+  }
+  /**
+   * 处理retry
+   */
+  mergeRetryConfig(retryConfig: RetryOptions) {
+    const { retry } = this.httpConfig;
+    if (retry) {
+      this.httpConfig.retry = HttpSubDecoratorConfigHandler.mergeRetryConfig(retry as RetryOptions, retryConfig);
+    }
+    return this;
+  }
+  /**
+   * 处理debounce
+   */
+  mergeDebounceConfig(debounceConfig: DebounceOptions) {
+    const { debounce } = this.httpConfig;
+    if (debounce) {
+      this.httpConfig.debounce = HttpSubDecoratorConfigHandler.mergeDebounceConfig(
+        debounce as DebounceOptions,
+        debounceConfig,
+      );
+    }
+    return this;
+  }
+  /**
+   * 处理节流
+   */
+  mergeThrottleConfig(throttleConfig: ThrottleOptions) {
+    const { throttle } = this.httpConfig;
+    if (throttle) {
+      this.httpConfig.throttle = HttpSubDecoratorConfigHandler.mergeThrottleConfig(
+        throttle as ThrottleOptions,
+        throttleConfig,
+      );
+    }
     return this;
   }
   /**
@@ -81,7 +125,6 @@ export class HttpSubDecoratorConfigHandler {
       return httpMockConfig;
     }
   }
-
   /**
    * 处理transformRequest
    */
@@ -99,7 +142,6 @@ export class HttpSubDecoratorConfigHandler {
       return [...httpTransformReqs, ...transformReqs];
     }
   }
-
   /**
    * 处理transformResponse
    */
@@ -116,5 +158,24 @@ export class HttpSubDecoratorConfigHandler {
       let transformReqs = Array.isArray(transformResponse) ? transformResponse : [transformResponse];
       return [...httpTransformReqs, ...transformReqs];
     }
+  }
+
+  /**
+   * 处理retry
+   */
+  static mergeRetryConfig(httpRetryConfig: RetryOptions, retryConfig: RetryOptions) {
+    return { ...retryConfig, ...httpRetryConfig };
+  }
+  /**
+   * 处理debounce
+   */
+  static mergeDebounceConfig(httpDebounceConfig: DebounceOptions, debounceConfig: DebounceOptions) {
+    return { ...httpDebounceConfig, debounceConfig };
+  }
+  /**
+   * 处理throttle
+   */
+  static mergeThrottleConfig(httpThrottleConfig: ThrottleOptions, throttleConfig: ThrottleOptions) {
+    return { ...throttleConfig, ...httpThrottleConfig };
   }
 }
