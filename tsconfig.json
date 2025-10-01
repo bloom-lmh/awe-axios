@@ -9,7 +9,6 @@
       "@aop/*": ["./src/core/aop/*"],
       "@http/*": ["./src/core/httpMethod/*"],
       "@mock/*": ["./src/core/mock/*"],
-      "@faker/*": ["./src/core/faker/*"],
       "@params/*": ["./src/core/params/*"],
       "@utils/*": ["./src/utils/*"],
       "@types/*": ["./src/types/*"]
@@ -44,5 +43,5 @@
     "declaration": true,
     "declarationDir": "dist/types"
   },
-  "include": ["src/**/*", "types/**/*.d.ts"]
+  "include": ["src/**/*", "src/types/**/*"]
 }

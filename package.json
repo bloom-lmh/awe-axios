@@ -1,16 +1,17 @@
 {
-  "name": "axiosplus",
+  "name": "axios-plus",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.esm.js",
   "module": "dist/index.esm.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.cjs",
+    "build": "cross-env NODE_ENV=production rollup -c rollup.config.cjs",
+    "dev": "rollup -c rollup.config.cjs --watch",
     "clean": "rimraf dist",
     "build:clean": "npm run clean && npm run build",
     "test": "jest"
@@ -20,10 +21,12 @@
     "@babel/preset-env": "^7.28.3",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.1.0",
     "babel-jest": "^30.1.2",
+    "cross-env": "^10.1.0",
     "jest": "^30.0.5",
     "jest-environment-node": "^30.1.2",
     "jest-esm-transformer": "^1.0.0",
