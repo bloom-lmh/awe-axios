@@ -1,0 +1,38 @@
+import { DebounceOptions } from '../types/httpMethod';
+import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
+import { HttpRequestConfig } from '../types/HttpRequestConfig';
+
+/**
+ * 防抖请求策略
+ * @param requestFn 请求函数
+ * @param config 防抖配置
+ */
+export function useDebounce(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: DebounceOptions) {
+  // 实现防抖
+  let { delay, immediate, signal } = config as Required<DebounceOptions>;
+  let timer: any;
+  return async (config: HttpRequestConfig) => {
+    // 取消防抖
+    if (signal.isAborted()) {
+      return await requestFn(config);
+    }
+    // 立即执行
+    if (immediate) {
+      immediate = false;
+      return await requestFn(config);
+    }
+    clearTimeout(timer);
+    return new Promise((resolve, reject) => {
+      timer = setTimeout(async () => {
+        try {
+          const result = await requestFn(config);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          timer = null;
+        }
+      }, delay);
+    });
+  };
+}

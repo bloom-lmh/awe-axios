@@ -1,4 +1,4 @@
-import { ParamDecoratorConfig } from '@/core/decorators/decorator';
+import { ParamDecoratorConfig } from '@/core/decorator';
 
 /**
  * 参数处理工具
