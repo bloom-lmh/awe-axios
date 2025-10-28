@@ -6,7 +6,7 @@ import { ProxyFactory } from '../ioc/ProxyFactory';
 import { AdviceChain } from './AdviceChain';
 import { AspectContext } from './AspectContext';
 import { AspectFactory } from './AspectFactory';
-import { InstancePointCut } from './types/aop';
+import { InstancePointCut } from '../../aop';
 
 /**
  * Aspect处理器

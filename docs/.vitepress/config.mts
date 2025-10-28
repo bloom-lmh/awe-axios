@@ -45,9 +45,10 @@ export default defineConfig({
           text: '发送HTTP请求',
           items: [
             { text: '基本请求方法', link: '/zh/发送HTTP请求/基本请求方法' },
+            { text: '参数装饰器', link: '/zh/发送HTTP请求/参数装饰器' },
             { text: '常用功能', link: '/zh/发送HTTP请求/常用功能' },
             { text: '信号量机制', link: '/zh/发送HTTP请求/信号量机制' },
-            { text: '自定义常用功能', link: '/zh/发送HTTP请求/自定义常用功能' },
+            { text: '子项装饰器', link: '/zh/发送HTTP请求/子项装饰器' },
           ],
         },
         {

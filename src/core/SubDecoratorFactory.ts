@@ -1,4 +1,4 @@
-import { ClassDecorator, MethodDecorator, ParameterDecorator, PropertyDecorator } from './decorator';
+import { ClassDecorator, MethodDecorator, ParameterDecorator, PropertyDecorator } from '../decorator';
 import { DecoratorInfo } from './DecoratorInfo';
 
 /**

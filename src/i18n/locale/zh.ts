@@ -1,4 +1,4 @@
-import { Locale } from '../i18n.d';
+import { Locale } from '../../i18n';
 
 export const zhCN: Locale = {
   name: 'zhCN',

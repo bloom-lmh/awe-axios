@@ -5,11 +5,11 @@ import { SYSTEM } from '../common/constant/SystemConstants';
 import { ClassDecoratorStateManager } from '../common/statemanager/ClassDecoratorStateManager';
 import { MethodDecoratorStateManager } from '../common/statemanager/MethodDecoratorStateManager';
 import { ClassDecoratorValidator } from '../common/validator/ClassDecoratorValidator';
-import { ClassDecorator, DecoratedClass, DecoratedClassOrProto } from '../decorator';
+import { ClassDecorator, DecoratedClass, DecoratedClassOrProto } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
-import { HttpApiDecoratorConfig } from './types/httpMethod';
+import { HttpApiDecoratorConfig } from '../../httpMethod';
 
 /**
  * httpApi装饰器工厂

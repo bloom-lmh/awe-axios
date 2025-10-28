@@ -1,6 +1,6 @@
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { ClassDecoratorValidator } from '../common/validator';
-import { ClassDecorator, DecoratedClass, DecoratedClassOrProto } from '../decorator';
+import { ClassDecorator, DecoratedClass, DecoratedClassOrProto } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';

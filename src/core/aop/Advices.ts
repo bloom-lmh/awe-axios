@@ -8,7 +8,7 @@ import {
   AroundAdviceMethod,
   BeforeAdviceMethod,
   Interceptor,
-} from './types/aop';
+} from '../../aop';
 import { AspectContext } from './AspectContext';
 
 /**

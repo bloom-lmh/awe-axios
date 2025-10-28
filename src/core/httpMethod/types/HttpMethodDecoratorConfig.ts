@@ -9,7 +9,7 @@ import {
   RetryRequestPolicy,
   ThrottleConfig,
   ThrottleRequestPolicy,
-} from './httpMethod';
+} from '../../../httpMethod';
 import {
   AddressFamily,
   AxiosAdapter,

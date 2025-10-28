@@ -2,11 +2,11 @@ import { Inject } from '.';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { ClassDecoratorStateManager } from '../common/statemanager';
 import { ClassDecoratorValidator } from '../common/validator';
-import { ClassDecorator, DecoratedClass } from '../decorator';
+import { ClassDecorator, DecoratedClass } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { InstanceFactory } from './InstanceFactory';
-import { ComponentDecoratorOptions, InstanceRegisterConfig } from './types/ioc';
+import { ComponentDecoratorOptions, InstanceRegisterConfig } from '../../ioc';
 
 /**
  * Component 装饰器工厂

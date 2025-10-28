@@ -1,4 +1,4 @@
-import { DecoratedClass, DecoratorType, SubDecorationConfigs } from '@/core/decorator';
+import { DecoratedClass, DecoratorType, SubDecorationConfigs } from '@/decorator';
 import { DecoratorInfo } from '@/core/DecoratorInfo';
 
 /**

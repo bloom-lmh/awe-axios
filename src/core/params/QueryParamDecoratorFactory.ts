@@ -1,5 +1,5 @@
 import { DECORATORNAME } from '../common/constant';
-import { DecoratedClassOrProto, ParamDecoratorConfig } from '../decorator';
+import { DecoratedClassOrProto, ParamDecoratorConfig } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { PathParamDecoratorFactory } from './PathParamDecoratorFactory';
 

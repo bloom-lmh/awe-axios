@@ -1,6 +1,6 @@
 import { ParamUtils } from '@/utils/ParamUtils';
 import { PropertyDecoratorStateManager } from './PropertyDecoratorStateManager';
-import { DecoratedClassOrProto, ParamDecoratorConfig } from '@/core/decorator';
+import { DecoratedClassOrProto, ParamDecoratorConfig } from '@/decorator';
 
 /**
  * 参数装饰器状态管理器

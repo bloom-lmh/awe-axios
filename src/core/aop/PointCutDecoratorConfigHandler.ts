@@ -1,6 +1,6 @@
 import { FuncUtils } from '@/utils/FuncUtils';
 import { DecoratorConfigHandler } from '../common/handler/DecoratorConfigHandler';
-import { PointCutExpression, InstancePointCut } from './types/aop';
+import { PointCutExpression, InstancePointCut } from '../../aop';
 
 /**
  * 切点表达式配置处理器

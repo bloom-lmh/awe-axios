@@ -1,4 +1,4 @@
-import { AdviceItems, Advices } from './types/aop';
+import { AdviceItems, Advices } from '../../aop';
 
 /**
  * 切面工厂

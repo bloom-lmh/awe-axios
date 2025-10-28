@@ -2,7 +2,7 @@ import { JoiUtils } from '@/utils/JoiUtils';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { ParamDecoratorStateManager } from '../common/statemanager';
 import { ParamDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto, ParamDecoratorConfig, ParameterDecorator } from '../decorator';
+import { DecoratedClassOrProto, ParamDecoratorConfig, ParameterDecorator } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';

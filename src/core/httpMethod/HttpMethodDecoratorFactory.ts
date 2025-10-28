@@ -7,7 +7,7 @@ import {
   ParamDecoratorStateManager,
 } from '../common/statemanager';
 import { MethodDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto } from '../decorator';
+import { DecoratedClassOrProto } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { ProxyFactory } from '../ioc/ProxyFactory';
@@ -19,7 +19,7 @@ import { useMock } from './requeststrategy/Mock';
 import { useRequest } from './requeststrategy/Request';
 import { useRetry } from './requeststrategy/Retry';
 import { useThrottle } from './requeststrategy/Throttle';
-import { RetryOptions, ThrottleOptions, DebounceOptions } from './types/httpMethod';
+import { RetryOptions, ThrottleOptions, DebounceOptions } from '../../httpMethod';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 import { I18n, i18n } from '@/i18n/i18n';
@@ -174,7 +174,6 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    * @param config http请求配置,HttpMethodDecoratorConfig的包装配置
    */
   protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
-    console.log(this.decoratorConfig);
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
     // 基础请求

@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { ClassDecoratorStateManager } from '../common/statemanager';
 import { ClassDecoratorValidator } from '../common/validator';
-import { ClassDecorator, DecoratedClass } from '../decorator';
+import { ClassDecorator, DecoratedClass } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';

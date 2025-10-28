@@ -1,10 +1,10 @@
 import { AxiosInstance, AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
 import { DECORATORNAME } from '../common/constant';
-import { DecoratedClassOrProto } from '../decorator';
+import { DecoratedClassOrProto } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { HttpSubDecoratorConfigHandler } from './handler/HttpSubDecoratorConfigHandler';
 import { HttpMtdSubDecoratorFactory } from './HttpMtdSubDecoratorFactory.ts';
-import { MockConfig, RetryOptions, ThrottleOptions } from './types/httpMethod';
+import { MockConfig, RetryOptions, ThrottleOptions } from '../../httpMethod';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 
 /**
@@ -144,8 +144,6 @@ export class RetryDecoratorFactory extends HttpMtdSubDecoratorFactory<RetryOptio
       const httpMethodConfig = httpMethodDecoratorInfo.configs[0] as HttpRequestConfig;
       if (httpMethodConfig) {
         let retry = HttpSubDecoratorConfigHandler.mergeRetryConfig(httpMethodConfig.retry as RetryOptions, config);
-        console.log(retry);
-
         httpMethodConfig.setRetry(retry);
       }
     } else {

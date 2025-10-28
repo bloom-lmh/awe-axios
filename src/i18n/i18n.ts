@@ -1,4 +1,4 @@
-import { Locale } from './i18n.d';
+import { Locale } from '../i18n';
 import { zhCN } from './locale/zh';
 // 国际化支持类
 export class I18n {

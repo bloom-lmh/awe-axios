@@ -1,4 +1,4 @@
-import { DecoratedClassOrProto, DecoratorType, SubDecorationConfigs } from '@/core/decorator';
+import { DecoratedClassOrProto, DecoratorType, SubDecorationConfigs } from '@/decorator';
 import { DecoratorInfo } from '@/core/DecoratorInfo';
 import { METADATAKEY } from '../constant/MetaDataConstants';
 import { DecoratorStateManager } from './DecoratorStateManager';

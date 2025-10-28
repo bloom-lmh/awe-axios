@@ -1,6 +1,6 @@
-import { ComponentDecoratorConfig } from './decorator.d';
-import { AxiosPlusRequestConfig } from './httpMethod/types/httpMethod';
-import { DependencyConfig, InstanceRegisterConfig } from './ioc/types/ioc';
+import { ComponentDecoratorConfig } from './decorator';
+import { AxiosPlusRequestConfig } from './httpMethod';
+import { DependencyConfig, InstanceRegisterConfig } from './ioc';
 
 /**
  * 构造器
@@ -33,7 +33,7 @@ export type ClassDecorator = (target: DecoratedClass) => void;
 export type MethodDecorator = (
   target: DecoratedClassOrProto,
   propertyKey: string | symbol,
-  descriptor: TypedPropertyDescriptor<any>,
+  descriptor: PropertyDescriptor,
 ) => void;
 
 /**

@@ -1,6 +1,6 @@
-import { DecoratedClass, DecoratedClassProto } from '@/core/decorator';
+import { DecoratedClass, DecoratedClassProto } from '@/decorator';
 import { METADATAKEY } from '../constant';
-import { DecoratorInfos } from '../statemanager/types/state';
+import { DecoratorInfos } from '../../../state';
 import { DecoratorValidator } from './DecoratorValidator';
 
 /**

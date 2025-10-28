@@ -21,10 +21,10 @@ export { Mock } from './core/mock';
 export { MockAPI } from './core/mock/MockAPI.ts';
 export { QueryParam, PathParam, BodyParam } from './core/params';
 
-export type * from './core/aop/types/aop.d.ts';
-export type * from './core/ioc/types/ioc.d.ts';
-export type * from './core/httpMethod/types/httpMethod.d.ts';
-export type * from './core/decorator.d.ts';
+export type * from './aop';
+export type * from './ioc';
+export type * from './httpMethod';
+export type * from './decorator';
 export type * from './core/httpMethod/types/HttpRequestConfig.ts';
 export type * from './core/httpMethod/types/HttpMethodDecoratorConfig.ts';
 export { default as axiosPlus } from 'axios';

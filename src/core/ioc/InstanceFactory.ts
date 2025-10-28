@@ -16,7 +16,7 @@ import {
   MethodDecoratorValidator,
   ParamDecoratorValidator,
 } from '../common/validator';
-import { DecoratedClass, DecoratedClassOrProto } from '../decorator';
+import { DecoratedClass, DecoratedClassOrProto } from '../../decorator';
 import { HttpMtdDecoratorConfigHandler } from '../httpMethod/handler/HttpMtdDecoratorConfigHandler';
 import {
   InstanceRegisterConfig,
@@ -25,7 +25,7 @@ import {
   InstanceScope,
   InstanceItem,
   CandidateInstances,
-} from './types/ioc';
+} from '../../ioc';
 
 function Init(
   target: DecoratedClass & {

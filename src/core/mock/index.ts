@@ -1,5 +1,5 @@
-import { MockHandlers, MockConfig } from '../httpMethod/types/httpMethod';
-import { MethodDecorator } from '../decorator';
+import { MockHandlers, MockConfig } from '../../httpMethod';
+import { MethodDecorator } from '../../decorator';
 import { MockDecoratorFactory } from '../httpMethod/SubDecorators';
 import { DECORATORNAME } from '../common/constant';
 

@@ -1,7 +1,7 @@
 import { METADATAKEY } from '../common/constant';
 import { ClassDecoratorStateManager } from '../common/statemanager';
-import { DecoratedClassOrProto } from '../decorator';
-import { Advices, AdviceType, AdviceItems, AdviceItem } from './types/aop';
+import { DecoratedClassOrProto } from '../../decorator';
+import { Advices, AdviceType, AdviceItems, AdviceItem } from '../../aop';
 
 /**
  * 切面装饰器状态管理器

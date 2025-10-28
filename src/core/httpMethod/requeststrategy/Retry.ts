@@ -1,4 +1,4 @@
-import { RetryOptions } from '../types/httpMethod';
+import { RetryOptions } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 
 /**

@@ -1,4 +1,4 @@
-import { DebounceOptions } from '../types/httpMethod';
+import { DebounceOptions } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../types/HttpRequestConfig';
 

@@ -1,5 +1,5 @@
 import { AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
-import { MockConfig, RetryOptions, DebounceOptions, ThrottleOptions } from '../types/httpMethod';
+import { MockConfig, RetryOptions, DebounceOptions, ThrottleOptions } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../types/HttpRequestConfig';
 

@@ -1,4 +1,4 @@
-import { DecoratedClass, DecoratorType, DecoratedClassOrProto, SubDecorationConfigs } from '@/core/decorator';
+import { DecoratedClass, DecoratorType, DecoratedClassOrProto, SubDecorationConfigs } from '@/decorator';
 import { DecoratorInfo } from '@/core/DecoratorInfo';
 import { HttpRequestConfig } from '@/core/httpMethod/types/HttpRequestConfig';
 import { METADATAKEY } from '../constant';

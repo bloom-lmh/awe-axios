@@ -1,14 +1,14 @@
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { MethodDecoratorStateManager } from '../common/statemanager';
 import { MethodDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto } from '../decorator';
+import { DecoratedClassOrProto } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { AdviceFactory } from './Advices';
 import { AspectDecoratorStateManager } from './AspectDecoratorStateManager';
 import { PointCutDecoratorConfigHandler } from './PointCutDecoratorConfigHandler';
-import { PointCutDecoratorConfig, InstancePointCut, AdviceType, AdviceMethod, AdviceItem } from './types/aop';
+import { PointCutDecoratorConfig, InstancePointCut, AdviceType, AdviceMethod, AdviceItem } from '../../aop';
 
 /**
  * 所有切入点装饰器

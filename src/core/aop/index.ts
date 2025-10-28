@@ -5,7 +5,7 @@ import {
   AfterThrowDecoratorConfig,
   AroundDecoratorConfig,
   BeforeDecoratorConfig,
-} from './types/aop';
+} from '../../aop';
 import { AspectDecoratorFactory } from './AspectDecoratorFactory';
 import { DECORATORNAME } from '../common/constant';
 

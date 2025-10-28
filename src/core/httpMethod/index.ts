@@ -7,9 +7,9 @@ import {
   ThrottleDecoratorFactory,
   AxiosRefDecoratorFactory,
 } from './SubDecorators';
-import { RetryConfig, DebounceConfig } from './types/httpMethod';
+import { RetryConfig, DebounceConfig } from '../../httpMethod';
 import { RefAxiosDecoratorFactory } from './RefAxiosDecoratorFactory';
-import { ClassDecorator, MethodDecorator } from '../decorator';
+import { ClassDecorator, MethodDecorator } from '../../decorator';
 import { DECORATORNAME } from '../common/constant/DecoratorConstants';
 import { HttpMtdDecoratorConfigHandler } from './handler/HttpMtdDecoratorConfigHandler';
 import { HttpMethodDecoratorFactory } from './HttpMethodDecoratorFactory';

@@ -7,7 +7,7 @@ import {
   ParamDecoratorStateManager,
 } from '../common/statemanager';
 import { MethodDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto } from '../decorator';
+import { DecoratedClassOrProto } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { ProxyFactory } from '../ioc/ProxyFactory';
@@ -19,7 +19,7 @@ import { useMock } from './requeststrategy/Mock';
 import { useRequest } from './requeststrategy/Request';
 import { useRetry } from './requeststrategy/Retry';
 import { useThrottle } from './requeststrategy/Throttle';
-import { RetryOptions, ThrottleOptions, DebounceOptions } from './types/httpMethod';
+import { RetryOptions, ThrottleOptions, DebounceOptions } from '../../httpMethod';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 
@@ -178,22 +178,18 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     let requestFn = useRequest();
     // 伴随请求重发
     if (retry) {
-      console.log('retry');
       requestFn = useRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
-      console.log('throttle');
       requestFn = useThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
-      console.log('debounce');
       requestFn = useDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
-      console.log('mock');
       requestFn = useMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;

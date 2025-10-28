@@ -10,7 +10,7 @@ import {
   MockConfig,
   DebounceOptions,
   ThrottleOptions,
-} from '../types/httpMethod';
+} from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../types/HttpRequestConfig';
 import { HttpSubDecoratorConfigHandler } from './HttpSubDecoratorConfigHandler';

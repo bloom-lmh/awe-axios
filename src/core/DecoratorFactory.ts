@@ -1,4 +1,4 @@
-import { Decorator } from './decorator';
+import { Decorator } from '../decorator';
 import { DecoratorFactoryBuilder } from './DecoratorFactoryBuilder';
 
 /**

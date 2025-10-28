@@ -1,6 +1,6 @@
 import { SubDecorationInfo } from './ioc';
 import { DecoratedClass } from './decorator';
-import { Constructor } from '../../decorator';
+import { Constructor } from './decorator';
 /**
  * 实例数组中的项
  */

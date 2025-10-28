@@ -1,14 +1,14 @@
 import { InjectDecoratorFactory } from './InjectDecoratorFactory';
 import { InjectDecoratorStateManager } from './InjectDecoratorStateManager';
-import { InjectDecoratorOptions, ComponentDecoratorOptions } from './types/ioc';
+import { InjectDecoratorOptions, ComponentDecoratorOptions } from '../../ioc';
 import { AxiosInstance } from 'axios';
 import { DecoratorConfigHandler } from '../common/handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../common/validator';
 import { HttpApiDecoratorFactory } from '../httpMethod/HttpApiDecoratorFactory';
-import { HttpApiDecoratorConfig } from '../httpMethod/types/httpMethod';
+import { HttpApiDecoratorConfig } from '../../httpMethod';
 import { ComponentDecoratorFactory } from './ComponentDecoratorFactory';
 
-import { ClassDecorator } from '../decorator';
+import { ClassDecorator } from '../../decorator';
 
 /**
  * inject 装饰器

@@ -1,6 +1,6 @@
-import { Constructor } from '../../decorator';
-import { Advice } from '../Advices';
-import { PointCutExpWithReturn } from './aop.d';
+import { Constructor } from './decorator';
+import { Advice } from './core/aop/Advices';
+import { PointCutExpWithReturn } from './aop';
 /**
  * 切点表达式
  */

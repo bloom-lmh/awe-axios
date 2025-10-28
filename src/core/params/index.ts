@@ -1,4 +1,4 @@
-import { ParameterDecorator } from '../decorator';
+import { ParameterDecorator } from '../../decorator';
 import { BodyParamDecoratorFactory } from './BodyParamDecoratorFactory';
 import { PathParamDecoratorFactory } from './PathParamDecoratorFactory';
 import { QueryParamDecoratorFactory } from './QueryParamDecoratorFactory';

@@ -2,12 +2,12 @@ import { i18n, I18n } from '@/i18n/i18n';
 import { DECORATORNAME } from '../common/constant';
 import { DecoratorConfigHandler } from '../common/handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto, DecoratedClass, PropertyDecorator } from '../decorator';
+import { DecoratedClassOrProto, DecoratedClass, PropertyDecorator } from '../../decorator';
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { InjectDecoratorStateManager } from './InjectDecoratorStateManager';
 import { InstanceFactory } from './InstanceFactory';
-import { InjectDecoratorOptions, GetInstanceConfig, InjectDecoratorConfig } from './types/ioc';
+import { InjectDecoratorOptions, GetInstanceConfig, InjectDecoratorConfig } from '../../ioc';
 
 /**
  * inject装饰器工厂

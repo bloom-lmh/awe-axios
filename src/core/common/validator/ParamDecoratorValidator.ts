@@ -1,7 +1,7 @@
-import { DecoratedClassOrProto, ParamDecoratorConfig } from '@/core/decorator';
+import { DecoratedClassOrProto, ParamDecoratorConfig } from '@/decorator';
 import { DecoratorInfo } from '@/core/DecoratorInfo';
 import { METADATAKEY } from '../constant';
-import { DecoratorInfos } from '../statemanager/types/state';
+import { DecoratorInfos } from '../../../state';
 import { DecoratorValidator } from './DecoratorValidator';
 import { MethodDecoratorValidator } from './MethodDecoratorValidator';
 

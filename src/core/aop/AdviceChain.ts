@@ -1,5 +1,5 @@
 import { AspectContext } from './AspectContext';
-import { Interceptor, InterceptorChain } from './types/aop';
+import { Interceptor, InterceptorChain } from '../../aop';
 
 /**
  * 方法拦截器链

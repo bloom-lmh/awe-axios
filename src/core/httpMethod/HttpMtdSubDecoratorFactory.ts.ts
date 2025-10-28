@@ -2,7 +2,7 @@ import { i18n, I18n } from '@/i18n/i18n';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { MethodDecoratorStateManager } from '../common/statemanager';
 import { MethodDecoratorValidator } from '../common/validator';
-import { DecoratedClassOrProto } from '../decorator';
+import { DecoratedClassOrProto } from '../../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';

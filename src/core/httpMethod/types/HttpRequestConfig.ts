@@ -26,7 +26,7 @@ import {
   TransitionalOptions,
 } from 'axios';
 import { HttpMethodDecoratorConfig } from './HttpMethodDecoratorConfig';
-import { DebounceConfig, MockConfig, MockHandlers, RetryConfig, ThrottleConfig } from './httpMethod';
+import { DebounceConfig, MockConfig, MockHandlers, RetryConfig, ThrottleConfig } from '../../../httpMethod';
 
 /**
  * http请求配置

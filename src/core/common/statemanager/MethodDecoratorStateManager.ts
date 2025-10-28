@@ -1,4 +1,4 @@
-import { DecoratedClassOrProto } from '@/core/decorator';
+import { DecoratedClassOrProto } from '@/decorator';
 import { DecoratorInfo } from '@/core/DecoratorInfo';
 import { PropertyDecoratorStateManager } from './PropertyDecoratorStateManager';
 

@@ -1,7 +1,7 @@
 import { MockAPI } from '@/core/mock/MockAPI';
 import { PathUtils } from '@/utils/PathUtils';
 import { http } from 'msw';
-import { MockConfig, MockMethod, MockHandlersObject } from '../types/httpMethod';
+import { MockConfig, MockMethod, MockHandlersObject } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 
 /**

@@ -1,4 +1,4 @@
-import { ThrottleOptions } from '../types/httpMethod';
+import { ThrottleOptions } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 
 export function useThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: ThrottleOptions) {
