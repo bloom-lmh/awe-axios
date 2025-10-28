@@ -7,6 +7,7 @@ import { DecoratorInfo } from '../DecoratorInfo';
 import { MockHandlers, MockConfig } from '../httpMethod/types/httpMethod';
 import { Inject } from '../ioc';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';
+import { i18n, I18n } from '@/i18n/i18n';
 
 /**
  * mock http 装饰器
@@ -31,12 +32,14 @@ export class MockDecoratorFactory extends SubDecoratorFactory {
     ctor: MethodDecoratorStateManager,
   })
   protected stateManager!: MethodDecoratorStateManager;
+
   /**
    * 初始化装饰器信息
    */
   protected initDecoratorInfo(config?: any): void {
     this.decoratorInfo = new DecoratorInfo().setName(DECORATORNAME.MOCK).setConflictList([DECORATORNAME.MOCK]);
   }
+
   /**
    * 校验装饰器
    * @param target 被装饰的类或类原型
@@ -45,13 +48,15 @@ export class MockDecoratorFactory extends SubDecoratorFactory {
   protected validateDecorator(target: DecoratedClassOrProto, propertyKey: string | symbol): void {
     const { conflictList } = this.decoratorInfo;
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error('装饰器冲突');
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
   }
+
   /**
    * 处理配置
    */
   protected preHandleConfig(mockHandlers: MockHandlers, mockConfig?: Omit<MockConfig, 'handlers'>) {}
+
   /**
    * 设置状态
    * @param target
@@ -66,6 +71,7 @@ export class MockDecoratorFactory extends SubDecoratorFactory {
     // 初始化子装饰器配置信息
     this.stateManager.initSubDecoratorConfig(target, DECORATORNAME.MOCK, propertyKey);
   }
+
   /**
    *
    * @param target
@@ -75,6 +81,7 @@ export class MockDecoratorFactory extends SubDecoratorFactory {
   protected handleConfig(target: DecoratedClassOrProto, config?: AxiosInstance, propertyKey?: string | symbol): void {
     throw new Error('Method not implemented.');
   }
+
   /**
    * 创建装饰器函数
    * @param config
@@ -85,7 +92,6 @@ export class MockDecoratorFactory extends SubDecoratorFactory {
       this.initDecoratorInfo();
       // 校验装饰器
       this.validateDecorator(target, propertyKey);
-      // 设置状态
     };
   }
 }

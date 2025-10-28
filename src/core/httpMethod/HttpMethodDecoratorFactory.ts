@@ -1,4 +1,3 @@
-import { JoiUtils } from '@/utils/JoiUtils';
 import { PathUtils } from '@/utils/PathUtils';
 import axios, { Method } from 'axios';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
@@ -23,6 +22,7 @@ import { useThrottle } from './requeststrategy/Throttle';
 import { RetryOptions, ThrottleOptions, DebounceOptions } from './types/httpMethod';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
+import { I18n, i18n } from '@/i18n/i18n';
 
 /**
  * HttpMethod装饰器工厂
@@ -112,7 +112,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     const { conflictList } = this.decoratorInfo;
     // 校验是否存在冲突装饰器
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error('The Get decorator confilct with other decorators in the class.');
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
   }
 
@@ -151,7 +151,6 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
 
     // 合并子配置项
     const subItemsConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
-    console.log('subItemConfig', subItemsConfig);
     this.decoratorConfig = this.configHandler.mergeSubItemsConfig(config, subItemsConfig);
   }
 
@@ -183,28 +182,24 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     // 在基础请求的基础上装饰逻辑
     // 伴随请求重发
     if (retry) {
-      console.log('retry');
       requestFn = customRetry
         ? customRetry(requestFn, retry as RetryOptions)
         : useRetry(requestFn, retry as RetryOptions);
     }
     // 伴随节流
     if (throttle) {
-      console.log('throttle');
       requestFn = customThrottle
         ? customThrottle(requestFn, throttle as ThrottleOptions)
         : useThrottle(requestFn, throttle as ThrottleOptions);
     }
     // 伴随防抖
     if (debounce) {
-      console.log('debounce');
       requestFn = customDebounce
         ? customDebounce(requestFn, debounce as DebounceOptions)
         : useDebounce(requestFn, debounce as DebounceOptions);
     }
     // mock请求
     if (mock) {
-      console.log('mock');
       requestFn = useMock(requestFn, this.decoratorInfo.id);
     }
     return requestFn;
@@ -265,9 +260,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     // 检查url是否合法以及是否存在refAxios,是否存在baseURL。若即不存在refAxios又不存在baseURL则报错
     const { baseURL } = this.decoratorConfig;
     if (!baseURL) {
-      throw new Error(
-        'The refAxios which is the instance of axios with baseURL or baseURL is required in the decorator config.',
-      );
+      throw new Error(I18n.t_v2(i18n.ERROR.MISSING_BASEURL));
     }
   }
 

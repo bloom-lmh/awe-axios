@@ -1,4 +1,3 @@
-import { DecoratedClassOrProto } from './decorator';
 import { DecoratorFactory } from './DecoratorFactory';
 
 /**

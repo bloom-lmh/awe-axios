@@ -6,6 +6,7 @@ import { ClassDecorator, DecoratedClass } from '../decorator';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
 import { SubDecoratorFactory } from '../SubDecoratorFactory';
+import { i18n, I18n } from '@/i18n/i18n';
 
 /**
  * refAxios 装饰器
@@ -52,7 +53,7 @@ export class RefAxiosDecoratorFactory extends SubDecoratorFactory {
   protected validateDecorator(target: DecoratedClass): void {
     const { conflictList } = this.decoratorInfo;
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList)) {
-      throw new Error(`The @RefAxios decorator cannot be used with the others decorator at the same time.`);
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
   }
 

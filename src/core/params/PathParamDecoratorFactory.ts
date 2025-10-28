@@ -6,6 +6,7 @@ import { DecoratedClassOrProto, ParamDecoratorConfig, ParameterDecorator } from 
 import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { Inject } from '../ioc';
+import { i18n, I18n } from '@/i18n/i18n';
 
 /**
  * 路径参数装饰器
@@ -44,6 +45,7 @@ export class PathParamDecoratorFactory extends DecoratorFactory {
       .setType('parameter')
       .setConflictList([DECORATORNAME.PATHPARAM, DECORATORNAME.QUERYPARAM, DECORATORNAME.BODYPARAM]);
   }
+
   /**
    * 校验装饰器
    * @param target 被装饰的类或类原型对象
@@ -59,7 +61,7 @@ export class PathParamDecoratorFactory extends DecoratorFactory {
     const { paramName, paramIndex } = config;
     // 校验装饰器是否冲突(不允许同一个属性上冲突装饰器)
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey, paramIndex)) {
-      throw new Error(`PathParam decorator cannot be used with the  decorator at the same time.`);
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
     // 校验装饰器声明的属性名是否重复
     if (this.decoratorValidator.hasDuplicateParamName(target, propertyKey, name, paramName)) {
@@ -68,6 +70,7 @@ export class PathParamDecoratorFactory extends DecoratorFactory {
       );
     }
   }
+
   /**
    * 预处理配置
    * @param paramName 参数名
@@ -76,13 +79,15 @@ export class PathParamDecoratorFactory extends DecoratorFactory {
   protected preHandleConfig(paramName: string, paramIndex: number): ParamDecoratorConfig {
     return { paramName, paramIndex };
   }
+
   /**
    * 配置检查
    * @param config 配置
    */
   protected preCheckConfig(config: ParamDecoratorConfig): void {
-    //JoiUtils.validate(ParamSchema, config);
+    // JoiUtils.validate(ParamSchema, config);
   }
+
   /**
    * 设置状态
    * @param target 被装饰的类或类原型对象

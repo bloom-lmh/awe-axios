@@ -1,3 +1,4 @@
+import { i18n, I18n } from '@/i18n/i18n';
 import { SYSTEM, DECORATORNAME } from '../common/constant';
 import { MethodDecoratorStateManager } from '../common/statemanager';
 import { MethodDecoratorValidator } from '../common/validator';
@@ -15,6 +16,7 @@ export abstract class HttpMtdSubDecoratorFactory<T> extends SubDecoratorFactory 
    * 装饰器信息
    */
   protected decoratorInfo!: DecoratorInfo;
+
   /**
    * 方法装饰器校验器
    */
@@ -51,12 +53,10 @@ export abstract class HttpMtdSubDecoratorFactory<T> extends SubDecoratorFactory 
     const { conflictList } = this.decoratorInfo;
     // 冲突性校验
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error(`The @refAxios decorator cannot be used with the  decorators at the same time.`);
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
   }
-  /**
-   * 预处理配置
-   */
+
   /**
    * 设置状态
    * @param target 倍装饰方法所示的类或原型
@@ -71,10 +71,12 @@ export abstract class HttpMtdSubDecoratorFactory<T> extends SubDecoratorFactory 
     // 初始化子装饰器配置信息
     this.stateManager.initSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
   }
+
   /**
    * 处理配置
    */
   protected abstract handleConfig(...args: any[]): void;
+
   /**
    * 创建装饰器
    * @param config axios实例

@@ -1,3 +1,4 @@
+import { i18n, I18n } from '@/i18n/i18n';
 import { DECORATORNAME } from '../common/constant';
 import { DecoratorConfigHandler } from '../common/handler/DecoratorConfigHandler';
 import { PropertyDecoratorValidator } from '../common/validator';
@@ -7,10 +8,10 @@ import { DecoratorInfo } from '../DecoratorInfo';
 import { InjectDecoratorStateManager } from './InjectDecoratorStateManager';
 import { InstanceFactory } from './InstanceFactory';
 import { InjectDecoratorOptions, GetInstanceConfig, InjectDecoratorConfig } from './types/ioc';
+
 /**
  * inject装饰器工厂
  */
-
 export class InjectDecoratorFactory extends DecoratorFactory {
   /**
    * 装饰器信息
@@ -47,9 +48,10 @@ export class InjectDecoratorFactory extends DecoratorFactory {
 
     // 校验装饰器是否存在冲突
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error('Conflict decorator');
+      throw new Error(I18n.t_v2(i18n.ERROR.DECORATOER_CONFLICT));
     }
   }
+
   /**
    * 装饰器配置检查
    * @param config 装饰器配置
@@ -57,6 +59,7 @@ export class InjectDecoratorFactory extends DecoratorFactory {
   protected preCheckConfig(config: InjectDecoratorOptions): void {
     //JoiUtils.validate(injectDecoratorConfigSchema, config);
   }
+
   /**
    * 处理装饰器配置
    * @param config 装饰器配置

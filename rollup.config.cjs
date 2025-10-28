@@ -3,7 +3,7 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const terser = require('@rollup/plugin-terser');
 const { resolve } = require('path');
-
+const copy = require('rollup-plugin-copy');
 // 控制是否压缩（可通过命令行传入 --environment PRODUCTION）
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -23,6 +23,13 @@ module.exports = {
       sourcemap: isProduction ? false : true,
       exports: 'named',
     },
+    {
+      file: 'dist/index.iife.js',
+      format: 'iife',
+      name: 'AxiosPlus',
+      sourcemap: isProduction ? false : true,
+      exports: 'named',
+    },
   ],
 
   external: [],
@@ -38,6 +45,12 @@ module.exports = {
       declaration: true,
       declarationDir: 'dist/types',
       emitDeclarationOnly: false,
+    }),
+    copy({
+      targets: [
+        { src: 'src/**/*.d.ts', dest: 'dist/types' }, // 将 src 下的 .d.ts 文件复制到 dist/types
+      ],
+      hook: 'writeBundle', // 在打包完成后执行
     }),
     // 只在生产环境启用压缩
     isProduction &&

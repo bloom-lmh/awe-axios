@@ -21,30 +21,35 @@ import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 export function Get(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
   return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.GET, 'get');
 }
+
 /**
  * Post装饰器
  */
 export function Post(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
   return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.POST, 'post');
 }
+
 /**
  * Put装饰器
  */
 export function Put(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
   return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.PUT, 'put');
 }
+
 /**
  * Patch装饰器
  */
 export function Patch(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
   return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.PATCH, 'patch');
 }
+
 /**
  * Delete装饰器
  */
 export function Delete(config?: HttpMethodDecoratorConfig | string): MethodDecorator {
   return new HttpMethodDecoratorFactory().createDecorator(config, DECORATORNAME.DELETE, 'delete');
 }
+
 /**
  * head装饰器
  */

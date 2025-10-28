@@ -111,7 +111,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
     const { conflictList } = this.decoratorInfo;
     // 校验是否存在冲突装饰器
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error('The Get decorator confilct use other decorators in the class.');
+      throw new Error('The @Get decorator confilct with other decorators in the class.');
     }
   }
 
@@ -273,6 +273,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
       const request = this.applyConfig();
       // 记录原方法
       const invoke = descriptor.value;
+
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(invoke, {
         /**
@@ -286,6 +287,7 @@ export class GetDecoratorFactory extends MethodDecoratorFactory {
           this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig();
+
           // 发送请求
           return request(this.decoratorConfig.getOriginalConfig());
         },
