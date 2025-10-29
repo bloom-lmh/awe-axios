@@ -7,6 +7,8 @@ import { de, IteratorFactory } from 'data-faker-plus';
 import { SignalController } from '@/core/common/signal/SignalController';
 import { custom } from 'joi';
 import { useRetry } from '../requeststrategy/Retry';
+import { useDebounce } from '../requeststrategy/Debounce';
+import { useThrottle } from '../requeststrategy/Throttle';
 const jsonData = IteratorFactory.getIterator([
   HttpResponse.error(),
   HttpResponse.error(),
@@ -14,7 +16,23 @@ const jsonData = IteratorFactory.getIterator([
     data: 'a',
   }),
 ]);
-
+const throttleRetryData = IteratorFactory.getIterator([
+  HttpResponse.error(),
+  HttpResponse.error(),
+  HttpResponse.error(),
+  HttpResponse.json({
+    data: '1',
+  }),
+  HttpResponse.error(),
+  HttpResponse.error(),
+  HttpResponse.error(),
+  HttpResponse.json({
+    data: '2',
+  }),
+  HttpResponse.json({
+    data: '3',
+  }),
+]);
 const handlers = [
   http.get('http://localhost:3000/users/pages', ({ request }) => {
     console.log(request.url);
@@ -55,6 +73,8 @@ const handlers = [
   }),
 
   http.get('http://localhost:3000/users/retry/:id', async ({ request }) => {
+    console.log('a');
+
     return jsonData.next().value;
   }),
 
@@ -64,6 +84,17 @@ const handlers = [
     return HttpResponse.json({
       data: 'a',
     });
+  }),
+
+  http.get('http://localhost:3000/users/throttle/:id', async ({ request }) => {
+    console.log('a');
+
+    return HttpResponse.json({
+      data: 'a',
+    });
+  }),
+  http.get('http://localhost:3000/users/throttleRetry/:id', async ({ request }) => {
+    return throttleRetryData.next().value;
   }),
 ];
 const worker = setupServer(...handlers);
@@ -121,67 +152,105 @@ describe('@Get装饰器测试', () => {
   });
 
   test('2. 请求重发', async () => {
-    const retryCtr = new SignalController();
-    const requestCtr = new AbortController();
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
     class UserApi {
       @Get({
         url: '/retry/:id',
-        signal: requestCtr.signal,
-        retry: {
-          count: 3,
-          signal: retryCtr.signal,
-        },
-        customRetry: useRetry,
       })
       getUserById(@PathParam('id') id: number): any {}
     }
 
     // 取消重传
     const userApi = new UserApi();
-    setTimeout(() => {
-      // 取消请求
-      requestCtr.abort();
-    }, 100);
-    // 不再进行请求重发
-    const { data } = await userApi.getUserById(1);
+    async function getUserById(id: number) {
+      const { data } = await userApi.getUserById(id);
+    }
+    const retryGetUserById = useRetry(getUserById, {
+      delay: 1000,
+    });
+    await retryGetUserById(1);
   });
 
-  test.only('3. 防抖', async () => {
+  test('3. 防抖', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
     class UserApi {
       @Get({
         url: '/debounce/:id',
-        debounce: true,
       })
       getUserById(@PathParam('id') id: number): any {}
     }
     const userApi = new UserApi();
-    // 只发送一次请求
-    await userApi.getUserById(1);
-    await userApi.getUserById(1);
-    await userApi.getUserById(1);
+    async function getUserById(id: number) {
+      const { data } = await userApi.getUserById(id);
+      console.log(data);
+    }
+    const fn = useDebounce(getUserById);
+    fn(1);
+    fn(2);
+    fn(3);
+    fn(4);
+    await fn(5);
   });
 
-  /*   test.only('3. 防抖', async () => {
+  test('4. 节流', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
     class UserApi {
       @Get({
-        url: '/debounce/:id',
-        debounce: true,
+        url: '/throttle/:id',
       })
       getUserById(@PathParam('id') id: number): any {}
     }
     const userApi = new UserApi();
-    for (let i = 0; i < 2; i++) {
-      // 不再进行超时重传
-      const { data } = await userApi.getUserById(1);
+    // 真实接口调用
+    async function getUserById(id: number) {
+      const { data } = await userApi.getUserById(id);
+      console.log(data);
     }
-  }); */
+    // 节流函数
+    const fn = useThrottle(getUserById);
+    // 默认100ms的执行间隔，所以下面实际调用3次接口
+    fn(1);
+    fn(2);
+    await delay(100);
+    fn(3);
+    fn(4);
+    await delay(100);
+    fn(5);
+    fn(6);
+  });
+  test.only('5. 节流+重试', async () => {
+    @HttpApi({
+      baseURL: 'http://localhost:3000/users/',
+    })
+    class UserApi {
+      @Get({
+        url: '/throttleRetry/:id',
+      })
+      getUserById(@PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    // 真实接口调用
+    async function getUserById(id: number) {
+      const { data } = await userApi.getUserById(id);
+      console.log(data);
+    }
+    // 节流函数
+    const fn = useThrottle(useRetry(getUserById));
+    // 默认100ms的执行间隔，所以下面实际调用3次接口
+    fn(1);
+    fn(2);
+    await delay(1000);
+    fn(3);
+    fn(4);
+    await delay(1000);
+    fn(5);
+    fn(6);
+    fn(6);
+  });
 });

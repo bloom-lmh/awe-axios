@@ -53,27 +53,27 @@ export class HttpMethodDecoratorConfig<D = any> implements AxiosRequestConfig<D>
   /**
    * 请求重传
    */
-  retry?: RetryConfig;
+  //retry?: RetryConfig;
   /**
    * 自定义重传方式
    */
-  customRetry?: RetryRequestPolicy;
+  //customRetry?: RetryRequestPolicy;
   /**
    * 防抖
    */
-  debounce?: DebounceConfig;
+  //debounce?: DebounceConfig;
   /**
    * 自定义防抖
    */
-  customDebounce?: DebounceRequestPolicy;
+  //customDebounce?: DebounceRequestPolicy;
   /**
    * 节流
    */
-  throttle?: ThrottleConfig;
+  //throttle?: ThrottleConfig;
   /**
    * 自定义节流
    */
-  customThrottle?: ThrottleRequestPolicy;
+  // customThrottle?: ThrottleRequestPolicy;
   /**
    * mock
    */

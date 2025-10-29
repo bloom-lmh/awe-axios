@@ -57,17 +57,17 @@ export class HttpSubDecoratorConfigHandler {
   /**
    * 处理retry
    */
-  mergeRetryConfig(retryConfig: RetryOptions) {
+  /* mergeRetryConfig(retryConfig: RetryOptions) {
     const { retry } = this.httpConfig;
     if (retry) {
       this.httpConfig.retry = HttpSubDecoratorConfigHandler.mergeRetryConfig(retry as RetryOptions, retryConfig);
     }
     return this;
-  }
+  } */
   /**
    * 处理debounce
    */
-  mergeDebounceConfig(debounceConfig: DebounceOptions) {
+  /*  mergeDebounceConfig(debounceConfig: DebounceOptions) {
     const { debounce } = this.httpConfig;
     if (debounce) {
       this.httpConfig.debounce = HttpSubDecoratorConfigHandler.mergeDebounceConfig(
@@ -76,11 +76,11 @@ export class HttpSubDecoratorConfigHandler {
       );
     }
     return this;
-  }
+  } */
   /**
    * 处理节流
    */
-  mergeThrottleConfig(throttleConfig: ThrottleOptions) {
+  /* mergeThrottleConfig(throttleConfig: ThrottleOptions) {
     const { throttle } = this.httpConfig;
     if (throttle) {
       this.httpConfig.throttle = HttpSubDecoratorConfigHandler.mergeThrottleConfig(
@@ -89,7 +89,7 @@ export class HttpSubDecoratorConfigHandler {
       );
     }
     return this;
-  }
+  } */
   /**
    * 覆盖其它配置
    */

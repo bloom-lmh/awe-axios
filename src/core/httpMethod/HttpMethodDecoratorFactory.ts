@@ -139,14 +139,13 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ) {
-    let retry = (config as HttpMethodDecoratorConfig).retry;
     // 预处理配置项
     config = this.configHandler
       .setConfig(config, false)
       .preHandleConfig(method)
-      .preHandleRetryConfig()
+      /*    .preHandleRetryConfig()
       .preHandleDebounceConfig()
-      .preHandleThrottleConfig()
+      .preHandleThrottleConfig() */
       .preHandleMockConfig()
       .result() as HttpMethodDecoratorConfig;
 
@@ -176,13 +175,14 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    */
   protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
     // 实现防抖、节流和重传
-    const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
+    // const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
+    const { mock } = this.decoratorConfig;
 
     // 基础请求
     let requestFn = useRequest();
     // 在基础请求的基础上装饰逻辑
     // 伴随请求重发
-    if (retry) {
+    /*  if (retry) {
       requestFn = customRetry
         ? customRetry(requestFn, retry as RetryOptions)
         : useRetry(requestFn, retry as RetryOptions);
@@ -198,7 +198,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
       requestFn = customDebounce
         ? customDebounce(requestFn, debounce as DebounceOptions)
         : useDebounce(requestFn, debounce as DebounceOptions);
-    }
+    } */
     // mock请求
     if (mock) {
       requestFn = useMock(requestFn, this.decoratorInfo.id);

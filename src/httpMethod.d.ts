@@ -1,4 +1,3 @@
-import { Signal } from '@/core/signal/Signal';
 import { Axios, AxiosInstance } from 'axios';
 import { DefaultBodyType, RequestHandlerOptions } from 'msw';
 import { HttpResponseResolver, PathParams } from 'msw';
@@ -18,17 +17,17 @@ export type RetryOptions = {
   /**
    * 信号量
    */
-  signal?: Signal;
+  //signal?: Signal;
 };
 /**
  * 请求重传配置
  */
 export type RetryConfig =
   | RetryOptions
-  | boolean // 是否开启，开启则采用默认值
   | number // 请求重传的次数
-  | Signal
   | [number, number]; // 请求重传次数和延时（基础延时）
+// | boolean // 是否开启，开启则采用默认值
+//| Signal
 
 /**
  * 防抖选项
@@ -45,12 +44,12 @@ export type DebounceOptions = {
   /**
    * 信号量
    */
-  signal?: Signal;
+  // signal?: Signal;
 };
 /**
  * 防抖配置
  */
-export type DebounceConfig = DebounceOptions | boolean | number | Signal;
+export type DebounceConfig = DebounceOptions | number; //| Signal | boolean;
 
 /**
  * 节流选项
@@ -59,7 +58,7 @@ export type ThrottleOptions = {
   /**
    * 取消节流的信号量
    */
-  signal?: Signal;
+  //signal?: Signal;
   /**
    * 节流间隔
    */
@@ -68,7 +67,7 @@ export type ThrottleOptions = {
 /**
  * 节流配置
  */
-export type ThrottleConfig = ThrottleOptions | boolean | number | Signal;
+export type ThrottleConfig = ThrottleOptions | number; //| Signal;
 
 /**
  * 单个mockHandler函数

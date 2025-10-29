@@ -87,26 +87,26 @@ export function TransformResponse(
 /**
  * retry装饰器
  */
-export function Retry(config: RetryConfig): MethodDecorator {
+/* export function Retry(config: RetryConfig): MethodDecorator {
   const retryOptions = HttpMtdDecoratorConfigHandler.handleRetryConfig(config);
   return new RetryDecoratorFactory().createDecorator(DECORATORNAME.RETRY, retryOptions);
-}
+} */
 
 /**
  * debounce装饰器
  */
-export function Debounce(config: DebounceConfig): MethodDecorator {
+/* export function Debounce(config: DebounceConfig): MethodDecorator {
   let debounceOptions = HttpMtdDecoratorConfigHandler.handleDebounceConfig(config);
   return new DebounceDecoratorFactory().createDecorator(DECORATORNAME.DEBOUNCE, debounceOptions);
 }
-
+ */
 /**
  * throttle装饰器
  */
-export function Throttle(config: DebounceConfig): MethodDecorator {
+/* export function Throttle(config: DebounceConfig): MethodDecorator {
   let throttleOptions = HttpMtdDecoratorConfigHandler.handleThrottleConfig(config);
   return new ThrottleDecoratorFactory().createDecorator(DECORATORNAME.THROTTLE, throttleOptions);
-}
+} */
 
 /**
  * RefAxios装饰器

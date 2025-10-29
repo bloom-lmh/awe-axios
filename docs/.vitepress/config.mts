@@ -47,8 +47,8 @@ export default defineConfig({
             { text: '基本请求方法', link: '/zh/发送HTTP请求/基本请求方法' },
             { text: '参数装饰器', link: '/zh/发送HTTP请求/参数装饰器' },
             { text: '常用功能', link: '/zh/发送HTTP请求/常用功能' },
-            { text: '信号量机制', link: '/zh/发送HTTP请求/信号量机制' },
             { text: '子项装饰器', link: '/zh/发送HTTP请求/子项装饰器' },
+            { text: '自定义装饰器', link: '/zh/发送HTTP请求/封装自定义装饰器' },
           ],
         },
         {
@@ -56,6 +56,7 @@ export default defineConfig({
           items: [
             { text: '接口二义性', link: '/zh/HTTP请求拦截/接口二义性' },
             { text: '环境感知机制', link: '/zh/HTTP请求拦截/环境感知机制' },
+            { text: '数据生成工具', link: '/zh/HTTP请求拦截/数据生成工具' },
           ],
         },
         {
