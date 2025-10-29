@@ -27,8 +27,8 @@ export class DecoratorConfigHandler {
   /**
    * 若已经有对象则可通过该方法设置配置项
    */
-  setConfig(config: any) {
-    this.config = ObjectUtils.deepClone(config);
+  setConfig<T>(config: T, clone: boolean = true) {
+    this.config = clone ? ObjectUtils.deepClone(config) : config;
     return this;
   }
 

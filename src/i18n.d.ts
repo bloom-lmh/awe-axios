@@ -8,4 +8,7 @@ export interface Locale {
     // 重复参数名
     DUPLICATE_PARAM_NAME: string;
   };
+  WARN: {
+    CANCEL_RETRY: string;
+  };
 }

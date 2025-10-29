@@ -11,8 +11,7 @@ export function useRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promi
   let { count, delay, signal } = config as Required<RetryOptions>;
   // 实现请求重传
   return async (config: HttpMethodDecoratorConfig) => {
-    console.log('请求时signal', signal);
-
+    // 取消请求重发
     if (signal && (signal as Signal).isAborted()) {
       return await requestFn(config);
     }

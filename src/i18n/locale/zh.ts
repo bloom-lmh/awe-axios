@@ -7,7 +7,7 @@ export const zhCN: Locale = {
     DECORATOER_CONFLICT: '装饰器冲突',
     DUPLICATE_PARAM_NAME: '参数名重复',
   },
-  /*   WARN: {
-    
-  } */
+  WARN: {
+    CANCEL_RETRY: '请求重试取消',
+  },
 };

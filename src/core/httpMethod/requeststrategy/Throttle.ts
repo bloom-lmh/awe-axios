@@ -38,8 +38,6 @@ export function useThrottle(requestFn: (config: HttpMethodDecoratorConfig) => Pr
 
     // 首次调用直接执行
     if (lastTime === 0) {
-      console.log('节流首次执行');
-
       lastTime = currentTime;
       return await requestFn(config);
     }

@@ -16,12 +16,14 @@ export function useDebounce(requestFn: (config: HttpMethodDecoratorConfig) => Pr
     if (signal.isAborted()) {
       return await requestFn(config);
     }
+
     // 立即执行
     if (immediate) {
       immediate = false;
       return await requestFn(config);
     }
-    clearTimeout(timer);
+
+    timer && clearTimeout(timer);
     return new Promise((resolve, reject) => {
       timer = setTimeout(async () => {
         try {

@@ -139,9 +139,10 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     target: DecoratedClassOrProto,
     propertyKey: string | symbol,
   ) {
+    let retry = (config as HttpMethodDecoratorConfig).retry;
     // 预处理配置项
     config = this.configHandler
-      .setConfig(config)
+      .setConfig(config, false)
       .preHandleConfig(method)
       .preHandleRetryConfig()
       .preHandleDebounceConfig()

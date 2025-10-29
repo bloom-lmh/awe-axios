@@ -9,15 +9,15 @@ import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
  */
 export function useRequest(): any {
   return (config: HttpMethodDecoratorConfig) => {
-    const { refAxios = axios } = config;
+    const { refAxios = axios, signal } = config;
     // 树摇配置
-    const axiosRequestConfig = DecoratorConfigHandler.treeShakingConfig(config, [
+    /* const axiosRequestConfig = DecoratorConfigHandler.treeShakingConfig(config, [
       'refAxios',
       'retry',
       'debounce',
       'throttle',
       'mock',
-    ]);
-    return refAxios(axiosRequestConfig);
+    ]); */
+    return refAxios(config);
   };
 }

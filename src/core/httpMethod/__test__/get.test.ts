@@ -1,10 +1,12 @@
 import { setupServer } from 'msw/node';
 import { HttpApi } from '@/core/ioc';
-import { BodyParam, Get, PathParam, Post, QueryParam } from '@/index';
-import { http, HttpResponse } from 'msw';
-import { afterAll, beforeAll, describe, test } from 'vitest';
-import { IteratorFactory } from 'data-faker-plus';
+import { axiosPlus, BodyParam, Get, PathParam, Post, QueryParam } from '@/index';
+import { delay, http, HttpResponse } from 'msw';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { de, IteratorFactory } from 'data-faker-plus';
 import { SignalController } from '@/core/common/signal/SignalController';
+import { custom } from 'joi';
+import { useRetry } from '../requeststrategy/Retry';
 const jsonData = IteratorFactory.getIterator([
   HttpResponse.error(),
   HttpResponse.error(),
@@ -54,6 +56,14 @@ const handlers = [
 
   http.get('http://localhost:3000/users/retry/:id', async ({ request }) => {
     return jsonData.next().value;
+  }),
+
+  http.get('http://localhost:3000/users/debounce/:id', async ({ request }) => {
+    console.log('a');
+
+    return HttpResponse.json({
+      data: 'a',
+    });
   }),
 ];
 const worker = setupServer(...handlers);
@@ -110,26 +120,68 @@ describe('@Get装饰器测试', () => {
     const { data: data5 } = await userApi.uploadFile(form);
   });
 
-  test.only('2. 超时重传', async () => {
-    const retrySignalCtr = new SignalController();
-
+  test('2. 请求重发', async () => {
+    const retryCtr = new SignalController();
+    const requestCtr = new AbortController();
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
     class UserApi {
       @Get({
         url: '/retry/:id',
+        signal: requestCtr.signal,
         retry: {
-          signal: retrySignalCtr.signal,
+          count: 3,
+          signal: retryCtr.signal,
         },
+        customRetry: useRetry,
       })
       getUserById(@PathParam('id') id: number): any {}
     }
-    retrySignalCtr.abort();
-    console.log(retrySignalCtr.signal.isAborted());
 
+    // 取消重传
     const userApi = new UserApi();
+    setTimeout(() => {
+      // 取消请求
+      requestCtr.abort();
+    }, 100);
+    // 不再进行请求重发
     const { data } = await userApi.getUserById(1);
-    console.log(data);
   });
+
+  test.only('3. 防抖', async () => {
+    @HttpApi({
+      baseURL: 'http://localhost:3000/users/',
+    })
+    class UserApi {
+      @Get({
+        url: '/debounce/:id',
+        debounce: true,
+      })
+      getUserById(@PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    // 只发送一次请求
+    await userApi.getUserById(1);
+    await userApi.getUserById(1);
+    await userApi.getUserById(1);
+  });
+
+  /*   test.only('3. 防抖', async () => {
+    @HttpApi({
+      baseURL: 'http://localhost:3000/users/',
+    })
+    class UserApi {
+      @Get({
+        url: '/debounce/:id',
+        debounce: true,
+      })
+      getUserById(@PathParam('id') id: number): any {}
+    }
+    const userApi = new UserApi();
+    for (let i = 0; i < 2; i++) {
+      // 不再进行超时重传
+      const { data } = await userApi.getUserById(1);
+    }
+  }); */
 });
