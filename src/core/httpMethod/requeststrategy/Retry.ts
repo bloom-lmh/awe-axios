@@ -1,3 +1,4 @@
+import { Signal } from '@/core/common/signal/Signal';
 import { RetryOptions } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 
@@ -7,10 +8,12 @@ import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
  * @returns
  */
 export function useRetry(requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>, config: RetryOptions) {
-  const { count, delay, signal } = config as Required<RetryOptions>;
+  let { count, delay, signal } = config as Required<RetryOptions>;
   // 实现请求重传
   return async (config: HttpMethodDecoratorConfig) => {
-    if (signal && signal.isAborted()) {
+    console.log('请求时signal', signal);
+
+    if (signal && (signal as Signal).isAborted()) {
       return await requestFn(config);
     }
     // 最后一次错误

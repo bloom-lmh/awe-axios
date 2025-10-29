@@ -23,7 +23,7 @@ export class SignalController {
    * 取消信号量
    */
   abort(message: string = '') {
-    this.signal.abort();
+    this._signal.abort();
   }
 
   /**

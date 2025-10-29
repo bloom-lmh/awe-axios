@@ -40,6 +40,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",
     "cross-env": "^10.1.0",
+    "data-faker-plus": "^0.1.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.52.3",
     "rollup-plugin-copy": "^3.5.0",

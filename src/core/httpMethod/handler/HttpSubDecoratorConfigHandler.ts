@@ -157,6 +157,9 @@ export class HttpSubDecoratorConfigHandler {
 
   /**
    * 处理retry
+   * @param httpRetryConfig HttpMethod装饰器上的配置
+   * @param retryConfig 子项装饰器上的配置
+   * @description HttpMethod装饰器上的配置优先级更高
    */
   static mergeRetryConfig(httpRetryConfig: RetryOptions, retryConfig: RetryOptions) {
     return { ...retryConfig, ...httpRetryConfig };

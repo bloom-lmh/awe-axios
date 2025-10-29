@@ -176,6 +176,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
   protected applyConfig(): (config: HttpMethodDecoratorConfig) => Promise<any> {
     // 实现防抖、节流和重传
     const { throttle, debounce, retry, mock, customRetry, customDebounce, customThrottle } = this.decoratorConfig;
+
     // 基础请求
     let requestFn = useRequest();
     // 在基础请求的基础上装饰逻辑
