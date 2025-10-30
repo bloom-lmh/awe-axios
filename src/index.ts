@@ -11,9 +11,6 @@ export {
   Head,
   TransformRequest,
   TransformResponse,
-  Retry,
-  Debounce,
-  Throttle,
   RefAxios,
   AxiosRef,
 } from './core/httpMethod';

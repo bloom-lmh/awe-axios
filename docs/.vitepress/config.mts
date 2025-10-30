@@ -54,9 +54,9 @@ export default defineConfig({
         {
           text: 'HTTP请求拦截',
           items: [
-            { text: '接口二义性', link: '/zh/HTTP请求拦截/接口二义性' },
-            { text: '环境感知机制', link: '/zh/HTTP请求拦截/环境感知机制' },
-            { text: '数据生成工具', link: '/zh/HTTP请求拦截/数据生成工具' },
+            { text: '搭建mock接口', link: '/zh/HTTP请求拦截/搭建mock接口' },
+            { text: '环境切换机制', link: '/zh/HTTP请求拦截/环境切换机制' },
+            { text: '搭配数据生成工具', link: '/zh/HTTP请求拦截/数据生成工具' },
           ],
         },
         {

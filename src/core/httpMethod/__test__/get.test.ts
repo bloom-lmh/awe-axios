@@ -4,6 +4,8 @@ import {
   axiosPlus,
   BodyParam,
   Get,
+  HttpMethodDecoratorConfig,
+  Mock,
   PathParam,
   Post,
   QueryParam,
@@ -338,7 +340,7 @@ describe('@Get装饰器测试', () => {
     console.log(data);
   });
 
-  test.only('9. 子项装饰器@TransformRequest', async () => {
+  test('9. 子项装饰器@TransformRequest', async () => {
     @HttpApi('http://localhost:3000/users/')
     class UserApi {
       @Post({
@@ -360,6 +362,31 @@ describe('@Get装饰器测试', () => {
       createUser(@BodyParam() user: { name: string; age: number }): any {}
     }
     const { data } = await new UserApi().createUser({ name: 'test', age: 18 });
+    console.log(data);
+  });
+  // 只获取响应数据的data部分
+  function ExtractData() {
+    return TransformResponse((data: any) => {
+      data = JSON.parse(data).data;
+      return data;
+    });
+  }
+  function FileUp(config: HttpMethodDecoratorConfig) {
+    config.headers = {
+      'Content-Type': 'mutilpart/form-data',
+    };
+    return Post(config);
+  }
+  test.only('10. 封装自定义装饰器', async () => {
+    @HttpApi('http://localhost:3000/users/')
+    class UserApi {
+      @FileUp({ url: '/upload' })
+      @ExtractData()
+      avaterUpload(@BodyParam() form: FormData): any {}
+    }
+    const form = new FormData();
+    form.append('file', new File(['test'], 'test.txt'));
+    const { data } = await new UserApi().avaterUpload(form);
     console.log(data);
   });
 });
