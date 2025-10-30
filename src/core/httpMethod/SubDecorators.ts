@@ -60,7 +60,7 @@ export class TransformRequestDecoratorFactory extends HttpMtdSubDecoratorFactory
   protected validateDecorator(target: DecoratedClassOrProto, propertyKey: string | symbol): void {}
   protected handleConfig(
     target: DecoratedClassOrProto,
-    config: AxiosRequestTransformer | AxiosRequestTransformer[],
+    config: AxiosRequestTransformer[],
     propertyKey: string | symbol,
   ): void {
     // 尝试获取HttpApi类型的装饰器信息
@@ -82,9 +82,9 @@ export class TransformRequestDecoratorFactory extends HttpMtdSubDecoratorFactory
       const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
       if (subDecoratorConfig) {
         if (!subDecoratorConfig['transformRequest']) {
-          subDecoratorConfig['transformRequest'] = [config];
+          subDecoratorConfig['transformRequest'] = config;
         } else {
-          subDecoratorConfig['transformRequest'].unshift(config);
+          subDecoratorConfig['transformRequest'] = [...config, ...subDecoratorConfig['transformRequest']];
         }
       }
     }
@@ -101,7 +101,7 @@ export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactor
   protected validateDecorator(target: DecoratedClassOrProto, propertyKey: string | symbol): void {}
   protected handleConfig(
     target: DecoratedClassOrProto,
-    config: AxiosResponseTransformer | AxiosResponseTransformer[],
+    config: AxiosResponseTransformer[],
     propertyKey: string | symbol,
   ) {
     // 尝试获取HttpApi类型的装饰器信息
@@ -123,9 +123,9 @@ export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactor
       const subDecoratorConfig = this.stateManager.getSubDecoratorConfig(target, DECORATORNAME.HTTPMETHOD, propertyKey);
       if (subDecoratorConfig) {
         if (!subDecoratorConfig['transformResponse']) {
-          subDecoratorConfig['transformResponse'] = [config];
+          subDecoratorConfig['transformResponse'] = config;
         } else {
-          subDecoratorConfig['transformResponse'].push(config);
+          subDecoratorConfig['transformResponse'] = [...subDecoratorConfig['transformResponse'], ...config];
         }
       }
     }
@@ -135,7 +135,7 @@ export class TransformResponseDecoratorFactory extends HttpMtdSubDecoratorFactor
 /**
  * Retry装饰工厂
  */
-export class RetryDecoratorFactory extends HttpMtdSubDecoratorFactory<RetryOptions> {
+/* export class RetryDecoratorFactory extends HttpMtdSubDecoratorFactory<RetryOptions> {
   protected handleConfig(target: DecoratedClassOrProto, config: RetryOptions, propertyKey: string | symbol): void {
     // 尝试获取HttpApi类型的装饰器信息
     const httpMethodDecoratorInfo = this.stateManager.getHttpMethodDecoratorInfo(target, propertyKey);
@@ -152,16 +152,13 @@ export class RetryDecoratorFactory extends HttpMtdSubDecoratorFactory<RetryOptio
       subDecoratorConfig && (subDecoratorConfig['retry'] = config);
     }
   }
-}
+} */
 
 /**
  * Throttle装饰工厂
  */
-export class ThrottleDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
-  /**
-   * 初始化装饰器信息
-   * @param config
-   */
+/* export class ThrottleDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
+
   protected initDecoratorInfo(decoratorName: string | symbol): void {
     this.decoratorInfo = new DecoratorInfo()
       .setName(decoratorName)
@@ -190,16 +187,12 @@ export class ThrottleDecoratorFactory extends HttpMtdSubDecoratorFactory<Throttl
       subDecoratorConfig && (subDecoratorConfig['throttle'] = config);
     }
   }
-}
+} */
 
 /**
  * Debounce装饰工厂
  */
-export class DebounceDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
-  /**
-   * 初始化装饰器信息
-   * @param config
-   */
+/* export class DebounceDecoratorFactory extends HttpMtdSubDecoratorFactory<ThrottleOptions> {
   protected initDecoratorInfo(decoratorName: string | symbol): void {
     this.decoratorInfo = new DecoratorInfo()
       .setName(decoratorName)
@@ -229,3 +222,4 @@ export class DebounceDecoratorFactory extends HttpMtdSubDecoratorFactory<Throttl
     }
   }
 }
+ */

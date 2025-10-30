@@ -2,16 +2,11 @@ import { AxiosInstance, AxiosRequestTransformer, AxiosResponseTransformer } from
 import {
   TransformRequestDecoratorFactory,
   TransformResponseDecoratorFactory,
-  RetryDecoratorFactory,
-  DebounceDecoratorFactory,
-  ThrottleDecoratorFactory,
   AxiosRefDecoratorFactory,
 } from './SubDecorators';
-import { RetryConfig, DebounceConfig } from '../../httpMethod';
 import { RefAxiosDecoratorFactory } from './RefAxiosDecoratorFactory';
 import { ClassDecorator, MethodDecorator } from '../../decorator';
 import { DECORATORNAME } from '../common/constant/DecoratorConstants';
-import { HttpMtdDecoratorConfigHandler } from './handler/HttpMtdDecoratorConfigHandler';
 import { HttpMethodDecoratorFactory } from './HttpMethodDecoratorFactory';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 
@@ -70,8 +65,8 @@ export function Options(config?: HttpMethodDecoratorConfig | string): MethodDeco
 export function TransformRequest(
   transformRequest: AxiosRequestTransformer | AxiosRequestTransformer[],
 ): MethodDecorator {
-  // todo 直接传入装饰器信息
-  return new TransformRequestDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMREQUEST, transformRequest);
+  let config = !Array.isArray(transformRequest) ? [transformRequest] : transformRequest;
+  return new TransformRequestDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMREQUEST, config);
 }
 
 /**
@@ -80,8 +75,9 @@ export function TransformRequest(
 export function TransformResponse(
   transformResponse: AxiosResponseTransformer | AxiosResponseTransformer[],
 ): MethodDecorator {
+  let config = !Array.isArray(transformResponse) ? [transformResponse] : transformResponse;
   // todo 直接传入装饰器信息
-  return new TransformResponseDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMRESPONSE, transformResponse);
+  return new TransformResponseDecoratorFactory().createDecorator(DECORATORNAME.TRANSFORMRESPONSE, config);
 }
 
 /**

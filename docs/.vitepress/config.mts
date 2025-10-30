@@ -48,7 +48,7 @@ export default defineConfig({
             { text: '参数装饰器', link: '/zh/发送HTTP请求/参数装饰器' },
             { text: '常用功能', link: '/zh/发送HTTP请求/常用功能' },
             { text: '子项装饰器', link: '/zh/发送HTTP请求/子项装饰器' },
-            { text: '自定义装饰器', link: '/zh/发送HTTP请求/封装自定义装饰器' },
+            { text: '自定义装饰器', link: '/zh/发送HTTP请求/自定义装饰器' },
           ],
         },
         {

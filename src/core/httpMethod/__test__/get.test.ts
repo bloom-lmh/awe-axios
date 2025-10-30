@@ -1,11 +1,19 @@
 import { setupServer } from 'msw/node';
 import { HttpApi } from '@/core/ioc';
-import { axiosPlus, BodyParam, Get, PathParam, Post, QueryParam } from '@/index';
+import {
+  axiosPlus,
+  BodyParam,
+  Get,
+  PathParam,
+  Post,
+  QueryParam,
+  RefAxios,
+  TransformRequest,
+  TransformResponse,
+} from '@/index';
 import { delay, http, HttpResponse } from 'msw';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { de, IteratorFactory } from 'data-faker-plus';
-import { SignalController } from '@/core/common/signal/SignalController';
-import { custom } from 'joi';
+import { defineModel, fakeData, IteratorFactory } from 'data-faker-plus';
 import { useRetry } from '../requeststrategy/Retry';
 import { useDebounce } from '../requeststrategy/Debounce';
 import { useThrottle } from '../requeststrategy/Throttle';
@@ -36,8 +44,17 @@ const throttleRetryData = IteratorFactory.getIterator([
 const handlers = [
   http.get('http://localhost:3000/users/pages', ({ request }) => {
     console.log(request.url);
+    let userModel = defineModel('user', {
+      id: 'string.uuid',
+      name: 'person.fullName',
+      emial: 'internet.email',
+      sex: 'person.sex',
+    });
     return HttpResponse.json({
-      data: 'a',
+      data: fakeData(userModel, {
+        count: 3,
+        locale: 'zh_CN',
+      }),
     });
   }),
 
@@ -150,7 +167,6 @@ describe('@Get装饰器测试', () => {
     form.append('file', new File(['test'], 'test.txt'));
     const { data: data5 } = await userApi.uploadFile(form);
   });
-
   test('2. 请求重发', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
@@ -195,7 +211,6 @@ describe('@Get装饰器测试', () => {
     fn(4);
     await fn(5);
   });
-
   test('4. 节流', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
@@ -224,7 +239,7 @@ describe('@Get装饰器测试', () => {
     fn(5);
     fn(6);
   });
-  test.only('5. 节流+重试', async () => {
+  /*   test('5. 节流+重试', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
@@ -249,8 +264,102 @@ describe('@Get装饰器测试', () => {
     fn(3);
     fn(4);
     await delay(1000);
-    fn(5);
-    fn(6);
-    fn(6);
+  }); */
+  test('6. 子项装饰器@TransformResponse', async () => {
+    const request = axiosPlus.create({
+      baseURL: 'http://localhost:3000/users/',
+    });
+    @HttpApi({
+      refAxios: request,
+    })
+    class UserApi {
+      @Get({
+        url: '/pages',
+        transformResponse: [
+          data => {
+            return JSON.parse(data).data;
+          },
+        ],
+      })
+      @TransformResponse([
+        data => {
+          data = data
+            ? data.map((user: any) => {
+                user['age'] = 12;
+                return user;
+              })
+            : data;
+          return data;
+        },
+      ])
+      getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
+    }
+    const { data } = await new UserApi().getUserPages(1, 3);
+    console.log(data);
+  });
+
+  test('7. 子项装饰器@RefAxios', async () => {
+    const request1 = axiosPlus.create({
+      baseURL: 'http://localhost:3000/users/',
+    });
+    const request2 = axiosPlus.create({
+      baseURL: 'http://localhost:3000/users/',
+    });
+    @HttpApi({
+      refAxios: request1,
+    })
+    @RefAxios(request2)
+    class UserApi {
+      @Get({
+        url: '/pages',
+      })
+      getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
+    }
+    // 最终发送接口为http://localhost:3000/users/pages?size=3&page=1
+    const { data } = await new UserApi().getUserPages(1, 3);
+    console.log(data);
+  });
+  test('8. 子项装饰器@AxiosRef', async () => {
+    const request1 = axiosPlus.create({
+      baseURL: 'http://localhost:3000/users/',
+    });
+    const request2 = axiosPlus.create({
+      baseURL: 'http://localhost:3000/users/',
+    });
+    class UserApi {
+      @Get({
+        refAxios: request1,
+        url: '/pages',
+      })
+      getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
+    }
+    // 最终发送接口为http://localhost:3000/users/pages?size=3&page=1
+    const { data } = await new UserApi().getUserPages(1, 3);
+    console.log(data);
+  });
+
+  test.only('9. 子项装饰器@TransformRequest', async () => {
+    @HttpApi('http://localhost:3000/users/')
+    class UserApi {
+      @Post({
+        url: '/',
+        transformRequest: [
+          data => {
+            data.email = '1111@11.com';
+            return data;
+          },
+        ],
+      })
+      @TransformRequest([
+        // 为user添加属性sex
+        data => {
+          data.sex = '男';
+          return JSON.stringify(data);
+        },
+      ])
+      createUser(@BodyParam() user: { name: string; age: number }): any {}
+    }
+    const { data } = await new UserApi().createUser({ name: 'test', age: 18 });
+    console.log(data);
   });
 });
