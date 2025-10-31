@@ -1,4 +1,4 @@
-export { HttpResponse } from 'msw';
+export { HttpResponse, http } from 'msw';
 export { After, Aspect, Before, Around, AfterReturning, AfterThrowing } from './core/aop';
 export { Inject, Component, HttpApi } from './core/ioc';
 export {

@@ -19,7 +19,7 @@ import { useMock } from './requeststrategy/Mock';
 import { useRequest } from './requeststrategy/Request';
 import { useRetry } from './requeststrategy/Retry';
 import { useThrottle } from './requeststrategy/Throttle';
-import { RetryOptions, ThrottleOptions, DebounceOptions } from '../../httpMethod';
+import { RetryOptions, ThrottleOptions, DebounceOptions, MockConfig } from '../../httpMethod';
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 import { I18n, i18n } from '@/i18n/i18n';
@@ -201,7 +201,11 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     } */
     // mock请求
     if (mock) {
-      requestFn = useMock(requestFn, this.decoratorInfo.id);
+      requestFn = useMock(requestFn, {
+        id: this.decoratorInfo.id,
+        url: this.decoratorConfig.url!,
+        baseURL: this.decoratorConfig.baseURL!,
+      });
     }
     return requestFn;
   }

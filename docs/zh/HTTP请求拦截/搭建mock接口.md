@@ -10,7 +10,7 @@
 
 想要将真实接口改为 `mock` 接口，只需要填写 `mock` 配置即可，`mock`配置项接受一个函数，如下所示：
 
-```ts {1-2,10-17,22-23}
+```ts {1-2,7-14,20}
 // 全局打开 mock 功能
 MockAPI.on();
 @HttpApi('http://localhost:3000/users')
@@ -92,6 +92,50 @@ let { data } = await userApi.getUsers()('success');
 console.log(data);
 ```
 
+当然这样写实在太丑陋了，嵌套非常深，`axios-plus`还提供了另一种写法就是直接在`mockHandlers`中单独配置处理器函数，这些处理器函数会最终与`mock.handlers`合并，如下所示：
+
+```ts {5}
+@HttpApi('http://localhost:3000/users/')
+class UserApi {
+  @Post({
+    url: '/pages/:page/:size',
+    mockHandlers: {
+      success: async ({ request }) => {
+        const data = await request.json();
+        const { page, size } = data as { page: number; size: number };
+        // 1,10
+        console.log(page, size);
+        return HttpResponse.json({
+          data: [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+          ],
+        });
+      },
+      error: () => {
+        return HttpResponse.error();
+      },
+      default: () => {
+        return HttpResponse.json({
+          data: [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+          ],
+        });
+      },
+    },
+  })
+  getUserPages(@BodyParam() qo: { page: number; size: number }): any {}
+}
+let userApi = new UserApi();
+let { data } = await userApi.getUserPages({ page: 1, size: 10 })('success');
+console.log(data);
+```
+
+::: warning 同名处理器函数
+如果你在`mock.handlers`和`mockHandlers`中配置了同名的处理器函数，那么`axios-plus`会优先使用`mock.handlers`中的处理器函数。
+:::
+
 ### 默认处理器函数
 
 刚才基本使用的案例中，我们只配置了一个处理器函数，这个处理器函数本质上就是一个名为`defulat`默认处理函数，也就是说你其实可以这么定义它:
@@ -158,15 +202,25 @@ console.log(data);
 
 ```ts
 // 定义Response resolver
+http.get('http://localhost:3000/users/groups', ({ request }) => {
+  console.log(request.url);
+  return HttpResponse.json({
+    data: 'a',
+  });
+}),
+const server = setupServer(...handlers);
+server.listen();
 ```
 
-`axios-plus`只是做了简化了工作，你不再需要设置`mock`接口的路径，`axios-plus`会自动读取`@HttpApi`和`@Get`这类装饰器的配置，以及`mock`配置，并自动生成`msw`的`Response resolver`，然后注册。
+可以看到原生的定义方式中，需要使用`msw`的`http.get`来定义一个`Response resolver`，你需要传入请求地址和处理器函数。
+
+> `axios-plus`只是做了简化了工作，你不再需要设置`mock`接口的路径，`axios-plus`会自动读取`@HttpApi`和`@Get`这类装饰器的配置，以及`mock`配置，并自动生成`msw`的`Response resolver`，然后注册。
 
 ## HttpResponse
 
-`HttpResponse`是`msw`提供的方便我们响应数据的`API`，具体你可以参见`msw`,下面我会介绍一些常用的`HttpResponse`方法。
+`HttpResponse`是`msw`提供的方便我们响应数据的`API`，具体你可以参见`msw`
 
-### 调用签名
+### 构造函数
 
 `HttpResponse`类具有与`Fetch API Response`类完全相同的构造函数签名。这包括静态响应方法，如`Response.json()`和`Response.error()`。
 
@@ -205,7 +259,11 @@ new HttpResponse('Not found', {
 });
 ```
 
-### json
+### 常用静态方法
+
+下面我会介绍一些常用的`HttpResponse`静态方法。
+
+#### json
 
 `json`方法可以将响应数据转换为`json`格式，并设置响应头`Content-Type: application/json`
 
@@ -218,7 +276,7 @@ return HttpResponse.json(
 );
 ```
 
-### error
+#### error
 
 `error`方法可以模拟一个`network error`
 
@@ -239,13 +297,22 @@ return HttpResponse.error();
 HttpResponse.text('Hello world!');
 ```
 
+#### html
+
+`HttpResponse.html(body, init)`
+创建一个带有`Content-Type: text/html`头和给定响应体的`Response`实例。
+
+```ts
+HttpResponse.html(`<p class="greeting">Hello world!</p>`);
+```
+
 ::: tip 使用原生`Response`
 您绝对可以在您的响应解析器中使用原生的 `Fetch API Response` 实例。`MSW` 是建立在标准的请求和响应基础之上的，因此您可以随时使用它们。只需要在处理器函数参数中获取`Response`对象即可。处理器函数参数即将介绍。
 :::
 
 ## 处理器函数参数
 
-处理器参数本质上就是一个上下文对象，包含了请求参数和响应对象，你可以通过它来获取传入的参数和设置响应数据。具体来说有如下属性：
+处理器函数能够接受一个参数，这个参数本质上就是一个上下文对象，包含了请求参数和响应对象，你可以通过它来获取传入的参数和设置响应数据。它有如下属性：
 
 | Property  | Type                               | Description                                                  |
 | :-------- | :--------------------------------- | :----------------------------------------------------------- |
@@ -254,20 +321,92 @@ HttpResponse.text('Hello world!');
 | params    | Record<string, string \| string[]> | Request path parameters (e.g. :userId).                      |
 | cookies   | Record<string, string>             | Parsed request cookies.                                      |
 
-下面列举了一些常用接受参数的场景:
+通过它我们能够获取请求参数，并设置响应数据。下面列举了一些常用接受参数响应数据的场景:
 
-::: code-group
+### 接受查询参数
 
-```js [接受查询参数]
+`request`是一个查询参数对象，你可以通过它获取查询参数。
 
+```js {6-8,19,22}
+@HttpApi('http://localhost:3000/users')
+class UserApi {
+  @Get({
+    url: '/pages',
+    mock: ({ request }) => {
+      const url = new URL(request.url);
+      const page = url.searchParams.get('page');
+      const size = url.searchParams.get('size');
+      // 1,10
+      console.log(page, size);
+      return HttpResponse.json({
+        data: [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+        ],
+      });
+    },
+  })
+  getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
+}
+let userApi = new UserApi();
+let { data } = await userApi.getUserPages(1, 10)();
+console.log(data);
 ```
 
-```js [接受路径参数]
+### 接受路径参数
 
+通过`params`属性，你可以获取路径参数。
+
+```js {6-8}
+@HttpApi('http://localhost:3000/users/')
+class UserApi {
+  @Get({
+    url: '/pages/:page/:size',
+    mock: ({ params }) => {
+      const { page, size } = params;
+      // 1,10
+      console.log(page, size);
+      return HttpResponse.json({
+        data: [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+        ],
+      });
+    },
+  })
+  getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
 ```
 
-```js [接受请求体参数]
+### 接受请求体参数
 
+通过`request`属性，你可以获取请求体参数。
+
+```js {7-10,19,22}
+test.only('接受请求体参数', async () => {
+  @HttpApi('http://localhost:3000/users/')
+  class UserApi {
+    @Post({
+      url: '/pages/:page/:size',
+      mock: async ({ request }) => {
+        const data = await request.json();
+        const { page, size } = data as { page: number; size: number };
+        // 1,10
+        console.log(page, size);
+        return HttpResponse.json({
+          data: [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+          ],
+        });
+      },
+    })
+    getUserPages(@BodyParam() qo: { page: number; size: number }): any {}
+  }
+  let userApi = new UserApi();
+  let { data } = await userApi.getUserPages({ page: 1, size: 10 })();
+  console.log(data);
 ```
 
+::: warning 注意
+你需要改为`post`请求方式才能传递请求体参数。
 :::

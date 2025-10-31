@@ -55,7 +55,7 @@ export default defineConfig({
           text: 'HTTP请求拦截',
           items: [
             { text: '搭建mock接口', link: '/zh/HTTP请求拦截/搭建mock接口' },
-            { text: '环境切换机制', link: '/zh/HTTP请求拦截/环境切换机制' },
+            { text: '取消mock', link: '/zh/HTTP请求拦截/取消mock' },
             { text: '搭配数据生成工具', link: '/zh/HTTP请求拦截/数据生成工具' },
           ],
         },

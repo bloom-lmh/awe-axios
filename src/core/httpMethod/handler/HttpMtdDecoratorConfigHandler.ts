@@ -2,15 +2,7 @@ import { DecoratorConfigHandler } from '@/core/common/handler/DecoratorConfigHan
 import { Signal } from '@/core/common/signal/Signal';
 import { Method } from 'axios';
 import { HttpResponse } from 'msw';
-import {
-  RetryConfig,
-  RetryOptions,
-  ThrottleConfig,
-  DebounceConfig,
-  MockConfig,
-  DebounceOptions,
-  ThrottleOptions,
-} from '../../../httpMethod';
+import { RetryConfig, RetryOptions, ThrottleConfig, DebounceConfig, MockConfig } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from '../types/HttpRequestConfig';
 import { HttpSubDecoratorConfigHandler } from './HttpSubDecoratorConfigHandler';
@@ -47,6 +39,7 @@ export class HttpMtdDecoratorConfigHandler extends DecoratorConfigHandler {
       },
     };
     let { mock, mockHandlers } = this.config;
+
     // 若没有mock配置或配置为false，表示不采用mock
     if (!mock && !mockHandlers) {
       return this;

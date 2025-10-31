@@ -59,30 +59,27 @@ const handlers = [
       }),
     });
   }),
-
   http.get('http://localhost:3000/users/groups', ({ request }) => {
     console.log(request.url);
     return HttpResponse.json({
       data: 'a',
     });
   }),
+  http.get('http://localhost:3000/users/:id', ({ request, params }) => {
+    console.log(params);
 
-  http.get('http://localhost:3000/users/:id', ({ request }) => {
     console.log(request.url);
     return HttpResponse.json({
       data: 'a',
     });
   }),
-
   http.post('http://localhost:3000/users/', async ({ request }) => {
     const user = await request.json();
     console.log(user);
-
     return HttpResponse.json({
       data: 'a',
     });
   }),
-
   http.post('http://localhost:3000/users/upload', async ({ request }) => {
     const form = await request.formData();
     console.log(form);
@@ -90,24 +87,18 @@ const handlers = [
       data: 'a',
     });
   }),
-
   http.get('http://localhost:3000/users/retry/:id', async ({ request }) => {
     console.log('a');
-
     return jsonData.next().value;
   }),
-
   http.get('http://localhost:3000/users/debounce/:id', async ({ request }) => {
     console.log('a');
-
     return HttpResponse.json({
       data: 'a',
     });
   }),
-
   http.get('http://localhost:3000/users/throttle/:id', async ({ request }) => {
     console.log('a');
-
     return HttpResponse.json({
       data: 'a',
     });
@@ -125,7 +116,7 @@ afterAll(() => {
 });
 
 describe('@Get装饰器测试', () => {
-  test('1. 基本查询测试', async () => {
+  test.only('1. 基本查询测试', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
@@ -377,7 +368,7 @@ describe('@Get装饰器测试', () => {
     };
     return Post(config);
   }
-  test.only('10. 封装自定义装饰器', async () => {
+  test('10. 封装自定义装饰器', async () => {
     @HttpApi('http://localhost:3000/users/')
     class UserApi {
       @FileUp({ url: '/upload' })
