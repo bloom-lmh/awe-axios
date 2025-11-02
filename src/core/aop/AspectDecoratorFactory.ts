@@ -74,7 +74,6 @@ export class AspectDecoratorFactory extends DecoratorFactory {
   protected registerAdvices(target: DecoratedClass, config: number): void {
     // 获取所有通知
     let advices = this.stateManager.getAdvices(target.prototype);
-
     if (advices && Object.keys(advices).length > 0) {
       // 注册切面所有通知
       AspectFactory.registerAspectAdvices(config, advices);

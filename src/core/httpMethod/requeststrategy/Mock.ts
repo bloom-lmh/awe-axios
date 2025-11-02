@@ -3,7 +3,6 @@ import { PathUtils } from '@/utils/PathUtils';
 import { http } from 'msw';
 import { MockConfig, MockMethod, MockHandlersObject, MockHandlers } from '../../../httpMethod';
 import { HttpMethodDecoratorConfig } from '../types/HttpMethodDecoratorConfig';
-import { ObjectUtils } from '@/utils/ObjectUtils';
 
 /**
  * mock请求

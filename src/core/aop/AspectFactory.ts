@@ -1,4 +1,5 @@
 import { AdviceItems, Advices } from '../../aop';
+import { AspectProcessor } from './AspectProcessor';
 
 /**
  * 切面工厂
@@ -16,6 +17,7 @@ export class AspectFactory {
     this.aspectAdvices.push({ order, advices });
     // 排序 小于表示优先级高排在前面
     this.aspectAdvices.sort((a, b) => a.order - b.order);
+    AspectProcessor.weave();
   }
 
   /**

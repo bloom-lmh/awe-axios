@@ -1,4 +1,6 @@
+export { AdviceChain } from './core/aop/AdviceChain';
 export { HttpResponse, http } from 'msw';
+export { AspectContext } from './core/aop/AspectContext';
 export { After, Aspect, Before, Around, AfterReturning, AfterThrowing } from './core/aop';
 export { Inject, Component, HttpApi } from './core/ioc';
 export {

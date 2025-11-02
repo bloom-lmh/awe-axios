@@ -16,11 +16,7 @@ export class AspectProcessor {
   /**
    * 方法状态管理器
    */
-  @Inject({
-    module: SYSTEM.LIB,
-    ctor: MethodDecoratorStateManager,
-  })
-  private static stateManager: MethodDecoratorStateManager;
+  private static stateManager: MethodDecoratorStateManager = new MethodDecoratorStateManager();
   /**
    * 编织切面
    */
@@ -79,10 +75,28 @@ export class AspectProcessor {
 
         // 获取原方法
         let invokeMethod = (ctor.prototype as any)[methodName];
+        console.log(invokeMethod);
 
+        // 先撤销代理
+        // 已经注册过则不再注册
+        /* invokeMethod['adviceChain'] = adviceChain; */
         // 只代理非静态方法,并获取代理方法和revoke函数
         const proxy = new Proxy(invokeMethod, {
+          // 若是`axios-plus`代理后的http方法则交给自身处理
+
           apply(invoke, _this, args) {
+            console.log('a');
+
+            /* const isHttpMethod = AspectProcessor.stateManager.hasDecoratorInfoOfType(
+              ctor.prototype,
+              'httpMethod',
+              methodName,
+            );
+            if (isHttpMethod) {
+              invoke = invoke.apply(_this, args);
+              console.log(invoke);
+            } */
+
             // 创建切面上下文对象
             let context = new AspectContext(invoke, _this, args);
             // 尝试获取axios配置

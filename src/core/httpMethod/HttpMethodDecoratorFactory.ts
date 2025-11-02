@@ -24,6 +24,7 @@ import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 import { I18n, i18n } from '@/i18n/i18n';
 import { ObjectUtils } from '@/utils/ObjectUtils';
+import { AspectContext } from '../aop/AspectContext';
 
 /**
  * HttpMethod装饰器工厂
@@ -315,8 +316,16 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
           const httpRequestConfig = this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
           this.postCheckConfig(httpRequestConfig);
+          /* let adviceChain = invoke['adviceChain'];
+          if (adviceChain) {
+            let context = new AspectContext(invoke, _this, args);
+            context.setAxiosConfig(httpRequestConfig);
+            adviceChain.proceed(context);
+          } */
           // 发送请求
-          return request(httpRequestConfig.getOriginalConfig());
+          const result = request(httpRequestConfig.getOriginalConfig());
+
+          return result;
         },
       });
       // 注册原方法

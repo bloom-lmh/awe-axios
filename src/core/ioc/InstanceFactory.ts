@@ -1,4 +1,3 @@
-import { Constructor } from './../../decorator.d';
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import 'reflect-metadata';
 import { AspectDecoratorStateManager } from '../aop/AspectDecoratorStateManager';
@@ -27,6 +26,7 @@ import {
   InstanceItem,
   CandidateInstances,
 } from '../../ioc';
+import { AspectProcessor } from '../aop/AspectProcessor';
 
 function Init(
   target: DecoratedClass & {
@@ -97,6 +97,8 @@ export class InstanceFactory {
       instanceItemArray.push({ module, ctor, ctorName: ctor.name, alias, instance: undefined, methodNames });
       InstanceFactory.instanceItemMap.set(module, instanceItemArray);
     }
+    // 编织
+    AspectProcessor.weave();
   }
 
   /**

@@ -83,11 +83,11 @@ export type PointCutMethodWithReturnAndThrow = (
 /**
  * 切入点方法
  */
-export type PointCutMethod = (...args: any[]) => PointCutExpression | PointCutObj;
+export type PointCutMethod = (...args: any[]) => PointCutExpression;
 /**
  * Before\After\Around 切点类型
  */
-export type BeforeDecoratorConfig = PointCutExpression | PointCutObj | PointCutMethod;
+export type BeforeDecoratorConfig = PointCutExpression | PointCutMethod;
 export type AfterDecoratorConfig = BeforeDecoratorConfig;
 export type AroundDecoratorConfig = BeforeDecoratorConfig;
 

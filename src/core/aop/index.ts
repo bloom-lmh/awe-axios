@@ -5,6 +5,8 @@ import {
   AfterThrowDecoratorConfig,
   AroundDecoratorConfig,
   BeforeDecoratorConfig,
+  PointCutExpression,
+  PointCutMethod,
 } from '../../aop';
 import { AspectDecoratorFactory } from './AspectDecoratorFactory';
 import { DECORATORNAME } from '../common/constant';
@@ -14,7 +16,7 @@ import { DECORATORNAME } from '../common/constant';
  * @param config before装饰器配置
  * @returns @before 装饰器
  */
-export function Before(config: BeforeDecoratorConfig) {
+export function Before(config: PointCutExpression | PointCutMethod) {
   return new PointCutDecoratorFactory().createDecorator(config, DECORATORNAME.BEFORE, 'before');
 }
 
@@ -23,7 +25,7 @@ export function Before(config: BeforeDecoratorConfig) {
  * @param config after装饰器配置
  * @returns @after 装饰器
  */
-export function After(config: AfterDecoratorConfig) {
+export function After(config: PointCutExpression | PointCutMethod) {
   return new PointCutDecoratorFactory().createDecorator(config, DECORATORNAME.AFTER, 'after');
 }
 /**
@@ -31,7 +33,7 @@ export function After(config: AfterDecoratorConfig) {
  * @param config around装饰器配置
  * @returns @around 装饰器
  */
-export function Around(config: AroundDecoratorConfig) {
+export function Around(config: PointCutExpression | PointCutMethod) {
   return new PointCutDecoratorFactory().createDecorator(config, DECORATORNAME.AROUND, 'around');
 }
 /**
@@ -39,7 +41,7 @@ export function Around(config: AroundDecoratorConfig) {
  * @param config afterReturning装饰器配置
  * @returns @afterReturning 装饰器
  */
-export function AfterReturning(config: AfterReturnDecoratorConfig) {
+export function AfterReturning(config: PointCutExpression | PointCutMethod) {
   return new PointCutDecoratorFactory().createDecorator(config, DECORATORNAME.AFTERRETURN, 'afterReturning');
 }
 /**
@@ -47,7 +49,7 @@ export function AfterReturning(config: AfterReturnDecoratorConfig) {
  * @param config afterThrowing装饰器配置
  * @returns @afterThrowing 装饰器
  */
-export function AfterThrowing(config: AfterThrowDecoratorConfig) {
+export function AfterThrowing(config: PointCutExpression | PointCutMethod) {
   return new PointCutDecoratorFactory().createDecorator(config, DECORATORNAME.AFTERTHROW, 'afterThrowing');
 }
 
