@@ -23,6 +23,7 @@ import { RetryOptions, ThrottleOptions, DebounceOptions, MockConfig } from '../.
 import { HttpMethodDecoratorConfig } from './types/HttpMethodDecoratorConfig';
 import { HttpRequestConfig } from './types/HttpRequestConfig';
 import { I18n, i18n } from '@/i18n/i18n';
+import { ObjectUtils } from '@/utils/ObjectUtils';
 
 /**
  * HttpMethod装饰器工厂
@@ -200,11 +201,13 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
         : useDebounce(requestFn, debounce as DebounceOptions);
     } */
     // mock请求
+    const count = (mock as MockConfig).count === undefined ? Infinity : (mock as MockConfig).count;
     if (mock) {
       requestFn = useMock(requestFn, {
         id: this.decoratorInfo.id,
         url: this.decoratorConfig.url!,
         baseURL: this.decoratorConfig.baseURL!,
+        count: count!,
       });
     }
     return requestFn;
@@ -218,13 +221,14 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    */
   protected postHandleConfig(target: DecoratedClassOrProto, propertyKey: string | symbol, args: any[]) {
     // 获取配置
-    let httpRequestConfig = this.decoratorConfig;
+    let httpRequestConfig = ObjectUtils.deepClone(this.decoratorConfig);
     // 获取运行时路径参数和查询参数
     let [pathParams, queryParams, bodyParams] = this.paramStateManager.getRuntimeParams(target, propertyKey, args, [
       DECORATORNAME.PATHPARAM,
       DECORATORNAME.QUERYPARAM,
       DECORATORNAME.BODYPARAM,
     ]);
+
     // 若bodyParams存在且为对象且只有一个属性则拍平
     if (Object.keys(bodyParams).length === 1) {
       const value = Object.values(bodyParams)[0];
@@ -249,11 +253,13 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
     if (refAxios.defaults.baseURL) {
       httpRequestConfig.setBaseURL(refAxios.defaults.baseURL);
     }
+
     // 若mock存在与全局配置合并
     if (mock) {
       mock = { ...MockAPI.globalConfig, ...mock };
       httpRequestConfig.setMock(mock);
     }
+    return httpRequestConfig;
   }
 
   /**
@@ -261,9 +267,9 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
    * @param target
    * @param config
    */
-  protected postCheckConfig(): void {
+  protected postCheckConfig(httpRequestConfig: HttpRequestConfig): void {
     // 检查url是否合法以及是否存在refAxios,是否存在baseURL。若即不存在refAxios又不存在baseURL则报错
-    const { baseURL } = this.decoratorConfig;
+    const { baseURL } = httpRequestConfig;
     if (!baseURL) {
       throw new Error(I18n.t_v2(i18n.ERROR.MISSING_BASEURL));
     }
@@ -294,6 +300,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
       let request: (config: HttpMethodDecoratorConfig<any>) => Promise<any>;
       // 记录原方法
       const invoke = descriptor.value;
+
       // 方法替换实际调用的时候会调用descripter.value指向的方法
       descriptor.value = new Proxy(invoke, {
         /**
@@ -305,15 +312,15 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
         apply: (invoke, _this, args) => {
           !request && (request = this.applyConfig());
           // 后处理配置
-          this.postHandleConfig(target, propertyKey, args);
+          const httpRequestConfig = this.postHandleConfig(target, propertyKey, args);
           // 后置配置检查
-          this.postCheckConfig();
+          this.postCheckConfig(httpRequestConfig);
           // 发送请求
-          return request(this.decoratorConfig.getOriginalConfig());
+          return request(httpRequestConfig.getOriginalConfig());
         },
       });
       // 注册原方法
-      ProxyFactory.registerInvoke(descriptor.value, invoke);
+      // ProxyFactory.registerInvoke(descriptor.value, invoke);
       return descriptor;
     };
   }

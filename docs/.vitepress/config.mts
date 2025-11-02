@@ -56,21 +56,14 @@ export default defineConfig({
           items: [
             { text: '搭建mock接口', link: '/zh/HTTP请求拦截/搭建mock接口' },
             { text: '取消mock', link: '/zh/HTTP请求拦截/取消mock' },
-            { text: '搭配数据生成工具', link: '/zh/HTTP请求拦截/数据生成工具' },
           ],
         },
         {
-          text: '依赖注入',
+          text: 'IOC-AOP',
           items: [
-            { text: '注册类实例', link: '/zh/依赖注入/注册类实例' },
-            { text: '注入实例', link: '/zh/依赖注入/注入实例' },
-          ],
-        },
-        {
-          text: '面向切面',
-          items: [
-            { text: '切面方法', link: '/zh/面向切面/切面方法' },
-            { text: '上下文机制', link: '/zh/面向切面/上下文机制' },
+            { text: '控制反转', link: '/zh/IOC-AOP/控制反转' },
+            { text: '依赖注入', link: '/zh/IOC-AOP/依赖注入' },
+            { text: '面向切面', link: '/zh/IOC-AOP/面向切面' },
           ],
         },
       ],

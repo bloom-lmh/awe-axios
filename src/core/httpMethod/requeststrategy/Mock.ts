@@ -93,15 +93,16 @@ import { ObjectUtils } from '@/utils/ObjectUtils';
 
 export function useMock(
   requestFn: (config: HttpMethodDecoratorConfig) => Promise<any>,
-  rawConfig: { id: string; url: string; baseURL: string },
+  rawConfig: { id: string; url: string; baseURL: string; count: number },
 ) {
   // 是否已经注册了mock处理器
   let registered = false;
+  let count = rawConfig.count;
   // 记录未加工的config
   return (config: HttpMethodDecoratorConfig) => {
     // 处理运行时配置
     let { url = '', baseURL, allowAbsoluteUrls, method } = config;
-    let { handlers, condition, on, count, signal } = config.mock as MockConfig;
+    let { handlers, condition, on, signal } = config.mock as MockConfig;
 
     // 首次调用才进行注册
     if (!registered) {
@@ -115,6 +116,7 @@ export function useMock(
       // 2. 注册mock
       for (const type in handlers) {
         let fullPath = PathUtils.chain(baseURL).concat(id, type, url).removeExtraSlash().removeExtraSpace().toResult();
+        //console.log('fullPath:', fullPath);
         MockAPI.registerHandlers(http[method as MockMethod](fullPath, (handlers as MockHandlersObject)[type]));
       }
       registered = true;
@@ -129,25 +131,29 @@ export function useMock(
       if (signal) {
         isMock = isMock && !signal.isAborted();
       }
-      if (count) {
+      if (count != undefined && count != null) {
         isMock = isMock && count > 0;
       }
-      console.log(isMock);
+      //console.log('isMock:', isMock);
 
       // 若满足条件则走mock
       if (isMock) {
+        //console.log('url:', url);
+
         // 1. 处理路径
         if (url && allowAbsoluteUrls && PathUtils.isAbsoluteHttpUrl(url)) {
           const parseURL = new URL(url);
           baseURL = parseURL.origin;
           config.url = parseURL.pathname;
         }
-        config.baseURL = PathUtils.chain(baseURL)
+        config.baseURL = PathUtils.chain(rawConfig.baseURL)
           .concat(rawConfig.id, type)
           .removeExtraSlash()
           .removeExtraSpace()
           .toResult();
+        //console.log(config.baseURL, url);
 
+        --count;
         return requestFn(config);
       }
       return requestFn(config);

@@ -4,6 +4,7 @@ import { Get, Post } from '..';
 import { BodyParam, HttpResponse, MockAPI, PathParam, QueryParam } from '@/index';
 import { SignalController } from '@/core/common/signal/SignalController';
 import { http } from 'msw';
+import { ProxyFactory } from '@/core/ioc/ProxyFactory';
 
 beforeAll(() => {
   MockAPI.on();
@@ -209,5 +210,121 @@ describe('Mock test', () => {
     mockCtr.abort();
     // 发送到服务器真实接口 ： http://localhost:3000/users/pages/1/20
     let { data: data2 } = await userApi.getUserPages(1, 20)();
+  });
+  MockAPI.registerHandlers(
+    http.get('http://localhost:3000/users/pages/:page/:size', ({ request, params }) => {
+      const { page, size } = params;
+      console.log('真实接口');
+      console.log(request.url);
+      console.log(page, size);
+      return HttpResponse.json({
+        data: [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+        ],
+      });
+    }),
+  );
+  test('设置mock接口次数', async () => {
+    @HttpApi('http://localhost:3000/users/')
+    class UserApi {
+      @Get({
+        url: '/pages/:page/:size',
+        mock: {
+          count: 3,
+          handlers: async ({ request, params }) => {
+            console.log('mock接口');
+            console.log(request.url);
+            const { page, size } = params;
+            // 1,10
+            console.log(page, size);
+            return HttpResponse.json({
+              data: [
+                { id: 1, name: 'Alice' },
+                { id: 2, name: 'Bob' },
+              ],
+            });
+          },
+        },
+      })
+      getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
+    }
+    let userApi = new UserApi();
+    // 发送到mock接口 ：http://localhost:3000/users/176189724290824/default/pages/1/10
+    let { data: data1 } = await userApi.getUserPages(1, 10)();
+    // 发送到mock接口 ：http://localhost:3000/users/176189724290824/default/pages/1/20
+    let { data: data2 } = await userApi.getUserPages(1, 20)();
+    // 发送到mock接口 ：http://localhost:3000/users/176189724290824/default/pages/1/30
+    let { data: data3 } = await userApi.getUserPages(1, 30)();
+    // mock接口次数达到上限，走真实的接口
+    // 发送到服务器真实接口 ： http://localhost:3000/users/pages/1/40
+    let { data: data4 } = await userApi.getUserPages(1, 40)();
+    // 发送到服务器真实接口 ： http://localhost:3000/users/pages/1/50
+    let { data: data5 } = await userApi.getUserPages(1, 50)();
+    // 发送到服务器真实接口 ： http://localhost:3000/users/pages/1/60
+    let { data: data6 } = await userApi.getUserPages(1, 60)();
+  });
+  test('mock开关', async () => {
+    MockAPI.setCondition(() => {
+      return process.env.NODE_ENV === 'test';
+    });
+    @HttpApi({
+      baseURL: 'http://localhost:3000/users/',
+    })
+    class UserApi {
+      @Get({
+        url: '/pages/:page/:size',
+        mock: {
+          handlers: async ({ request, params }) => {
+            console.log('mock接口');
+            console.log(request.url);
+            const { page, size } = params;
+            // 1,10
+            console.log(page, size);
+            return HttpResponse.json({
+              data: [
+                { id: 1, name: 'Alice' },
+                { id: 2, name: 'Bob' },
+              ],
+            });
+          },
+        },
+      })
+      getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
+    }
+    let userApi = new UserApi();
+    // 由于关闭了mock，所以走真实的接口 ： http://localhost:3000/users/pages/1/10
+    let { data: data1 } = await userApi.getUserPages(1, 10)();
+  });
+  test.only('封装mock接口', async () => {
+    @HttpApi('http://localhost:3000/users/')
+    class UserApi {
+      @Get({
+        url: '/pages/:page/:size',
+        mock: {
+          handlers: async ({ request, params }) => {
+            console.log('mock接口');
+            console.log(request.url);
+            const { page, size } = params;
+            // 1,10
+            console.log(page, size);
+            return HttpResponse.json({
+              data: [
+                { id: 1, name: 'Alice' },
+                { id: 2, name: 'Bob' },
+              ],
+            });
+          },
+        },
+      })
+      getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
+    }
+    let userApi = new UserApi();
+    // 由于关闭了mock，所以走真实的接口 ： http://localhost:3000/users/pages/1/10
+    let { data: data1 } = await userApi.getUserPages(1, 10)();
+
+    // 获取原生接口
+    const originApi = ProxyFactory.getInvoke(userApi.getUserPages) as Function;
+    console.log(originApi);
   });
 });
