@@ -66,6 +66,13 @@ export default defineConfig({
             { text: '面向切面', link: '/zh/IOC-AOP/面向切面' },
           ],
         },
+        {
+          text: '最佳实践',
+          items: [
+            { text: '封装接口', link: '/zh/最佳实践/封装接口' },
+            { text: '搭配数据生成工具', link: '/zh/最佳实践/搭配数据生成工具' },
+          ],
+        },
       ],
       '/en/': [
         {

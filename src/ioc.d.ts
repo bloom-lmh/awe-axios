@@ -77,7 +77,7 @@ export type GetInstanceConfig = {
   /**
    * 创建实例模式
    */
-  scope: InstanceScope | string;
+  scope: InstanceScope;
 };
 /**
  * 组件装饰器配置

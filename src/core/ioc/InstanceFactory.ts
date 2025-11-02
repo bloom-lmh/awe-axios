@@ -1,3 +1,4 @@
+import { Constructor } from './../../decorator.d';
 import { ObjectUtils } from '@/utils/ObjectUtils';
 import 'reflect-metadata';
 import { AspectDecoratorStateManager } from '../aop/AspectDecoratorStateManager';
@@ -108,6 +109,7 @@ export class InstanceFactory {
     let { module = '__default__', alias, ctor, scope } = config;
 
     let instanceItem = undefined;
+
     // 通过模块和构造器获取实例项
     if (ctor) {
       instanceItem = this.getInstanceItemByCtor(module, ctor);
@@ -120,11 +122,12 @@ export class InstanceFactory {
       // 通过类型推断获取
       instanceItem = this.getInstanceItemByType(type, module);
     }
+
     if (!instanceItem) {
       return undefined;
     }
     // 注入模式
-    scope = (scope?.toUpperCase() as InstanceScope) || 'SINGLETON';
+    scope = (scope?.toUpperCase() as InstanceScope) || 'TRANSIENT';
     // 获取实例信息
     let { ctor: constuctor, instance } = instanceItem;
     // 没有实例则创建

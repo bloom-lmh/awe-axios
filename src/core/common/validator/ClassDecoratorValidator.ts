@@ -43,7 +43,7 @@ export class ClassDecoratorValidator implements DecoratorValidator {
    */
   isDecoratorConflict(target: DecoratedClass, conflictList: (string | symbol)[]): boolean {
     // 获取类上的装饰器信息
-    const decoratorInfos = Reflect.getMetadata(METADATAKEY.DECORATORINFOS, target) as DecoratorInfos;
+    const decoratorInfos = Reflect.getOwnMetadata(METADATAKEY.DECORATORINFOS, target) as DecoratorInfos;
     // 如果类上没有元数据信息表示没有装饰器，则不冲突
     if (!decoratorInfos || decoratorInfos.length === 0) {
       return false;

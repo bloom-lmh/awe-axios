@@ -25,7 +25,7 @@
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,
 
     /* Linting */
     "strict": true,

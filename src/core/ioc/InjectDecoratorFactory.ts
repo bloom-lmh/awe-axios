@@ -8,7 +8,7 @@ import { DecoratorInfo } from '../DecoratorInfo';
 import { InjectDecoratorStateManager } from './InjectDecoratorStateManager';
 import { InstanceFactory } from './InstanceFactory';
 import { InjectDecoratorOptions, GetInstanceConfig, InjectDecoratorConfig } from '../../ioc';
-
+import 'reflect-metadata';
 /**
  * inject装饰器工厂
  */
@@ -67,7 +67,7 @@ export class InjectDecoratorFactory extends DecoratorFactory {
   protected preHandleConfig(config: InjectDecoratorOptions): GetInstanceConfig {
     let defaultConfig: GetInstanceConfig = {
       module: '__default__',
-      scope: 'SINGLETON',
+      scope: 'TRANSIENT',
     };
     // 如果是表达式
     if (typeof config === 'string') {
@@ -81,12 +81,11 @@ export class InjectDecoratorFactory extends DecoratorFactory {
       }
     }
     if (typeof config === 'function') {
-      defaultConfig.constructor = config;
+      defaultConfig.ctor = config;
     }
     if (typeof config === 'object') {
       defaultConfig = { ...defaultConfig, ...config };
     }
-
     return defaultConfig;
   }
 
@@ -155,6 +154,7 @@ export class InjectDecoratorFactory extends DecoratorFactory {
     }
     // 获取声明的实例类型
     const declaredType = Reflect.getMetadata('design:type', target, propertyKey);
+
     // 如果实例类型不匹配，则尝试转换
     if (instance && declaredType && !declaredType.prototype.isPrototypeOf(instance)) {
       console.warn(
