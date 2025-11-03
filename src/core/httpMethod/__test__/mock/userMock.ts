@@ -3,6 +3,7 @@ import { fakeData, useModel } from 'data-faker-plus';
 import { UserModel } from './models/userModel';
 import { netWorkError } from './common';
 
+// 使用data-faker-plus生成假数据
 const users = fakeData(useModel(UserModel), 30);
 /**
  * 模拟用户页面

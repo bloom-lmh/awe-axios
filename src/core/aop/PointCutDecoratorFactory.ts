@@ -9,6 +9,7 @@ import { AdviceFactory } from './Advices';
 import { AspectDecoratorStateManager } from './AspectDecoratorStateManager';
 import { PointCutDecoratorConfigHandler } from './PointCutDecoratorConfigHandler';
 import { PointCutDecoratorConfig, InstancePointCut, AdviceType, AdviceMethod, AdviceItem } from '../../aop';
+import { i18n } from '@/i18n/i18n';
 
 /**
  * 所有切入点装饰器
@@ -86,7 +87,7 @@ export class PointCutDecoratorFactory extends DecoratorFactory {
     const { conflictList } = this.decoratorInfo;
     // 校验冲突
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList, propertyKey)) {
-      throw new Error(`The decorator  cannot be used with .`);
+      throw new Error(i18n.ERROR.DECORATOER_CONFLICT);
     }
   }
 

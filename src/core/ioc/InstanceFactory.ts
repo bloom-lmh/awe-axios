@@ -249,13 +249,13 @@ export class InstanceFactory {
   /**
    * 清空容器
    */
-  static clear() {
+  /* static clear() {
     if (process.env.NODE_ENV === 'test') {
       this.instanceItemMap.clear();
     } else {
       throw new Error('InstanceFactory cannot be cleared in production environment.');
     }
-  }
+  } */
 
   /**
    * 获取同类型或子类的实例个数

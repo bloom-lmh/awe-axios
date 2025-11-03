@@ -7,6 +7,7 @@ import { DecoratorFactory } from '../DecoratorFactory';
 import { DecoratorInfo } from '../DecoratorInfo';
 import { InstanceFactory } from './InstanceFactory';
 import { ComponentDecoratorOptions, InstanceRegisterConfig } from '../../ioc';
+import { i18n } from '@/i18n/i18n';
 
 /**
  * Component 装饰器工厂
@@ -58,7 +59,7 @@ export class ComponentDecoratorFactory extends DecoratorFactory {
     const { conflictList } = this.decoratorInfo;
     // 校验是否存在冲突装饰器
     if (this.decoratorValidator.isDecoratorConflict(target, conflictList)) {
-      throw new Error('The Component decorator confilct with other decorators in the class.');
+      throw new Error(i18n.ERROR.DECORATOER_CONFLICT);
     }
   }
 

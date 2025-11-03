@@ -48,7 +48,6 @@ export default defineConfig({
             { text: '参数装饰器', link: '/zh/发送HTTP请求/参数装饰器' },
             { text: '常用功能', link: '/zh/发送HTTP请求/常用功能' },
             { text: '子项装饰器', link: '/zh/发送HTTP请求/子项装饰器' },
-            { text: '导出为函数', link: '/zh/发送HTTP请求/导出为函数' },
           ],
         },
         {
@@ -69,7 +68,10 @@ export default defineConfig({
         },
         {
           text: '最佳实践',
-          items: [{ text: '封装装饰器', link: '/zh/最佳实践/封装装饰器' }],
+          items: [
+            { text: '封装装饰器', link: '/zh/最佳实践/封装装饰器' },
+            { text: '结合数据生成工具', link: '/zh/最佳实践/结合数据生成工具' },
+          ],
         },
       ],
       '/en/': [
