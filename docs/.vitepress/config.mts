@@ -48,7 +48,7 @@ export default defineConfig({
             { text: '参数装饰器', link: '/zh/发送HTTP请求/参数装饰器' },
             { text: '常用功能', link: '/zh/发送HTTP请求/常用功能' },
             { text: '子项装饰器', link: '/zh/发送HTTP请求/子项装饰器' },
-            { text: '自定义装饰器', link: '/zh/发送HTTP请求/自定义装饰器' },
+            { text: '导出为函数', link: '/zh/发送HTTP请求/导出为函数' },
           ],
         },
         {
@@ -56,6 +56,7 @@ export default defineConfig({
           items: [
             { text: '搭建mock接口', link: '/zh/HTTP请求拦截/搭建mock接口' },
             { text: '取消mock', link: '/zh/HTTP请求拦截/取消mock' },
+            { text: '子项装饰器', link: '/zh/HTTP请求拦截/子项装饰器' },
           ],
         },
         {
@@ -68,10 +69,7 @@ export default defineConfig({
         },
         {
           text: '最佳实践',
-          items: [
-            { text: '封装接口', link: '/zh/最佳实践/封装接口' },
-            { text: '搭配数据生成工具', link: '/zh/最佳实践/搭配数据生成工具' },
-          ],
+          items: [{ text: '封装装饰器', link: '/zh/最佳实践/封装装饰器' }],
         },
       ],
       '/en/': [

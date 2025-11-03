@@ -202,7 +202,7 @@ export class HttpMethodDecoratorFactory extends MethodDecoratorFactory {
         : useDebounce(requestFn, debounce as DebounceOptions);
     } */
     // mock请求
-    const count = (mock as MockConfig).count === undefined ? Infinity : (mock as MockConfig).count;
+    const count = (mock as MockConfig)?.count === undefined ? Infinity : (mock as MockConfig).count;
     if (mock) {
       requestFn = useMock(requestFn, {
         id: this.decoratorInfo.id,

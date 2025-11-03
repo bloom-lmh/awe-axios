@@ -85,18 +85,6 @@ export class AspectProcessor {
           // 若是`axios-plus`代理后的http方法则交给自身处理
 
           apply(invoke, _this, args) {
-            console.log('a');
-
-            /* const isHttpMethod = AspectProcessor.stateManager.hasDecoratorInfoOfType(
-              ctor.prototype,
-              'httpMethod',
-              methodName,
-            );
-            if (isHttpMethod) {
-              invoke = invoke.apply(_this, args);
-              console.log(invoke);
-            } */
-
             // 创建切面上下文对象
             let context = new AspectContext(invoke, _this, args);
             // 尝试获取axios配置

@@ -10,12 +10,12 @@ export type Constructor<T = any> = new (...args: any[]) => T;
 /**
  * 被装饰类原型
  */
-type DecoratedClassProto = {};
+type DecoratedClassProto = Record<string | symbol, any>;
 
 /**
  * 被装饰类
  */
-export type DecoratedClass<T = any> = Constructor<T>;
+export type DecoratedClass<T = any> = Constructor<T> & Record<string | symbol, any>;
 
 /**
  * 被装饰类或原型

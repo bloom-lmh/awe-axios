@@ -1,7 +1,7 @@
 import { HttpApi } from '@/core/ioc';
 import { beforeAll, describe, test } from 'vitest';
 import { Get, Post } from '..';
-import { BodyParam, HttpResponse, MockAPI, PathParam, QueryParam } from '@/index';
+import { BodyParam, HttpResponse, Mock, MockAPI, PathParam, QueryParam } from '@/index';
 import { SignalController } from '@/core/common/signal/SignalController';
 import { http } from 'msw';
 import { ProxyFactory } from '@/core/ioc/ProxyFactory';
@@ -301,20 +301,36 @@ describe('Mock test', () => {
     class UserApi {
       @Get({
         url: '/pages/:page/:size',
-        mock: {
-          handlers: async ({ request, params }) => {
-            console.log('mock接口');
-            console.log(request.url);
-            const { page, size } = params;
-            // 1,10
-            console.log(page, size);
-            return HttpResponse.json({
-              data: [
-                { id: 1, name: 'Alice' },
-                { id: 2, name: 'Bob' },
-              ],
-            });
-          },
+      })
+      /* @Mock(async ({ request, params }) => {
+        console.log('mock接口');
+        console.log(request.url);
+        const { page, size } = params;
+        // 1,10
+        console.log(page, size);
+        return HttpResponse.json({
+          data: [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+          ],
+        });
+      }) */
+      @Mock({
+        default: async ({ request, params }) => {
+          return HttpResponse.json({
+            data: [
+              { id: 1, name: 'Alice' },
+              { id: 2, name: 'Bob' },
+            ],
+          });
+        },
+        success: async ({ request, params }) => {
+          return HttpResponse.json({
+            data: [
+              { id: 1, name: 'Alice' },
+              { id: 2, name: 'Bob' },
+            ],
+          });
         },
       })
       getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
