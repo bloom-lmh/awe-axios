@@ -3,23 +3,24 @@
 layout: home
 
 hero:
-  name: "AxiosPlus"
-  text: "An annotation-driven enhanced Axios framework"
-  tagline: My great project tagline
+  name: 'AxiosPlus'
+  text: 'An annotation-driven enhanced Axios framework'
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
-    - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: 起步
+      link: /en/起步/Basic Introduction
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Annotation-Driven API
+    details: Define APIs using decorators like @Get, @Post, and @HttpApi, with automatic request proxying
+  - title: Built-in Request Enhancers
+    details: Out-of-the-box retry, debounce, and throttle capabilities to handle common request scenarios
+  - title: Seamless Mock Integration
+    details: Network-level request interception with MSW, supporting both real and mock interfaces in one definition
+  - title: Aspect-Oriented Programming
+    details: Fine-grained request/response interception using @Before, @After, and other AOP decorators
+  - title: Dependency Injection
+    details: Manage axios instances and configurations through IoC container for better modularity
+  - title: Axios Compatibility
+    details: Full compatibility with original Axios APIs, ensuring smooth migration for existing projects
 ---
-

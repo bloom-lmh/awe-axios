@@ -11,21 +11,20 @@ export default defineConfig({
   },
   themeConfig: {
     nav: [
-      { text: '指南', link: '/zh/起步/基本介绍' },
+      { text: 'Guide', link: '/en/起步/Quick Start.md' },
       {
-        text: '国际化',
+        text: 'Locale',
         items: [
           {
             text: '中文',
-            link: '/zh/什么是DataFaker.md',
+            link: '/zh/起步/基本介绍',
           },
           {
             text: 'English',
-            link: '/en/What is DataFaker.md',
+            link: '/en/起步/Basic Introduction',
           },
         ],
       },
-      { text: 'API', link: '/zh/预设数据.md' },
     ],
     search: { provider: 'local' },
     outline: {
@@ -78,35 +77,40 @@ export default defineConfig({
         {
           text: 'Introduction',
           items: [
-            { text: 'What is DataFaker?', link: '/en/What is DataFaker.md' },
-            { text: 'Quick Start', link: '/en/Quick Start.md' },
-            { text: 'Basic Usage', link: '/en/Basic Usage' },
+            { text: 'Basic Introduction', link: '/en/起步/Basic Introduction' },
+            { text: 'Quick Start', link: '/en/起步/Quick Start.md' },
           ],
         },
         {
-          text: 'Core Concepts',
+          text: 'Initiate an HTTP request',
           items: [
-            { text: 'Template Syntax', link: '/en/Template Syntax' },
-            { text: 'Unique Values', link: '/en/Unique Values' },
-            { text: 'Data References', link: '/en/Data References' },
-            { text: 'Data Models', link: '/en/Data Models' },
-            { text: 'Multi-Language', link: '/en/Multi-Language Support.md' },
-            { text: 'Hooks', link: '/en/Data Generation Hooks.md' },
-            { text: 'Data Iterators', link: '/en/Data Iterators' },
+            { text: 'Basic Request Methods', link: '/en/发起HTTP请求/Basic Request Methods' },
+            { text: 'Common Functions', link: '/en/发起HTTP请求/Common Functions' },
+            { text: 'Parameter Decorator', link: '/en/发起HTTP请求/Parameter Decorator' },
+            { text: 'Subitem Decorator', link: '/en/发起HTTP请求/Subitem Decorator' },
           ],
         },
         {
-          text: 'Experimental Features',
+          text: 'HTTP request interception',
           items: [
-            { text: 'Decorator Syntax', link: '/en/Decorator Syntax' },
-            { text: 'Simulating the Business Layer', link: '/en/Simulating the Business Layer' },
+            { text: 'Cancel Mock', link: '/en/HTTP请求拦截/Cancel Mock' },
+            { text: 'Mock Interface Setup', link: '/en/HTTP请求拦截/Mock Interface Setup' },
+            { text: 'Subitem Decorator', link: '/en/HTTP请求拦截/Subitem Decorator' },
           ],
         },
         {
-          text: 'Related Links',
+          text: 'IOC-AOP',
           items: [
-            { text: 'faker.js', link: 'https://faker.nodejs.cn/guide/unique.html' },
-            { text: 'axios-plus', link: 'https://github.com/bloom-lmh/AxiosPlus' },
+            { text: 'Inversion of Control', link: '/en/IOC-AOP/Inversion of Control' },
+            { text: 'Dependency Injection', link: '/en/IOC-AOP/Dependency Injection' },
+            { text: 'Aspect-Oriented Programming', link: '/en/IOC-AOP/Aspect-Oriented Programming' },
+          ],
+        },
+        {
+          text: 'Best Practices',
+          items: [
+            { text: 'Encapsulation Decorator', link: '/en/最佳实践/Encapsulation Decorator' },
+            { text: 'Data Generation Tool Integration', link: '/en/最佳实践/Data Generation Tool Integration' },
           ],
         },
       ],
