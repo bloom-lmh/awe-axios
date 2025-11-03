@@ -116,7 +116,7 @@ afterAll(() => {
 });
 
 describe('@Get装饰器测试', () => {
-  test.only('1. 基本查询测试', async () => {
+  test('1. 基本查询测试', async () => {
     @HttpApi({
       baseURL: 'http://localhost:3000/users/',
     })
@@ -258,7 +258,7 @@ describe('@Get装饰器测试', () => {
     fn(4);
     await delay(1000);
   }); */
-  test('6. 子项装饰器@TransformResponse', async () => {
+  test.only('6. 子项装饰器@TransformResponse', async () => {
     const request = axiosPlus.create({
       baseURL: 'http://localhost:3000/users/',
     });

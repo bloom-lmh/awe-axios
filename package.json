@@ -3,7 +3,7 @@
   "private": false,
   "version": "0.0.1",
   "type": "module",
-  "main": "dist/index.esm.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "types": "dist/types/index.d.ts",
   "description": "A lightweight, annotation-driven framework for enhancing Axios with declarative API definitions and powerful features.",
