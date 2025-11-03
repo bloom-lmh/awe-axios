@@ -2,19 +2,19 @@
 
 ## Installation
 
-Install `axios-plus` using `npm` or `yarn`:
+Install `awe-axios` using `npm` or `yarn`:
 
 ```bash
 # Using npm
-npm install axios-plus --save
+npm install awe-axios --save
 
 # Using yarn
-yarn add axios-plus
+yarn add awe-axios
 ```
 
 ## Environment Requirements
 
-Since `axios-plus` heavily utilizes decorator syntax, you need to develop with `TypeScript`. You must have a TypeScript environment set up in your project and add the following configurations to your `tsconfig.json`:
+Since `awe-axios` heavily utilizes decorator syntax, you need to develop with `TypeScript`. You must have a TypeScript environment set up in your project and add the following configurations to your `tsconfig.json`:
 
 ```json
 {
@@ -69,7 +69,7 @@ class UserApi {
 If you need to use the native `axios` library, you can directly import `axiosPlus` and use it just like `axios`. Here's an example with interceptors:
 
 ```typescript
-import { axiosPlus } from 'axios-plus';
+import { axiosPlus } from 'awe-axios';
 axiosPlus.interceptors.request.use(config => {
   console.log('Request interceptor', config);
   return config;

@@ -31,7 +31,7 @@ getUserPages(@QueryParam('page1')@QueryParam('page') page: number): any {}
 getUserPages(@PathParam('id') @QueryParam('size') size: number): any {}
 ```
 
-In fact, most decorators in `axios-plus` cannot appear repeatedly, otherwise an error will be thrown.
+In fact, most decorators in `awe-axios` cannot appear repeatedly, otherwise an error will be thrown.
 
 :::
 
@@ -107,7 +107,7 @@ data: {
 }
 ```
 
-Therefore, when there's only one parameter, `axios-plus` allows you to omit the parameter name:
+Therefore, when there's only one parameter, `awe-axios` allows you to omit the parameter name:
 
 ```ts
 @Post('/')

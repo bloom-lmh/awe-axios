@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: 'AxiosPlus'
+  name: 'Awesome Axios'
   text: 'An annotation-driven enhanced Axios framework'
   actions:
     - theme: brand

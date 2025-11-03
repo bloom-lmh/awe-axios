@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'AxiosPlus',
+  title: 'Awe-Axios',
   description: 'An annotation-driven enhanced Axios framework',
   markdown: {
     lineNumbers: true,

@@ -1,6 +1,6 @@
 # Common Features Explained
 
-`axios-plus` encapsulates several commonly used features, including:
+`awe-axios` encapsulates several commonly used features, including:
 
 - Request Retry (`Retry`)
 - Debounce (`Debounce`)
@@ -41,7 +41,7 @@ await retryGetUserById(1);
 ```
 
 ::: tip Default Values
-When you wrap the actual API call with `useRetry`, `axios-plus` applies default retry count and base delay time:
+When you wrap the actual API call with `useRetry`, `awe-axios` applies default retry count and base delay time:
 
 - Default retry count: `3` times
 - Default base delay time: `100` ms
@@ -50,7 +50,7 @@ When you wrap the actual API call with `useRetry`, `axios-plus` applies default 
 
 ### Multiple Configuration Methods
 
-The above method is the simplest, requiring no configuration. `axios-plus` uses default settings for request retries. However, this might not meet all your needs. Therefore, `axios-plus` supports multiple configuration methods to suit your project requirements:
+The above method is the simplest, requiring no configuration. `awe-axios` uses default settings for request retries. However, this might not meet all your needs. Therefore, `awe-axios` supports multiple configuration methods to suit your project requirements:
 
 ::: code-group
 
@@ -88,10 +88,10 @@ const retryGetUserById = useRetry(getUserById, [3, 1000]);
 
 ### Key Features
 
-The Request Retry feature in `axios-plus` has the following key characteristics:
+The Request Retry feature in `awe-axios` has the following key characteristics:
 
-- `axios-plus` uses an **exponential backoff strategy**: The delay time for the `n-th` retry is `delay * 2^(n-1)`
-- `axios-plus` does not limit the number of retries. The first retry has no delay; the delay strategy applies from the second retry onwards.
+- `awe-axios` uses an **exponential backoff strategy**: The delay time for the `n-th` retry is `delay * 2^(n-1)`
+- `awe-axios` does not limit the number of retries. The first retry has no delay; the delay strategy applies from the second retry onwards.
 
 ::: warning Request Idempotence and POST Requests
 Using the Request Retry feature with `POST` requests is **not recommended** because `POST` requests are generally not idempotent. Retries might lead to data duplication.
@@ -136,7 +136,7 @@ fn(5);
 ```
 
 ::: tip Default Values
-When you wrap the actual API call with `useDebounce`, `axios-plus` applies default delay time and immediate execution settings:
+When you wrap the actual API call with `useDebounce`, `awe-axios` applies default delay time and immediate execution settings:
 
 - Default delay time: `100` ms
 - Default immediate execution: `false`
@@ -217,7 +217,7 @@ fn(6);
 ```
 
 ::: tip Default Values
-When you wrap the actual API call with `useThrottle`, `axios-plus` applies a default interval time: `100` ms
+When you wrap the actual API call with `useThrottle`, `awe-axios` applies a default interval time: `100` ms
 :::
 
 ### Other Configuration Methods
@@ -236,7 +236,7 @@ const fn = useThrottle(getUserById, 1000);
 
 ## Feature Combination
 
-`axios-plus` supports combining multiple features. For example, your interface can have both debounce and retry functionality, or both throttle and retry functionality. You can choose the appropriate combination based on your project needs. The usage is simple, as shown below:
+`awe-axios` supports combining multiple features. For example, your interface can have both debounce and retry functionality, or both throttle and retry functionality. You can choose the appropriate combination based on your project needs. The usage is simple, as shown below:
 
 ```typescript {7}
 // Real API call
@@ -249,14 +249,14 @@ const fn = useThrottle(useRetry(getUserById));
 ```
 
 ::: tip Decorator Pattern
-Essentially, `axios-plus` uses the **Decorator Pattern** to enhance request functionality. The outer request function wraps the inner request function, layer by layer (like nesting dolls), ultimately returning a new request function used to initiate the call.
+Essentially, `awe-axios` uses the **Decorator Pattern** to enhance request functionality. The outer request function wraps the inner request function, layer by layer (like nesting dolls), ultimately returning a new request function used to initiate the call.
 !https://image-bucket-1307756649.cos.ap-chengdu.myqcloud.com/image/20251029160152919.png
 
 :::
 
 :::warning Important Notes
 
-`axios-plus` does **not recommend** using Debounce and Throttle simultaneously because their implementation mechanisms conflict, which might lead to request failures.
+`awe-axios` does **not recommend** using Debounce and Throttle simultaneously because their implementation mechanisms conflict, which might lead to request failures.
 Recommended combinations are:
 
 - Search scenarios: `Debounce + Retry`

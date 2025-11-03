@@ -2,7 +2,7 @@
 
 ## Basic Introduction
 
-`axios-plus` defines some child decorators. These decorators act like syntactic sugar, allowing users to configure things more conveniently. Let's look at an example:
+`awe-axios` defines some child decorators. These decorators act like syntactic sugar, allowing users to configure things more conveniently. Let's look at an example:
 
 ```ts {7-16}
 @HttpApi({
@@ -26,7 +26,7 @@ class UserApi {
 }
 ```
 
-As you can see, all our `http` request configuration items are placed within `@Get`, which can lead to very bloated configuration. Therefore, `axios-plus` defines some child decorators to make the configuration structure clearer. For example, below we use `@TransformResponse` to separate the response data processor from `@Get`:
+As you can see, all our `http` request configuration items are placed within `@Get`, which can lead to very bloated configuration. Therefore, `awe-axios` defines some child decorators to make the configuration structure clearer. For example, below we use `@TransformResponse` to separate the response data processor from `@Get`:
 
 ```ts {11-22}
 const request = axiosPlus.create({
@@ -57,7 +57,7 @@ const { data } = await new UserApi().getUserPages(1, 3);
 console.log(data);
 ```
 
-In fact, `axios-plus` has other child decorators, such as: `@RefAxios`, `@AxiosRef`, etc.
+In fact, `awe-axios` has other child decorators, such as: `@RefAxios`, `@AxiosRef`, etc.
 
 ## @RefAxios
 

@@ -2,7 +2,7 @@
 
 ## 基本介绍
 
-为了方便前端开发人员快速搭建页面而不用等待后端真实接口。`axios-plus` 封装了一套 `mock` 接口的解决方案。你只需要做简单的配置就能将一个真实的接口变为`mock`接口，并在开发和生产环境下可以相互转换。
+为了方便前端开发人员快速搭建页面而不用等待后端真实接口。`awe-axios` 封装了一套 `mock` 接口的解决方案。你只需要做简单的配置就能将一个真实的接口变为`mock`接口，并在开发和生产环境下可以相互转换。
 
 > 这里我们致敬 [msw](https://mswjs.io/)，它真实做到了从网络层面进行拦截
 
@@ -57,7 +57,7 @@ console.log(data);
 
 ### 多个处理器函数
 
-也许有许多人会认为函数柯里化调用很奇怪，事实上`axios-plus`采用函数柯里化是有很多好处的，它能让你分步传参
+也许有许多人会认为函数柯里化调用很奇怪，事实上`awe-axios`采用函数柯里化是有很多好处的，它能让你分步传参
 
 1. 第一个参数传入的是必要的请求参数
 2. 第二个参数传入的是处理器类型
@@ -94,7 +94,7 @@ let { data } = await userApi.getUsers()('success');
 console.log(data);
 ```
 
-当然这样写实在太丑陋了，嵌套非常深，`axios-plus`还提供了另一种写法就是直接在`mockHandlers`中单独配置处理器函数，这些处理器函数会最终与`mock.handlers`合并，如下所示：
+当然这样写实在太丑陋了，嵌套非常深，`awe-axios`还提供了另一种写法就是直接在`mockHandlers`中单独配置处理器函数，这些处理器函数会最终与`mock.handlers`合并，如下所示：
 
 ```ts {5}
 @HttpApi('http://localhost:3000/users/')
@@ -135,7 +135,7 @@ console.log(data);
 ```
 
 ::: warning 同名处理器函数
-如果你在`mock.handlers`和`mockHandlers`中配置了同名的处理器函数，那么`axios-plus`会优先使用`mock.handlers`中的处理器函数。
+如果你在`mock.handlers`和`mockHandlers`中配置了同名的处理器函数，那么`awe-axios`会优先使用`mock.handlers`中的处理器函数。
 :::
 
 ### 默认处理器函数
@@ -174,7 +174,7 @@ let { data } = await userApi.getUsers()('defualt');
 console.log(data);
 ```
 
-`axios-plus`中提供了默认的处理器函数，你的单个处理器函数只是覆盖了这个默认的处理器函数，如果你不配置处理器函数，那么它会调用默认的处理器函数。
+`awe-axios`中提供了默认的处理器函数，你的单个处理器函数只是覆盖了这个默认的处理器函数，如果你不配置处理器函数，那么它会调用默认的处理器函数。
 
 ```ts
 @HttpApi({
@@ -200,7 +200,7 @@ console.log(data);
 
 ### 处理器函数原理
 
-你可能会很好奇，为什么配置一个或一组函数就能让`mock`接口生效？其实`axios-plus`底层采用了`msw`的`Response resolver`，这个`Response resolver`就是处理器函数保证函数。它需要你自己定义请求地址和处理器函数。比如：
+你可能会很好奇，为什么配置一个或一组函数就能让`mock`接口生效？其实`awe-axios`底层采用了`msw`的`Response resolver`，这个`Response resolver`就是处理器函数保证函数。它需要你自己定义请求地址和处理器函数。比如：
 
 ```ts
 // 定义Response resolver
@@ -216,7 +216,7 @@ server.listen();
 
 可以看到原生的定义方式中，需要使用`msw`的`http.get`来定义一个`Response resolver`，你需要传入请求地址和处理器函数。
 
-> `axios-plus`只是做了简化了工作，你不再需要设置`mock`接口的路径，`axios-plus`会自动读取`@HttpApi`和`@Get`这类装饰器的配置，以及`mock`配置，并自动生成`msw`的`Response resolver`，然后注册。
+> `awe-axios`只是做了简化了工作，你不再需要设置`mock`接口的路径，`awe-axios`会自动读取`@HttpApi`和`@Get`这类装饰器的配置，以及`mock`配置，并自动生成`msw`的`Response resolver`，然后注册。
 
 ## HttpResponse
 

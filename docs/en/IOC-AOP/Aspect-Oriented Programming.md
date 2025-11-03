@@ -2,7 +2,7 @@
 
 ## Basic Concepts
 
-`axios-plus` also implements Aspect-Oriented Programming (AOP) functionality. Through decorators like `@Before`, `@After`, etc., you can intercept requests before execution, after execution, on errors, and other stages, and process the requests accordingly.
+`awe-axios` also implements Aspect-Oriented Programming (AOP) functionality. Through decorators like `@Before`, `@After`, etc., you can intercept requests before execution, after execution, on errors, and other stages, and process the requests accordingly.
 
 ## Aspect Classes
 
@@ -33,7 +33,7 @@ A pointcut expression is essentially a string that specifies the interception lo
 6.  `*`: All methods
 
 ::: tip Cache Optimization
-`axios-plus` caches used pointcut expressions using memoization to avoid repeated execution and improve performance.
+`awe-axios` caches used pointcut expressions using memoization to avoid repeated execution and improve performance.
 :::
 
 ## Advice Types (When to Intercept)
@@ -140,7 +140,7 @@ console.log(data);
 
 ## Join Point Context Object
 
-The Join Point Context object (`AspectContext`) in `axios-plus` is used to store information about the join point. It is the first parameter `ctx` in the advice methods above. It contains the following information:
+The Join Point Context object (`AspectContext`) in `awe-axios` is used to store information about the join point. It is the first parameter `ctx` in the advice methods above. It contains the following information:
 
 ```ts
 export class AspectContext {
@@ -168,7 +168,7 @@ Therefore, you can use `ctx.method`, `ctx.target`, `ctx.args`, and `ctx.axiosCon
 
 ## Reusable Pointcut Expressions
 
-You might frequently use certain pointcut expressions. `axios-plus` supports providing reusable pointcut expressions. A reusable pointcut expression is simply a function that returns the pointcut expression string, as shown below:
+You might frequently use certain pointcut expressions. `awe-axios` supports providing reusable pointcut expressions. A reusable pointcut expression is simply a function that returns the pointcut expression string, as shown below:
 
 ```ts {1-3,6,10}
 function reusableExp() {
@@ -279,7 +279,7 @@ Therefore, the general execution order for a single aspect is: `Around (before p
 
 ### Aspect Class Execution Order
 
-When there are multiple aspect classes, `axios-plus` allows you to set a priority order for them using the parameter to `@Aspect()`. The default priority is 5. **A lower number indicates higher priority, meaning that aspect executes first**. If priorities are the same, the order is non-deterministic (random). If priorities are different, how do they execute? Let's look at the code below with two aspects having different priorities:
+When there are multiple aspect classes, `awe-axios` allows you to set a priority order for them using the parameter to `@Aspect()`. The default priority is 5. **A lower number indicates higher priority, meaning that aspect executes first**. If priorities are the same, the order is non-deterministic (random). If priorities are different, how do they execute? Let's look at the code below with two aspects having different priorities:
 
 ```ts {4,31} // Lines 4 and 31 show the priorities
 function reusableExp() {

@@ -1,6 +1,6 @@
 # HTTP Request Methods
 
-`axios-plus` encapsulates common HTTP request methods and provides them in the form of decorators for quickly defining API interfaces. These mainly include:
+`awe-axios` encapsulates common HTTP request methods and provides them in the form of decorators for quickly defining API interfaces. These mainly include:
 
 - Class Decorator: `@HttpApi`
 - Method Decorators: `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`, `@Options`, `@Head`
@@ -29,7 +29,7 @@ This decorator defines the base configuration for the API interface class, servi
 Usage example:
 
 ```typescript
-import { HttpApi, Get } from 'axios-plus';
+import { HttpApi, Get } from 'awe-axios';
 
 // Basic usage: specify baseURL
 @HttpApi('https://api.example.com')

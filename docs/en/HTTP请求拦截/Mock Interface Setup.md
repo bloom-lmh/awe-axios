@@ -2,7 +2,7 @@
 
 ## Introduction
 
-To make configurations more concise, `axios-plus` also provides child decorators specifically for `mock` functionality. You can use `@Mock` to configure `mock`-related settings. This decorator accepts two parameters:
+To make configurations more concise, `awe-axios` also provides child decorators specifically for `mock` functionality. You can use `@Mock` to configure `mock`-related settings. This decorator accepts two parameters:
 
 1.  The first parameter is `handlers`. It can be either a handler function or an object.
 

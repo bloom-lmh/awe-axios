@@ -1,5 +1,5 @@
 {
-  "name": "axios-plus",
+  "name": "awe-axios",
   "private": false,
   "version": "0.0.1",
   "type": "module",
@@ -12,11 +12,21 @@
   ],
   "keywords": [
     "axios",
-    "msw",
-    "api"
+    "mock",
+    "http",
+    "request"
   ],
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloom-lmh/awe-axios"
+  },
+  "homepage": "https://df-docs-seven.vercel.app/",
+  "bugs": {
+    "url": "https://github.com/bloom-lmh/data-faker/issues"
+  },
+  "changelog": "CHANGELOG.md",
   "buildOptions": {
     "name": "AxiosPlus",
     "formats": [
