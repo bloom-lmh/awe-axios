@@ -100,7 +100,7 @@ The configuration options supported by `@Get` (of type `HttpMethodDecoratorConfi
 |                   | `refAxios`          | Overrides the class decorator's default `axios` instance.                                                                          |
 
 ::: tip Path Parameters
-Typically, you need to use various parameter decorators to implement more complex API interfaces. AxiosPlus provides three types of parameter decorators to meet your parameter passing needs:
+Typically, you need to use various parameter decorators to implement more complex API interfaces. awe-axios provides three types of parameter decorators to meet your parameter passing needs:
 
 1.  `@QueryParam`: For query parameters (`?key=value`).
 2.  `@PathParam`: For path parameters (`/path/:id`).

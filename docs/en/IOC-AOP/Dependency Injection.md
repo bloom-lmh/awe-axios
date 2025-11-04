@@ -2,7 +2,7 @@
 
 ## Core Concepts
 
-In `axios-plus`, Dependency Injection (DI) is implemented through the `@Inject` decorator and an IoC (Inversion of Control) container, which decouples dependencies between components and automatically manages instance creation and injection. The following details the implementation and usage.
+In `awe-axios`, Dependency Injection (DI) is implemented through the `@Inject` decorator and an IoC (Inversion of Control) container, which decouples dependencies between components and automatically manages instance creation and injection. The following details the implementation and usage.
 
 ## Basic Usage
 
@@ -64,7 +64,7 @@ private productService: ProductService;
 ```
 
 ::: warning When both `ctor` and `alias` are configured
-If you configure both `ctor` and `alias`, `axios-plus` will only use `module + ctor` for the lookup and ignore `alias`.
+If you configure both `ctor` and `alias`, `awe-axios` will only use `module + ctor` for the lookup and ignore `alias`.
 :::
 
 ::: tip About `scope` and `backups`
@@ -83,7 +83,7 @@ private userService: UserService;
 
 <!-- ### Dependency Inference Mechanism
 
-You can also configure nothing. `axios-plus` is intelligent enough to automatically infer the dependency type, as shown below:
+You can also configure nothing. `awe-axios` is intelligent enough to automatically infer the dependency type, as shown below:
 
 ```ts
 @Inject()
@@ -92,15 +92,15 @@ private userService: UserService;
 
 ::: warning But there are prerequisites and risks
 
-1.  `axios-plus` infers based on the property declaration type, such as the `UserService` type declared in `userService: UserService` in the example above. However, type inference is not always accurate, for example with the `typeof` keyword, `any` type, `unknown` type, etc. If you want to use this feature, you need to write precise type annotations to avoid potential type errors.
-2.  Object-oriented languages often use polymorphism, meaning a class can have many subclasses. If you register multiple subclasses of a class (but the parent class is not registered), and you use the parent class type for injection, `axios-plus` will have multiple candidates (multiple subclass instances of the same kind) and cannot determine which specific subclass to inject. Therefore, if you use a property declared as a parent class, ensure that if multiple subclasses are registered, the parent class is also registered to create a best candidate (the parent class itself).
+1.  `awe-axios` infers based on the property declaration type, such as the `UserService` type declared in `userService: UserService` in the example above. However, type inference is not always accurate, for example with the `typeof` keyword, `any` type, `unknown` type, etc. If you want to use this feature, you need to write precise type annotations to avoid potential type errors.
+2.  Object-oriented languages often use polymorphism, meaning a class can have many subclasses. If you register multiple subclasses of a class (but the parent class is not registered), and you use the parent class type for injection, `awe-axios` will have multiple candidates (multiple subclass instances of the same kind) and cannot determine which specific subclass to inject. Therefore, if you use a property declared as a parent class, ensure that if multiple subclasses are registered, the parent class is also registered to create a best candidate (the parent class itself).
 
 :::
 -->
 
 ## Instance Scopes
 
-`axios-plus` provides multiple instance injection modes during dependency injection, including Singleton, Transient, Prototype, Shallow Clone, etc., to meet the needs of different scenarios. The creation strategy is controlled by the `scope` configuration, with a default value of `SINGLETON`:
+`awe-axios` provides multiple instance injection modes during dependency injection, including Singleton, Transient, Prototype, Shallow Clone, etc., to meet the needs of different scenarios. The creation strategy is controlled by the `scope` configuration, with a default value of `SINGLETON`:
 
 | Scope          | Description                                                                     | Suitable Scenarios                                                 |
 | -------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -112,7 +112,7 @@ private userService: UserService;
 
 ### Transient Scope
 
-In Transient scope, a new instance is created each time it is injected. `axios-plus` uses Transient scope by default, as shown in the following example:
+In Transient scope, a new instance is created each time it is injected. `awe-axios` uses Transient scope by default, as shown in the following example:
 
 ```typescript {4-11,14-15}
 @Component()
@@ -235,7 +235,7 @@ console.log(userService.user2.obj.a); // 1
 
 ## Dependency Backups
 
-To ensure injection stability, `axios-plus` provides a dependency backup mechanism. When the primary instance lookup fails, alternative instances can be specified via the `backups` configuration. The `backups` configuration can be a constructor, an object, or an array of constructors and objects, as shown in the following example:
+To ensure injection stability, `awe-axios` provides a dependency backup mechanism. When the primary instance lookup fails, alternative instances can be specified via the `backups` configuration. The `backups` configuration can be a constructor, an object, or an array of constructors and objects, as shown in the following example:
 
 ```typescript {8,13-14}
 class User {
@@ -259,5 +259,5 @@ console.log(userService.user1);
 ```
 
 ::: tip Backup Order
-When there are multiple backup instances, `axios-plus` will try them in the order of registration until an instance is found. If none are found, `undefined` is injected.
+When there are multiple backup instances, `awe-axios` will try them in the order of registration until an instance is found. If none are found, `undefined` is injected.
 :::

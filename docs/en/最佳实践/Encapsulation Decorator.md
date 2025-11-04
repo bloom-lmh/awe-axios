@@ -29,7 +29,7 @@ const { data } = await new UserApi().createUser({ name: 'test', age: 18 });
 console.log(data);
 ```
 
-Doesn't this look quite messy? To solve this problem, `axios-plus` allows encapsulating custom decorators. For example:
+Doesn't this look quite messy? To solve this problem, `awe-axios` allows encapsulating custom decorators. For example:
 
 ```ts {1-17,20-22}
 /**

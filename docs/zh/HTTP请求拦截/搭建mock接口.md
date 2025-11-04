@@ -195,7 +195,7 @@ console.log(data);
 结果为：
 
 ```json
-{ "message": "welcome to use AxiosPlusMock" }
+{ "message": "welcome to use awe-axiosMock" }
 ```
 
 ### 处理器函数原理

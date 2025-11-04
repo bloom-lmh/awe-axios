@@ -2,7 +2,7 @@
 
 ## 介绍
 
-`axios-plus`实现了依赖注入(`DI`)思想进行了实现，通过 `@Component` 装饰器，你可以把你要的类实例注册到容器中从而实现控制反转（`IOC`）。这样，你可以在其他类中通过 `@Inject` 装饰器注入你注册的类实例，实现解耦和可测试。
+`awe-axios`实现了依赖注入(`DI`)思想进行了实现，通过 `@Component` 装饰器，你可以把你要的类实例注册到容器中从而实现控制反转（`IOC`）。这样，你可以在其他类中通过 `@Inject` 装饰器注入你注册的类实例，实现解耦和可测试。
 
 ## 多种注册方式
 
@@ -39,7 +39,7 @@ class UserService {
 
 ### 字符串表达式注册
 
-`axios-plus`也支持通过字符串表达式快速配置（格式：`模块.别名`）：
+`awe-axios`也支持通过字符串表达式快速配置（格式：`模块.别名`）：
 
 ```typescript {1-2}
 // 等价于 { module: 'service', alias: 'userApi' }
@@ -79,7 +79,7 @@ class UserService {
 
 ### 同一模块下类名排他性
 
-`axios-plus`的容器是基于模块命名空间的，不同模块可以存在同名类或别名，但是同一模块下不允许出现两个有相同别名和类名的类实例。比如：
+`awe-axios`的容器是基于模块命名空间的，不同模块可以存在同名类或别名，但是同一模块下不允许出现两个有相同别名和类名的类实例。比如：
 
 ```ts
 @Component('userApi')
@@ -92,4 +92,4 @@ class UserApi2 {}
 
 ### 只能用于 ts 类
 
-`axios-plus`是基于 typescript 开发的，所以只能用于 typescript 类，如果你使用其他语言，比如 `javascript`，就无法使用`axios-plus`了。当然我们也期待`javascript`原生能支持这种装饰器语法功能
+`awe-axios`是基于 typescript 开发的，所以只能用于 typescript 类，如果你使用其他语言，比如 `javascript`，就无法使用`awe-axios`了。当然我们也期待`javascript`原生能支持这种装饰器语法功能
