@@ -1,50 +1,47 @@
-# AxiosPlus 全功能介绍文档
+# Awe-Axios
 
+注意以下只是简介，具体参考官方文档。
 [Official website](https://awe-axios.vercel.app/)
 [中文官网](https://aweaxios-758490sk.maozi.io/zh/%E8%B5%B7%E6%AD%A5/%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D.html)
 
-## 1. 什么是 AxiosPlus？
+## 基本介绍
 
-`AxiosPlus` 是在 `axios` 基础上扩展的增强型 HTTP 请求工具库，通过装饰器模式、配置扩展等方式提供更丰富的功能和更灵活的使用方式，同时保持与 axios 生态的兼容性。
+Awe-Axios 是基于 axios 扩展的增强型 HTTP 请求工具库，通过装饰器模式、配置扩展等方式优化请求体验，同时保持与 axios 生态的完全兼容。支持注解驱动、请求重传、防抖节流、Mock 拦截、面向切面、依赖注入等核心功能，适用于各类前端 HTTP 请求场景。
 
-核心特性包括：
+## 核心特性
 
-- **注解驱动**：基于装饰器定义 API 接口，自动代理为请求方法
-- **功能封装**：内置请求重传、防抖、节流等常用功能
-- **无侵入设计**：兼容 axios 原有 API，可平滑迁移
-- **强大 mock 能力**：基于 msw 实现网络层面拦截，支持真实/mock 接口无缝切换
-- **接口二义性**：同一接口可同时作为真实接口和 mock 接口
-- **面向切面编程**：精细化控制请求/响应拦截
-- **依赖注入**：支持实例管理与依赖注入，便于多环境配置
+- 注解驱动：通过装饰器定义 API 接口，被装饰方法自动代理为请求接口，简化配置
+- 功能封装：内置请求重传、防抖、节流等常用功能，无需重复开发
+- 无侵入设计：不修改 axios 原有 API，兼容现有 axios 项目
+- 真实 Mock 拦截：基于 msw 实现网络层面请求拦截，支持接口二义性（同一接口既是真实接口也是 Mock 接口）
+- 面向切面（AOP）：支持请求前后、成功失败等阶段的精细化拦截
+- 依赖注入（DI）：提供 IoC 容器，支持类实例注册与注入，解耦组件依赖
+- 多环境适配：支持自定义 axios 实例，适配不同域名、认证方式的后端服务
 
-## 2. 适用场景
+## 适用场景
 
-`AxiosPlus` 适用于各类需要处理 HTTP 请求的前端应用，尤其适合：
+1. 企业级应用开发：通过装饰器集中管理 API，提升代码可维护性
+2. 高频请求场景：防抖、节流功能减少无效网络请求，优化性能
+3. 不稳定网络环境：请求重传机制提升接口成功率
+4. 前后端并行开发：内置 Mock 功能，无需等待后端接口就绪
+5. 多环境切换：支持自定义 axios 实例，适配开发、测试、生产等多环境
+6. 数据转换需求：提供请求/响应数据转换器，处理格式转换、加密解密等场景
 
-1. **企业级应用开发**：通过装饰器集中管理 API 配置，提高可维护性
-2. **高频请求场景**：利用防抖、节流优化请求性能
-3. **不稳定网络环境**：通过请求重传机制提升成功率
-4. **多环境适配**：支持自定义 axios 实例，适配不同后端服务
-5. **前后端并行开发**：内置 mock 功能，无需等待后端接口
-6. **数据转换需求**：提供便捷的请求/响应数据转换能力
+## 快速开始
 
-支持 Vue、React 等框架应用及原生 JavaScript 项目。
-
-## 3. 快速开始
-
-### 3.1 安装
+### 安装
 
 ```bash
-# 使用 npm
-npm install axios-plus --save
+# npm
+npm install awe-axios --save
 
-# 使用 yarn
-yarn add axios-plus
+# yarn
+yarn add awe-axios
 ```
 
-### 3.2 环境要求
+### 环境要求
 
-需要 TypeScript 环境，并在 `tsconfig.json` 中配置：
+需使用 TypeScript 开发，在 tsconfig.json 中添加以下配置：
 
 ```json
 {
@@ -55,29 +52,31 @@ yarn add axios-plus
 }
 ```
 
-### 3.3 基本使用
+### 基本使用
 
 ```typescript
+import { HttpApi, Get, Post, PathParam, BodyParam, QueryParam } from 'awe-axios';
+
 @HttpApi({
   baseURL: 'http://localhost:3000/users',
 })
 class UserApi {
-  // 基础 GET 请求
+  // GET /users
   @Get('/')
   getAllUsers(): any {}
 
-  // 带路径参数的 GET 请求，失败时重试 3 次
+  // GET /users/:id （失败时重试3次）
   @Get({
     url: '/:id',
     retry: 3,
   })
   getUserById(@PathParam('id') id: number): any {}
 
-  // POST 请求
+  // POST /users （提交请求体）
   @Post('/')
   addUser(@BodyParam() data: { name: string; age: number }): any {}
 
-  // 带 mock 功能的请求
+  // GET /users/page?page=xxx&size=xxx （Mock 接口）
   @Get({
     url: '/page',
     mock: {
@@ -91,152 +90,368 @@ class UserApi {
   })
   getPage(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
 }
+
+// 使用示例
+const userApi = new UserApi();
+const allUsers = await userApi.getAllUsers();
+const user = await userApi.getUserById(1);
+const newUser = await userApi.addUser({ name: 'test', age: 18 });
 ```
 
-## 4. 核心功能详解
+### 原生 axios 使用
 
-### 4.1 HTTP 请求方法
+AxiosPlus 兼容原生 axios API，可直接使用 axiosPlus 调用：
 
-`AxiosPlus` 提供了一系列 HTTP 方法装饰器，继承自 axios 配置并扩展了增强功能：
+```typescript
+import { axiosPlus } from 'awe-axios';
 
-#### 4.1.1 @Get 装饰器
+// 请求拦截器
+axiosPlus.interceptors.request.use(config => {
+  console.log('请求拦截器', config);
+  return config;
+});
 
-基础用法：
+// 直接发起请求
+axiosPlus.get('http://localhost:3000/users');
+```
+
+## HTTP 请求方法
+
+AxiosPlus 提供类装饰器和方法装饰器，用于快速定义 API 接口。
+
+### 类装饰器 @HttpApi
+
+用于标记 HTTP 接口类，定义公共配置：
+
+```typescript
+import { HttpApi, Get } from 'awe-axios';
+
+// 基础用法
+@HttpApi('https://api.example.com')
+class UserApi {
+  @Get('/users')
+  getUserList(): any {} // 实际请求地址：https://api.example.com/users
+}
+
+// 完整配置
+@HttpApi({
+  baseURL: 'https://api.example.com', // 基础路径
+  url: '/v1', // 路径前缀
+  refAxios: customAxiosInstance, // 自定义 axios 实例
+  mock: {
+    // 全局 Mock 配置
+    on: true, // 是否开启 Mock
+    condition: () => process.env.NODE_ENV === 'development', // 触发条件
+  },
+})
+class UserApiV1 {
+  @Get('/users')
+  getUserList(): any {} // 实际请求地址：https://api.example.com/v1/users
+}
+```
+
+#### 配置合并规则
+
+- baseURL：方法装饰器配置覆盖类装饰器
+- url：类装饰器 url 与方法装饰器 url 自动拼接（处理斜杠）
+- headers：深度合并，方法装饰器配置优先
+- refAxios：方法装饰器配置覆盖类装饰器
+
+### 方法装饰器
+
+涵盖所有 HTTP 标准方法，配置项继承自 axios 并扩展增强功能：
+
+| 装饰器   | 说明              | 适用场景                 |
+| -------- | ----------------- | ------------------------ |
+| @Get     | 定义 GET 请求     | 查询资源                 |
+| @Post    | 定义 POST 请求    | 创建资源（注意幂等性）   |
+| @Put     | 定义 PUT 请求     | 全量更新资源             |
+| @Delete  | 定义 DELETE 请求  | 删除资源                 |
+| @Patch   | 定义 PATCH 请求   | 部分更新资源             |
+| @Options | 定义 OPTIONS 请求 | 跨域预检、查询支持的方法 |
+| @Head    | 定义 HEAD 请求    | 获取响应头（无响应体）   |
+
+#### 示例：@Post 用法
 
 ```typescript
 @HttpApi('https://api.example.com')
 class UserApi {
-  // 仅指定路径
-  @Get('/users')
-  getUserList(): any {}
-
-  // 带路径参数
-  @Get('/users/:id')
-  getUserDetail(): any {}
+  @Post('/users')
+  createUser(@BodyParam() user: { name: string; age: number }) {}
 }
 ```
 
-支持的配置项：
-| 类别 | 配置项 | 说明 |
-|------|--------|------|
-| 基础配置 | `url` | 请求路径 |
-| | `baseURL` | 覆盖类装饰器的 baseURL |
-| | `headers` | 请求头信息 |
-| | `timeout` | 超时时间（毫秒） |
-| 增强功能 | `retry` | 重试配置 |
-| | `debounce` | 防抖配置 |
-| | `throttle` | 节流配置 |
-| | `mock` | 方法级 mock 配置 |
+#### 增强功能配置
 
-#### 4.1.2 参数装饰器
-
-配合请求方法使用的参数装饰器：
-
-1. **@QueryParam**：用于查询参数（`?key=value`）
-2. **@PathParam**：用于路径参数（`/path/:id`）
-3. **@BodyParam**：用于请求体参数
-
-**@BodyParam 示例**：
+方法装饰器支持重试、防抖、节流等增强配置：
 
 ```typescript
-@HttpApi({
-  baseURL: 'http://localhost:3000/users/',
+@Get({
+  url: '/data',
+  retry: 3, // 重试3次
+  debounce: 300, // 防抖300ms
+  throttle: 1000, // 节流1s
+  mock: {} // Mock 配置
 })
-class UserApi {
-  @Post('/')
-  createUser(@BodyParam() user: { name: string; age: number }): any {}
-}
+getData(): any {}
 ```
 
-文件上传示例：
+## 参数装饰器
+
+用于处理请求参数，支持查询参数、路径参数、请求体参数：
+
+### @QueryParam
+
+将参数转换为查询字符串（?key=value）：
 
 ```typescript
-@HttpApi({
-  baseURL: 'http://localhost:3000/users/',
+@HttpApi('http://localhost:3000/users')
+class UserApi {
+  @Get('/pages')
+  getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
+}
+
+// 调用：userApi.getUserPages(1, 20)
+// 最终地址：http://localhost:3000/users/pages?page=1&size=20
+```
+
+#### 多参数合并
+
+同名参数自动合并为数组：
+
+```typescript
+@Get('/groups')
+getUserGroups(
+  @QueryParam('ids') id1: number,
+  @QueryParam('ids') id2: number
+): any {}
+
+// 调用：userApi.getUserGroups(1, 2)
+// 最终地址：http://localhost:3000/users/groups?ids[]=1&ids[]=2
+```
+
+### @PathParam
+
+将参数替换为路径占位符（/path/:id）：
+
+```typescript
+@Get('/:id')
+getUserById(@PathParam('id') id: number): any {}
+
+// 调用：userApi.getUserById(1)
+// 最终地址：http://localhost:3000/users/1
+```
+
+### @BodyParam
+
+收集参数作为请求体（支持 JSON、form-data 等格式）：
+
+```typescript
+// 基础用法
+@Post('/')
+createUser(@BodyParam() user: { name: string; age: number }): any {}
+
+// 多参数合并
+@Post('/')
+createUser(
+  @BodyParam('user') user: { name: string; age: number },
+  @BodyParam('person') person: { sex: string }
+): any {}
+// 最终请求体：{ "user": { "name": "test" }, "person": { "sex": "男" } }
+
+// 文件上传（需指定 Content-Type）
+@Post({
+  url: '/upload',
+  headers: { 'Content-Type': 'multipart/form-data' }
 })
-class UserApi {
-  @Post({
-    url: '/upload',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
-  uploadFile(@BodyParam('file') file: FormData): any {}
-}
+uploadFile(@BodyParam('file') file: FormData): any {}
 ```
 
-### 4.2 常用功能
+## 常用功能详解
 
-#### 4.2.1 请求重发
+### 请求重发（Retry）
 
-采用指数退避策略，支持失败自动重试：
+请求失败时自动重试，提高成功率，适用于非实时性接口。
+
+#### 基本使用
 
 ```typescript
+import { useRetry } from 'awe-axios';
+
+// 定义接口
+@HttpApi('http://localhost:3000/users')
+class UserApi {
+  @Get('/:id')
+  getUserById(@PathParam('id') id: number): any {}
+}
+
 const userApi = new UserApi();
+// 包装为带重试功能的接口
+const retryGetUser = useRetry(userApi.getUserById);
+// 调用（默认重试3次，基础延迟100ms）
+await retryGetUser(1);
+```
 
-// 原始请求函数
-async function getUserById(id: number) {
-  const { data } = await userApi.getUserById(id);
+#### 配置方式
+
+```typescript
+// 仅指定重试次数
+const retryGetUser = useRetry(userApi.getUserById, 3);
+
+// 完整配置
+const retryGetUser = useRetry(userApi.getUserById, {
+  count: 3, // 重试次数
+  delay: 1000, // 基础延迟时间（ms）
+});
+
+// 数组形式 [次数, 延迟]
+const retryGetUser = useRetry(userApi.getUserById, [3, 1000]);
+```
+
+#### 特性
+
+- 指数退避策略：第 n 次重试延迟 = delay \* 2^(n-1)
+- 首次重试无延迟，从第二次开始应用延迟
+- 不推荐 Post 请求使用（可能导致数据重复提交）
+
+### 防抖（Debounce）
+
+限制短时间内多次触发的请求，仅执行最后一次，适用于搜索框、频繁点击等场景。
+
+#### 基本使用
+
+```typescript
+import { useDebounce } from 'awe-axios';
+
+// 包装为带防抖功能的接口
+const debounceGetUser = useDebounce(userApi.getUserById, 300);
+
+// 短时间内多次调用，仅执行最后一次
+debounceGetUser(1);
+debounceGetUser(2);
+debounceGetUser(3); // 仅此次生效
+```
+
+#### 配置方式
+
+```typescript
+// 仅指定延迟时间（ms）
+const debounceGetUser = useDebounce(userApi.getUserById, 300);
+
+// 完整配置
+const debounceGetUser = useDebounce(userApi.getUserById, {
+  delay: 300, // 延迟时间
+  immediate: true, // 是否立即执行第一次请求
+});
+```
+
+### 节流（Throttle）
+
+限制请求执行频率，指定时间间隔内仅执行一次，适用于滚动加载、实时刷新等场景。
+
+#### 基本使用
+
+```typescript
+import { useThrottle } from 'awe-axios';
+
+// 包装为带节流功能的接口（1s 内最多执行一次）
+const throttleGetUser = useThrottle(userApi.getUserById, 1000);
+
+// 短时间内多次调用，仅1s内首次生效
+throttleGetUser(1);
+throttleGetUser(2); // 被忽略
+await delay(1000);
+throttleGetUser(3); // 生效
+```
+
+### 功能组合
+
+支持多种功能组合使用（装饰器模式）：
+
+```typescript
+// 防抖 + 重试（搜索场景）
+const debounceRetryGet = useDebounce(useRetry(userApi.getUserById), 300);
+
+// 节流 + 重试（滚动加载场景）
+const throttleRetryGet = useThrottle(useRetry(userApi.getUserById), 1000);
+```
+
+#### 注意事项
+
+- 不推荐防抖与节流同时使用（策略冲突）
+- 推荐组合：搜索场景（防抖+重试）、滚动加载（节流+重试）、普通接口（仅重试）
+
+## 子项装饰器
+
+用于拆分复杂配置，使代码结构更清晰，支持以下子项装饰器：
+
+### @RefAxios（类装饰器）
+
+设置类中所有接口的默认 axios 实例：
+
+```typescript
+const customAxios = axiosPlus.create({ baseURL: 'http://localhost:3000/users' });
+
+@HttpApi()
+@RefAxios(customAxios)
+class UserApi {
+  @Get('/pages')
+  getUserPages(): any {} // 自动使用 customAxios 实例
 }
-
-// 装饰为带重试功能的请求（默认重试3次）
-const retryGetUserById = useRetry(getUserById);
-await retryGetUserById(1);
 ```
 
-#### 4.2.2 防抖
+### @AxiosRef（方法装饰器）
 
-限制短时间内重复请求，适用于搜索等场景：
+设置单个接口的 axios 实例（优先级高于类配置）：
 
 ```typescript
-// 100ms 内多次调用只会执行一次
-const debouncedGetUser = useDebounce(getUserById, 100);
+class UserApi {
+  @Get('/pages')
+  @AxiosRef(customAxios)
+  getUserPages(): any {}
+}
 ```
 
-适用场景：
+### @TransformResponse
 
-- 搜索框输入联想
-- 窗口大小调整触发的请求
-- 频繁点击按钮的场景
-
-#### 4.2.3 节流
-
-控制请求执行频率，适用于滚动加载等场景：
+设置响应数据处理器（与 axios transformResponse 一致）：
 
 ```typescript
-// 100ms 内最多执行一次
-const throttledGetUser = useThrottle(getUserById, 100);
+@Get('/pages')
+@TransformResponse([
+  // 第一步：解析 JSON 并提取 data 字段
+  data => JSON.parse(data).data,
+  // 第二步：处理数据
+  data => data.map(user => ({ ...user, age: 18 }))
+])
+getUserPages(): any {}
 ```
 
-适用场景：
+### @TransformRequest
 
-- 滚动加载更多数据
-- 拖拽操作触发的请求
-- 实时数据刷新（如仪表盘）
-
-#### 4.2.4 功能组合
-
-支持多种功能组合使用：
+设置请求数据处理器（与 axios transformRequest 一致）：
 
 ```typescript
-// 节流+重试函数
-const fn = useThrottle(useRetry(getUserById));
+@Post('/')
+@TransformRequest([
+  // 第一步：添加额外字段
+  data => ({ ...data, sex: '男' }),
+  // 第二步：转换为 JSON 字符串
+  data => JSON.stringify(data)
+])
+createUser(@BodyParam() user: { name: string; age: number }): any {}
 ```
 
-推荐组合：
+## Mock 接口搭建
 
-- 搜索场景：`防抖 + 重传`
-- 滚动加载：`节流 + 重传`
-- 普通接口：`仅重传`（大多数场景）
+基于 msw 实现网络层面请求拦截，支持接口二义性（同一接口既是真实接口也是 Mock 接口）。
 
-### 4.3 Mock 功能
-
-`AxiosPlus` 提供了便捷的 mock 接口解决方案，支持开发/生产环境无缝切换。
-
-#### 4.3.1 基本使用
+### 基本使用
 
 ```typescript
-// 全局开启 mock
+import { MockAPI, HttpResponse } from 'awe-axios';
+
+// 开启全局 Mock
 MockAPI.on();
 
 @HttpApi('http://localhost:3000/users')
@@ -254,287 +469,95 @@ class UserApi {
   getUsers(): any {}
 }
 
-// 调用 mock 接口（柯里化调用方式）
+// 调用 Mock 接口（柯里化调用）
 const userApi = new UserApi();
 const { data } = await userApi.getUsers()();
 ```
 
-#### 4.3.2 多处理器支持
+### 处理器函数
+
+支持多状态处理器（成功/失败等）：
 
 ```typescript
+@Get({
+  mock: {
+    handlers: {
+      success: ctx => HttpResponse.json({ data: [1, 2, 3] }),
+      error: ctx => HttpResponse.error()
+    }
+  }
+})
+getUsers(): any {}
+
+// 调用指定处理器
+await userApi.getUsers()('success'); // 成功状态
+await userApi.getUsers()('error'); // 失败状态
+```
+
+#### 简化写法（mockHandlers）
+
+```typescript
+@Get({
+  mockHandlers: {
+    success: ctx => HttpResponse.json({ data: [1, 2, 3] }),
+    error: ctx => HttpResponse.error()
+  }
+})
+getUsers(): any {}
+```
+
+### 处理器参数
+
+通过 ctx 参数获取请求信息：
+
+```typescript
+@Post('/pages/:page/:size')
+@Mock({
+  handlers: async ({ request, params, cookies }) => {
+    // 获取查询参数
+    const url = new URL(request.url);
+    const page = url.searchParams.get('page');
+
+    // 获取路径参数
+    const { size } = params;
+
+    // 获取请求体
+    const body = await request.json();
+
+    // 获取 Cookie
+    const token = cookies.token;
+
+    return HttpResponse.json({ page, size, body });
+  }
+})
+getPages(): any {}
+```
+
+### HttpResponse 常用方法
+
+| 方法    | 说明                                        | 示例                                             |
+| ------- | ------------------------------------------- | ------------------------------------------------ |
+| json()  | 返回 JSON 格式响应（自动设置 Content-Type） | HttpResponse.json({ data: [] }, { status: 200 }) |
+| error() | 返回网络错误                                | HttpResponse.error()                             |
+| text()  | 返回文本响应                                | HttpResponse.text('success')                     |
+| html()  | 返回 HTML 响应                              | HttpResponse.html('<h1>Hello</h1>')              |
+
+## 取消 Mock
+
+支持多种方式切换真实接口与 Mock 接口，无需修改业务代码。
+
+### 信号量机制
+
+通过 SignalController 动态取消 Mock：
+
+```typescript
+// 创建 Mock 控制器
+const mockCtr = new SignalController();
+
 @HttpApi('http://localhost:3000/users')
 class UserApi {
   @Get({
     mock: {
-      handlers: {
-        success: ctx => {
-          return HttpResponse.json({ data: [{ id: 1, name: 'Alice' }] });
-        },
-        error: ctx => {
-          return HttpResponse.error();
-        },
-      },
-    },
-  })
-  getUsers(): any {}
-}
-
-// 调用指定处理器
-const { data } = await userApi.getUsers()('success');
+      signal: mockCtr.signal,
+      handlers: () => HttpResponse.json({ data:
 ```
-
-#### 4.3.3 处理器函数参数
-
-获取查询参数：
-
-```typescript
-@HttpApi('http://localhost:3000/users')
-class UserApi {
-  @Get({
-    url: '/pages',
-    mock: ({ request }) => {
-      const url = new URL(request.url);
-      const page = url.searchParams.get('page');
-      const size = url.searchParams.get('size');
-      return HttpResponse.json({
-        data: [
-          /* ... */
-        ],
-      });
-    },
-  })
-  getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
-}
-```
-
-获取请求体参数：
-
-```typescript
-@HttpApi('http://localhost:3000/users/')
-class UserApi {
-  @Post({
-    url: '/pages/:page/:size',
-    mock: async ({ request }) => {
-      const data = await request.json();
-      const { page, size } = data;
-      return HttpResponse.json({
-        data: [
-          /* ... */
-        ],
-      });
-    },
-  })
-  getUserPages(@BodyParam() qo: { page: number; size: number }): any {}
-}
-```
-
-#### 4.3.4 HttpResponse 方法
-
-- `HttpResponse.json()`：返回 JSON 响应
-- `HttpResponse.text()`：返回文本响应
-- `HttpResponse.html()`：返回 HTML 响应
-
-### 4.4 面向切面编程（AOP）
-
-通过 `@Before`、`@After` 等装饰器，对请求前、请求后、请求错误等阶段进行拦截。
-
-#### 4.4.1 切点表达式
-
-用于指定切入位置的字符串，支持通配符 `*`：
-
-1. `getUser*`：所有以 `getUser` 开头的方法
-2. `UserApi.getUser*`：`UserApi` 类中所有以 `getUser` 开头的方法
-3. `UserApi.*`：`UserApi` 类中所有的方法
-4. `*`：所有的方法
-
-#### 4.4.2 切入时机
-
-- `@Before`：方法执行前
-- `@After`：方法执行后（无论成功失败）
-- `@Around`：方法执行前后（可控制是否继续执行）
-- `@AfterReturning`：方法成功执行后
-- `@AfterThrowing`：方法抛出异常后
-
-#### 4.4.3 示例
-
-```typescript
-@Component()
-@HttpApi('http://localhost:3000/api/users')
-class UserApi {
-  @Get({
-    url: '/pages',
-    mock: () => {
-      return HttpResponse.json({ data: 'hello world' });
-    },
-  })
-  getUserPages(): any {}
-}
-
-@Aspect(1)
-class Logger {
-  @Before('getUser*')
-  log(ctx: AspectContext) {
-    console.log('before getUser*');
-  }
-
-  @After('getUser*')
-  logAfter(ctx: AspectContext) {
-    console.log('after getUser*');
-  }
-}
-```
-
-### 4.5 子项装饰器
-
-子项装饰器用于将配置从主装饰器中分离，使代码结构更清晰。
-
-#### 4.5.1 @TransformResponse
-
-用于处理响应数据：
-
-```typescript
-@HttpApi({
-  refAxios: request,
-})
-class UserApi {
-  @Get({ url: '/pages' })
-  @TransformResponse([data => JSON.parse(data).data, data => data.map((user: any) => ({ ...user, age: 12 }))])
-  getUserPages(@QueryParam('page') page: number, @QueryParam('size') size: number): any {}
-}
-```
-
-#### 4.5.2 配置优先级
-
-`@Get` 中配置 > `@AxiosRef` 装饰器配置 > `@HttpApi` 装饰器配置 > `@RefAxios` 装饰器配置
-
-### 4.6 依赖注入（DI）
-
-通过 `@Inject` 装饰器与 IoC（控制反转）容器实现，用于解耦组件间的依赖关系，自动管理实例的创建和注入过程。
-
-### 4.7 封装装饰器
-
-可以封装自定义装饰器以复用配置：
-
-```typescript
-// 封装文件上传post
-function FileUp(config: HttpMethodDecoratorConfig) {
-  config.headers = {
-    'Content-Type': 'multipart/form-data',
-  };
-  return Post(config);
-}
-
-// 只获取响应数据的data部分
-function ExtractData() {
-  return TransformResponse(() => (data: any) => data.data);
-}
-
-// 使用
-@HttpApi('http://localhost:3000/users/')
-class UserApi {
-  @FileUp({ url: '/upload' })
-  @ExtractData()
-  avaterUpload(@BodyParam() form: FormData): any {}
-}
-```
-
-## 5. 结合数据生成工具
-
-结合 `data-faker-plus` 可以更高效地生成 mock 数据。
-
-### 5.1 项目结构
-
-```bash
-project
- ├── api
- │   ├── common
- │   │   └── index.ts      # 通用接口装饰器
- │   └── userApi.ts        # 真实接口类
- └── mock
-     ├── common
-     │   └── index.ts      # 通用方法
-     ├── models
-     │   └── userModel.ts  # 定义数据模型
-     └── userMock.ts       # 封装用户mock装饰器
-```
-
-### 5.2 定义数据模型
-
-```typescript
-// /mock/models/userModel.ts
-import { DataField, DataModel, defineModel, faker } from 'data-faker-plus';
-
-@DataModel('user')
-export class UserModel {
-  @DataField('string.uuid')
-  declare id: string;
-
-  @DataField('person.firstName')
-  declare firstName: string;
-
-  @DataField('person.lastName')
-  declare lastName: string;
-
-  @DataField(['number.int', { min: 1, max: 120 }])
-  declare age: number;
-
-  // 更多字段...
-}
-```
-
-### 5.3 封装 mock 装饰器
-
-```typescript
-// /mock/userMock.ts
-import { HttpResponse, Mock, MockHandlers } from '@/index';
-import { fakeData, useModel } from 'data-faker-plus';
-import { UserModel } from './models/userModel';
-
-// 生成假数据
-const users = fakeData(useModel(UserModel), 30);
-
-// 模拟用户分页查询
-export function MockUserPages() {
-  let handlers = {
-    default: () => {
-      return HttpResponse.json({
-        message: 'success',
-        data: users,
-      });
-    },
-    error: () => HttpResponse.error(),
-  };
-  return Mock(handlers);
-}
-```
-
-### 5.4 定义真实接口类
-
-```typescript
-// /api/userApi.ts
-import { Delete, Get, Post } from '@/core/httpMethod';
-import { HttpApi } from '@/core/ioc';
-import { BodyParam, PathParam } from '@/core/params';
-import { MockUserPages, MockUserDelete } from '../mock/userMock';
-
-@HttpApi({
-  baseURL: 'http://localhost:3000/api/users',
-  mock: {
-    on: true,
-    condition: () => process.env.NODE_ENV === 'test',
-  },
-})
-class UserApi {
-  @Get('/pages/:page/:size')
-  @MockUserPages()
-  getUserPages(@PathParam('page') page: number, @PathParam('size') size: number): any {}
-
-  @Delete('/:id')
-  @MockUserDelete()
-  deleteUser(@PathParam('id') id: number): any {}
-}
-```
-
-## 6. 许可证
-
-MIT
