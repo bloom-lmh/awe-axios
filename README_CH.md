@@ -265,3 +265,5 @@ import { Component } from 'awe-axios/ioc-aop';
 - 兜底方案：在 GitHub 仓库里配置 `NPM_TOKEN` secret。
 
 现在 `npm run version-packages` 会在执行 `changeset version` 后同步刷新 `package-lock.json`，这样版本 PR 不会遗漏锁文件更新。
+
+如果你想看更完整的发版步骤、分支保护建议和 release PR 合并策略，可以直接看 [RELEASING.md](./RELEASING.md)。

@@ -262,3 +262,5 @@ To enable npm publishing in GitHub Actions:
 - Fallback: create a repository secret named `NPM_TOKEN`.
 
 `npm run version-packages` now refreshes `package-lock.json` after version bumps so the release PR stays consistent.
+
+For the full release checklist and branch protection recommendations, see [RELEASING.md](./RELEASING.md).
