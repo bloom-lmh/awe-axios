@@ -2,23 +2,47 @@
   "name": "@awe-axios/mock",
   "version": "0.1.0",
   "description": "MSW-powered mock package for Awe Axios",
+  "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloom-lmh/awe-axios.git"
+  },
+  "homepage": "https://github.com/bloom-lmh/awe-axios#readme",
+  "bugs": {
+    "url": "https://github.com/bloom-lmh/awe-axios/issues"
+  },
+  "keywords": [
+    "axios",
+    "mock",
+    "msw",
+    "typescript"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "file:../core"
+    "@awe-axios/core": "^0.1.0"
   },
   "peerDependencies": {
     "msw": "^2.11.6"
@@ -27,6 +51,6 @@
     "msw": "^2.11.6"
   },
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsup --config tsup.config.ts"
   }
 }

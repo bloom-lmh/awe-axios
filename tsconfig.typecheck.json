@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@awe-axios/core": ["./packages/core/src/index.ts"],
+      "@awe-axios/mock": ["./packages/mock/src/index.ts"],
+      "@awe-axios/ioc-aop": ["./packages/ioc-aop/src/index.ts"],
+      "awe-axios": ["./packages/awe-axios/src/index.ts"],
+      "awe-axios/core": ["./packages/awe-axios/src/core.ts"],
+      "awe-axios/mock": ["./packages/awe-axios/src/mock.ts"],
+      "awe-axios/ioc-aop": ["./packages/awe-axios/src/ioc-aop.ts"],
+      "awe-axios/all": ["./packages/awe-axios/src/all.ts"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "examples/**/*.ts"
+  ],
+  "exclude": [
+    "packages/*/dist/**",
+    "packages/*/src/**/__tests__/**",
+    "node_modules",
+    "docs/.vitepress/dist/**"
+  ]
+}

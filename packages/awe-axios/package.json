@@ -2,41 +2,71 @@
   "name": "awe-axios",
   "version": "0.1.0",
   "description": "Umbrella package for Awe Axios modules",
+  "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloom-lmh/awe-axios.git"
+  },
+  "homepage": "https://github.com/bloom-lmh/awe-axios#readme",
+  "bugs": {
+    "url": "https://github.com/bloom-lmh/awe-axios/issues"
+  },
+  "keywords": [
+    "axios",
+    "mock",
+    "ioc",
+    "aop",
+    "decorator",
+    "typescript"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./core": {
       "types": "./dist/core.d.ts",
-      "import": "./dist/core.js"
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
     },
     "./mock": {
       "types": "./dist/mock.d.ts",
-      "import": "./dist/mock.js"
+      "import": "./dist/mock.js",
+      "require": "./dist/mock.cjs"
     },
     "./ioc-aop": {
       "types": "./dist/ioc-aop.d.ts",
-      "import": "./dist/ioc-aop.js"
+      "import": "./dist/ioc-aop.js",
+      "require": "./dist/ioc-aop.cjs"
     },
     "./all": {
       "types": "./dist/all.d.ts",
-      "import": "./dist/all.js"
-    }
+      "import": "./dist/all.js",
+      "require": "./dist/all.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "file:../core",
-    "@awe-axios/ioc-aop": "file:../ioc-aop",
-    "@awe-axios/mock": "file:../mock"
+    "@awe-axios/core": "^0.1.0",
+    "@awe-axios/ioc-aop": "^0.1.0",
+    "@awe-axios/mock": "^0.1.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0",
@@ -52,6 +82,6 @@
     }
   },
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsup --config tsup.config.ts"
   }
 }
