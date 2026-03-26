@@ -1,26 +1,24 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
-  name: 'Awesome Axios'
-  text: 'An annotation-driven enhanced Axios framework'
+  name: Awe Axios
+  text: Decorator-first Axios toolkit, now rebuilt as a modular monorepo
   actions:
     - theme: brand
-      text: 起步
-      link: /en/起步/Basic Introduction
+      text: English Docs
+      link: /en/
+    - theme: alt
+      text: 中文文档
+      link: /zh/
 
 features:
-  - title: Annotation-Driven API
-    details: Define APIs using decorators like @Get, @Post, and @HttpApi, with automatic request proxying
-  - title: Built-in Request Enhancers
-    details: Out-of-the-box retry, debounce, and throttle capabilities to handle common request scenarios
-  - title: Seamless Mock Integration
-    details: Network-level request interception with MSW, supporting both real and mock interfaces in one definition
-  - title: Aspect-Oriented Programming
-    details: Fine-grained request/response interception using @Before, @After, and other AOP decorators
-  - title: Dependency Injection
-    details: Manage axios instances and configurations through IoC container for better modularity
-  - title: Axios Compatibility
-    details: Full compatibility with original Axios APIs, ensuring smooth migration for existing projects
+  - title: Modular packages
+    details: Install only core HTTP decorators, mock support, or IoC and AOP as needed.
+  - title: Better TypeScript ergonomics
+    details: Use `ApiCall<T>` to keep request methods consistently typed as `Promise<AxiosResponse<T>>`.
+  - title: Stable runtime model
+    details: Mock and real requests now share the same call signature and lifecycle.
+  - title: Cleaner extension points
+    details: Build custom decorators with `withHttpMethodConfig` and keep runtime behavior predictable.
 ---

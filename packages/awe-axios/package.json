@@ -1,0 +1,26 @@
+{
+  "name": "awe-axios",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@awe-axios/core": "file:../core",
+    "@awe-axios/ioc-aop": "file:../ioc-aop",
+    "@awe-axios/mock": "file:../mock"
+  },
+  "scripts": {
+    "build": "tsc -b"
+  }
+}
