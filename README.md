@@ -210,6 +210,14 @@ npm test
 npm run docs:dev
 ```
 
+For release preparation and dry-run publishing:
+
+```bash
+npm run changeset
+npm run version-packages
+npm run release:check
+```
+
 ## Import styles
 
 Choose the style that matches your distribution strategy:
@@ -233,3 +241,24 @@ import { Component } from 'awe-axios/ioc-aop';
 - Mock requests no longer switch to a double-call API.
 - IoC and AOP are decoupled from the HTTP package.
 - Tests now cover `core`, `mock`, and `ioc-aop` separately.
+
+## Release automation
+
+GitHub Actions now ships with two workflows:
+
+- [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) runs install, build, typecheck, test, docs build, and `npm pack --dry-run`.
+- [`.github/workflows/release.yml`](./.github/workflows/release.yml) uses Changesets to open or update the version PR, then publishes to npm after the version PR is merged.
+
+The release flow is:
+
+1. Add a changeset with `npm run changeset`.
+2. Merge the feature branch into `master`.
+3. The release workflow opens or updates a version PR.
+4. Merge that version PR to publish the packages.
+
+To enable npm publishing in GitHub Actions:
+
+- Preferred: configure npm Trusted Publishing for each package and point it at `release.yml`.
+- Fallback: create a repository secret named `NPM_TOKEN`.
+
+`npm run version-packages` now refreshes `package-lock.json` after version bumps so the release PR stays consistent.

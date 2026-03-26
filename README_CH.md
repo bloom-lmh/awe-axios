@@ -210,6 +210,14 @@ npm test
 npm run docs:dev
 ```
 
+如果你要准备发布或做发包前检查，也可以直接使用：
+
+```bash
+npm run changeset
+npm run version-packages
+npm run release:check
+```
+
 ## 导入方式
 
 如果你要最强的按需安装能力：
@@ -236,3 +244,24 @@ import { Component } from 'awe-axios/ioc-aop';
 - mock 逻辑从 HTTP 核心中解耦成插件式能力。
 - IoC / AOP 不再依赖旧的状态管理和杂糅的工厂类。
 - 测试按包拆分，构建和测试都已经打通。
+
+## 自动发包工作流
+
+仓库现在已经补好了两套 GitHub Actions：
+
+- [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) 负责安装依赖、构建、类型检查、测试、文档构建和 `npm pack --dry-run`。
+- [`.github/workflows/release.yml`](./.github/workflows/release.yml) 负责通过 Changesets 自动创建或更新版本 PR，并在版本 PR 合并后发布到 npm。
+
+推荐的发版流程是：
+
+1. 开发完成后执行 `npm run changeset` 生成版本说明。
+2. 把功能分支合并到 `master`。
+3. Release workflow 自动创建或更新版本 PR。
+4. 合并版本 PR，自动发布所有需要发布的包。
+
+启用 npm 自动发布时，建议这样配置：
+
+- 推荐方案：在 npm 上为每个包配置 Trusted Publishing，并把 workflow 文件名填成 `release.yml`。
+- 兜底方案：在 GitHub 仓库里配置 `NPM_TOKEN` secret。
+
+现在 `npm run version-packages` 会在执行 `changeset version` 后同步刷新 `package-lock.json`，这样版本 PR 不会遗漏锁文件更新。
