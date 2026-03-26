@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 
@@ -7,14 +7,21 @@ import {
   type ApiCall,
   AxiosRef,
   BodyParam,
+  Debounce,
   Get,
   HttpApi,
   PathParam,
   Post,
   QueryParam,
   RefAxios,
+  Retry,
+  Throttle,
   TransformResponse,
 } from '../index.js';
+
+let unstableCalls = 0;
+let searchCalls = 0;
+let metricCalls = 0;
 
 const server = setupServer(
   http.get('http://localhost:3000/users/:id', ({ request, params }) => {
@@ -32,10 +39,50 @@ const server = setupServer(
       source: 'method-axios',
     });
   }),
+  http.get('http://localhost:3000/unstable', () => {
+    unstableCalls += 1;
+
+    if (unstableCalls < 3) {
+      return HttpResponse.json(
+        {
+          ok: false,
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    return HttpResponse.json({
+      ok: true,
+      attempts: unstableCalls,
+    });
+  }),
+  http.get('http://localhost:3000/search', ({ request }) => {
+    searchCalls += 1;
+    const url = new URL(request.url);
+    return HttpResponse.json({
+      q: url.searchParams.get('q'),
+      calls: searchCalls,
+    });
+  }),
+  http.get('http://localhost:3000/metrics/:id', ({ params }) => {
+    metricCalls += 1;
+    return HttpResponse.json({
+      id: params.id,
+      calls: metricCalls,
+    });
+  }),
 );
 
 beforeAll(() => {
   server.listen();
+});
+
+beforeEach(() => {
+  unstableCalls = 0;
+  searchCalls = 0;
+  metricCalls = 0;
 });
 
 afterAll(() => {
@@ -109,5 +156,69 @@ describe('@awe-axios/core', () => {
       source: 'method-axios',
       transformed: true,
     });
+  });
+
+  test('supports retry decorator plugins', async () => {
+    @HttpApi('http://localhost:3000')
+    class HealthApi {
+      @Get('/unstable')
+      @Retry({
+        count: 3,
+        delay: 5,
+      })
+      check(): ApiCall<{ ok: boolean; attempts: number }> {
+        return undefined as never;
+      }
+    }
+
+    const response = await new HealthApi().check();
+
+    expect(response.data).toEqual({
+      ok: true,
+      attempts: 3,
+    });
+    expect(unstableCalls).toBe(3);
+  });
+
+  test('supports debounce decorator plugins', async () => {
+    @HttpApi('http://localhost:3000')
+    class SearchApi {
+      @Get('/search')
+      @Debounce({
+        delay: 10,
+      })
+      query(@QueryParam('q') q: string): ApiCall<{ q: string; calls: number }> {
+        return undefined as never;
+      }
+    }
+
+    const api = new SearchApi();
+    const [first, second, third] = await Promise.all([api.query('a'), api.query('b'), api.query('c')]);
+
+    expect(first.data.q).toBe('c');
+    expect(second.data.q).toBe('c');
+    expect(third.data.q).toBe('c');
+    expect(searchCalls).toBe(1);
+  });
+
+  test('supports throttle decorator plugins', async () => {
+    @HttpApi('http://localhost:3000')
+    class MetricsApi {
+      @Get('/metrics/:id')
+      @Throttle({
+        interval: 10,
+      })
+      read(@PathParam('id') id: string): ApiCall<{ id: string; calls: number }> {
+        return undefined as never;
+      }
+    }
+
+    const api = new MetricsApi();
+    const [first, second, third] = await Promise.all([api.read('1'), api.read('2'), api.read('3')]);
+
+    expect(first.data.id).toBe('1');
+    expect(second.data.id).toBe('3');
+    expect(third.data.id).toBe('3');
+    expect(metricCalls).toBe(2);
   });
 });

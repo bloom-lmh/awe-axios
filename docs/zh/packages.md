@@ -38,3 +38,11 @@
 ## `awe-axios`
 
 如果你更在意统一入口，而不是极致按需安装，可以直接使用这个聚合包。
+
+它现在也提供了子路径导出：
+
+- `awe-axios`
+- `awe-axios/core`
+- `awe-axios/mock`
+- `awe-axios/ioc-aop`
+- `awe-axios/all`

@@ -1,7 +1,15 @@
 import type { AxiosInstance, AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
 
 import { mergeClassConfig, mergeMethodConfig } from '../metadata.js';
-import type { HttpApiConfig, HttpMethodConfig } from '../types.js';
+import {
+  createDebouncePlugin,
+  createRetryPlugin,
+  createThrottlePlugin,
+  type DebounceOptions,
+  type RetryOptions,
+  type ThrottleOptions,
+} from '../runtime/strategies.js';
+import type { HttpApiConfig, HttpMethodConfig, HttpRuntimePlugin } from '../types.js';
 
 export function withHttpMethodConfig(config: Partial<HttpMethodConfig>): MethodDecorator {
   return (target, propertyKey) => {
@@ -17,6 +25,14 @@ export function withHttpClassConfig(config: Partial<HttpApiConfig>): ClassDecora
   return target => {
     mergeClassConfig(target, config);
   };
+}
+
+export function withHttpMethodPlugins(...plugins: HttpRuntimePlugin[]): MethodDecorator {
+  return withHttpMethodConfig({ plugins });
+}
+
+export function withHttpClassPlugins(...plugins: HttpRuntimePlugin[]): ClassDecorator {
+  return withHttpClassConfig({ plugins });
 }
 
 export function TransformRequest(
@@ -41,4 +57,16 @@ export function RefAxios(refAxios: AxiosInstance): ClassDecorator {
 
 export function AxiosRef(refAxios: AxiosInstance): MethodDecorator {
   return withHttpMethodConfig({ refAxios });
+}
+
+export function Retry(options: RetryOptions = {}): MethodDecorator {
+  return withHttpMethodPlugins(createRetryPlugin(options));
+}
+
+export function Debounce(options: DebounceOptions = {}): MethodDecorator {
+  return withHttpMethodPlugins(createDebouncePlugin(options));
+}
+
+export function Throttle(options: ThrottleOptions = {}): MethodDecorator {
+  return withHttpMethodPlugins(createThrottlePlugin(options));
 }

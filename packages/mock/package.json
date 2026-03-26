@@ -1,6 +1,8 @@
 {
   "name": "@awe-axios/mock",
   "version": "0.1.0",
+  "description": "MSW-powered mock package for Awe Axios",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -16,7 +18,12 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "file:../core",
+    "@awe-axios/core": "file:../core"
+  },
+  "peerDependencies": {
+    "msw": "^2.11.6"
+  },
+  "devDependencies": {
     "msw": "^2.11.6"
   },
   "scripts": {

@@ -1,3 +1,5 @@
+import type { HttpRequestExecutor, HttpRuntimePlugin } from '../types.js';
+
 export interface RetryOptions {
   count?: number;
   delay?: number;
@@ -15,6 +17,12 @@ export interface ThrottleOptions {
 }
 
 type AsyncFn<TArgs extends unknown[], TResult> = (...args: TArgs) => Promise<TResult>;
+
+function sleep(delay: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, delay);
+  });
+}
 
 export function useRequest<TArgs extends unknown[], TResult>(requester: AsyncFn<TArgs, TResult>) {
   return requester;
@@ -50,9 +58,7 @@ export function useRetry<TArgs extends unknown[], TResult>(
           throw error;
         }
 
-        await new Promise(resolve => {
-          setTimeout(resolve, delay);
-        });
+        await sleep(delay);
       }
     }
 
@@ -110,6 +116,32 @@ export function useDebounce<TArgs extends unknown[], TResult>(
       }, delay);
     });
   };
+}
+
+function createSingleConfigPlugin(
+  factory: (executor: HttpRequestExecutor) => HttpRequestExecutor,
+): HttpRuntimePlugin {
+  let wrapped: HttpRequestExecutor | undefined;
+
+  return next => {
+    if (!wrapped) {
+      wrapped = factory(next);
+    }
+
+    return config => wrapped!(config);
+  };
+}
+
+export function createRetryPlugin(options: RetryOptions = {}): HttpRuntimePlugin {
+  return createSingleConfigPlugin(next => useRetry(config => next(config), options));
+}
+
+export function createDebouncePlugin(options: DebounceOptions = {}): HttpRuntimePlugin {
+  return createSingleConfigPlugin(next => useDebounce(config => next(config), options));
+}
+
+export function createThrottlePlugin(options: ThrottleOptions = {}): HttpRuntimePlugin {
+  return createSingleConfigPlugin(next => useThrottle(config => next(config), options));
 }
 
 export function useThrottle<TArgs extends unknown[], TResult>(

@@ -38,3 +38,11 @@ Included:
 ## `awe-axios`
 
 Use this only if you want the convenience of a single import surface and do not mind installing the full bundle.
+
+It now also exposes subpaths:
+
+- `awe-axios`
+- `awe-axios/core`
+- `awe-axios/mock`
+- `awe-axios/ioc-aop`
+- `awe-axios/all`

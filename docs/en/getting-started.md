@@ -12,6 +12,8 @@ If you want everything in one package:
 npm install awe-axios axios msw reflect-metadata
 ```
 
+The scoped feature packages treat `axios`, `msw`, and `reflect-metadata` as peer dependencies so the app keeps ownership of those versions.
+
 ## Enable decorators
 
 ```json
@@ -63,3 +65,21 @@ const { data } = await api.getUser('42', 'profile');
 ```
 
 `ApiCall<T>` is the recommended return type because it keeps method signatures readable while preserving full Axios response typing.
+
+## Import strategy
+
+For the leanest install surface, import from the scoped packages:
+
+```ts
+import { Get, HttpApi } from '@awe-axios/core';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+If you install the umbrella package instead, subpath imports are also available:
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from 'awe-axios/mock';
+import { Component } from 'awe-axios/ioc-aop';
+```

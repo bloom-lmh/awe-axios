@@ -1,6 +1,8 @@
 {
   "name": "awe-axios",
   "version": "0.1.0",
+  "description": "Umbrella package for Awe Axios modules",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -9,6 +11,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./mock": {
+      "types": "./dist/mock.d.ts",
+      "import": "./dist/mock.js"
+    },
+    "./ioc-aop": {
+      "types": "./dist/ioc-aop.d.ts",
+      "import": "./dist/ioc-aop.js"
+    },
+    "./all": {
+      "types": "./dist/all.d.ts",
+      "import": "./dist/all.js"
     }
   },
   "files": [
@@ -19,6 +37,19 @@
     "@awe-axios/core": "file:../core",
     "@awe-axios/ioc-aop": "file:../ioc-aop",
     "@awe-axios/mock": "file:../mock"
+  },
+  "peerDependencies": {
+    "axios": "^1.11.0",
+    "msw": "^2.11.6",
+    "reflect-metadata": "^0.2.2"
+  },
+  "peerDependenciesMeta": {
+    "msw": {
+      "optional": true
+    },
+    "reflect-metadata": {
+      "optional": true
+    }
   },
   "scripts": {
     "build": "tsc -b"

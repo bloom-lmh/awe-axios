@@ -1,6 +1,8 @@
 {
   "name": "@awe-axios/core",
   "version": "0.1.0",
+  "description": "Decorator-first core HTTP package for Awe Axios",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,7 +17,10 @@
     "dist"
   ],
   "sideEffects": false,
-  "dependencies": {
+  "peerDependencies": {
+    "axios": "^1.11.0"
+  },
+  "devDependencies": {
     "axios": "^1.11.0"
   },
   "scripts": {

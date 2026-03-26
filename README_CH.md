@@ -13,6 +13,8 @@ Awe Axios 现在已经重构成一个 workspace monorepo。核心目标是把“
 | `@awe-axios/mock` | 基于 MSW 的 mock 装饰器和 `MockAPI` |
 | `@awe-axios/ioc-aop` | 轻量 IoC 容器、`@Inject` 和 AOP 装饰器 |
 
+如果你很在意安装体积，优先直接安装 scoped 子包。
+
 ## 安装方式
 
 按需安装即可：
@@ -28,6 +30,8 @@ npm install @awe-axios/core @awe-axios/mock axios msw
 ```bash
 npm install awe-axios axios msw reflect-metadata
 ```
+
+`axios`、`msw`、`reflect-metadata` 现在在功能包里按对等依赖处理，版本由宿主项目自己控制。
 
 如果你要使用 `@awe-axios/ioc-aop`，请在应用入口只引入一次：
 
@@ -87,6 +91,35 @@ const { data } = await api.getUser('42', 'profile');
 ```
 
 这里最关键的变化是：你可以直接把方法返回值声明成 `ApiCall<T>`，真实请求和 mock 请求都会稳定返回 `Promise<AxiosResponse<T>>`，不会再出现原来那种有时还要再调用一次函数的情况。
+
+## 策略装饰器示例
+
+除了工具函数，core 现在也提供正式的请求策略装饰器：
+
+```ts
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from '@awe-axios/core';
+
+@HttpApi('https://api.example.com')
+class SearchApi {
+  @Get('/search')
+  @Debounce({ delay: 150 })
+  search(@QueryParam('q') q: string): ApiCall<{ items: string[] }> {
+    return undefined as never;
+  }
+
+  @Get('/health')
+  @Retry({ count: 3, delay: 300 })
+  health(): ApiCall<{ ok: boolean }> {
+    return undefined as never;
+  }
+
+  @Get('/metrics')
+  @Throttle({ interval: 200 })
+  metrics(): ApiCall<{ count: number }> {
+    return undefined as never;
+  }
+}
+```
 
 ## Mock 使用示例
 
@@ -175,6 +208,24 @@ npm install
 npm run build
 npm test
 npm run docs:dev
+```
+
+## 导入方式
+
+如果你要最强的按需安装能力：
+
+```ts
+import { Get, HttpApi } from '@awe-axios/core';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+如果你已经安装了聚合包，也支持子路径导入：
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from 'awe-axios/mock';
+import { Component } from 'awe-axios/ioc-aop';
 ```
 
 ## 这次重构的重点

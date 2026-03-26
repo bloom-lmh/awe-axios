@@ -12,6 +12,8 @@ npm install @awe-axios/core axios
 npm install awe-axios axios msw reflect-metadata
 ```
 
+现在 `axios`、`msw`、`reflect-metadata` 在功能包里按对等依赖处理，所以版本控制权会留在业务项目自己手里。
+
 ## 打开装饰器支持
 
 ```json
@@ -63,3 +65,21 @@ const { data } = await api.getUser('42', 'profile');
 ```
 
 推荐把方法返回值写成 `ApiCall<T>`。这样写既不会影响运行时，又能让编辑器拿到完整的 Axios 响应类型。
+
+## 导入策略
+
+如果你更在意按需安装，推荐直接从 scoped 子包导入：
+
+```ts
+import { Get, HttpApi } from '@awe-axios/core';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+如果你已经安装了聚合包，也可以使用子路径导入：
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from 'awe-axios/mock';
+import { Component } from 'awe-axios/ioc-aop';
+```

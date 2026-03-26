@@ -13,6 +13,8 @@ Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. It
 | `@awe-axios/mock` | MSW-powered mock decorators and `MockAPI` |
 | `@awe-axios/ioc-aop` | Lightweight IoC container, `@Inject`, and AOP decorators |
 
+For install-size-sensitive projects, prefer the scoped packages directly.
+
 ## Install
 
 Install only what you need:
@@ -28,6 +30,8 @@ npm install @awe-axios/core @awe-axios/mock axios msw
 ```bash
 npm install awe-axios axios msw reflect-metadata
 ```
+
+`axios`, `msw`, and `reflect-metadata` are treated as peer dependencies in the feature packages, so the host application controls their versions.
 
 For `@awe-axios/ioc-aop`, make sure `reflect-metadata` is loaded once in your app entry:
 
@@ -84,6 +88,35 @@ class UserApi {
 
 const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
+```
+
+## Strategy decorators
+
+The core package now ships first-class request strategy decorators in addition to the plain helper functions:
+
+```ts
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from '@awe-axios/core';
+
+@HttpApi('https://api.example.com')
+class SearchApi {
+  @Get('/search')
+  @Debounce({ delay: 150 })
+  search(@QueryParam('q') q: string): ApiCall<{ items: string[] }> {
+    return undefined as never;
+  }
+
+  @Get('/health')
+  @Retry({ count: 3, delay: 300 })
+  health(): ApiCall<{ ok: boolean }> {
+    return undefined as never;
+  }
+
+  @Get('/metrics')
+  @Throttle({ interval: 200 })
+  metrics(): ApiCall<{ count: number }> {
+    return undefined as never;
+  }
+}
 ```
 
 ## Mock example
@@ -175,6 +208,22 @@ npm install
 npm run build
 npm test
 npm run docs:dev
+```
+
+## Import styles
+
+Choose the style that matches your distribution strategy:
+
+```ts
+import { Get, HttpApi } from '@awe-axios/core';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from 'awe-axios/mock';
+import { Component } from 'awe-axios/ioc-aop';
 ```
 
 ## What changed in this rebuild

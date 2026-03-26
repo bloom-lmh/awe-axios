@@ -1,6 +1,8 @@
 {
   "name": "@awe-axios/ioc-aop",
   "version": "0.1.0",
+  "description": "IoC and AOP package for Awe Axios",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,7 +17,10 @@
     "dist"
   ],
   "sideEffects": false,
-  "dependencies": {
+  "peerDependencies": {
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
     "reflect-metadata": "^0.2.2"
   },
   "scripts": {

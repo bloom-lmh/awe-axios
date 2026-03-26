@@ -49,3 +49,32 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 ## 运行时工具函数
 
 `useRetry`、`useDebounce`、`useThrottle` 是通用异步包装器，不只能用在装饰器请求上，也可以直接包你自己的异步函数。
+
+## 策略装饰器
+
+如果你想保持完全装饰器化的写法，也可以直接使用内置策略装饰器：
+
+```ts
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from '@awe-axios/core';
+
+@HttpApi('https://api.example.com')
+class SearchApi {
+  @Get('/search')
+  @Debounce({ delay: 150 })
+  search(@QueryParam('q') q: string): ApiCall<{ items: string[] }> {
+    return undefined as never;
+  }
+
+  @Get('/health')
+  @Retry({ count: 3, delay: 300 })
+  health(): ApiCall<{ ok: boolean }> {
+    return undefined as never;
+  }
+
+  @Get('/metrics')
+  @Throttle({ interval: 200 })
+  metrics(): ApiCall<{ count: number }> {
+    return undefined as never;
+  }
+}
+```
