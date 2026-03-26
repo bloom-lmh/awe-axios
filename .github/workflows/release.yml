@@ -52,6 +52,7 @@ jobs:
           publish: npm run release
           commit: "chore: version packages"
           title: "chore: version packages"
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
