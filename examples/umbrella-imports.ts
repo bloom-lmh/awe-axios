@@ -1,6 +1,4 @@
-import { Get, HttpApi } from 'awe-axios';
-import { HttpResponse, Mock } from 'awe-axios/mock';
-import { Component, Inject } from 'awe-axios/ioc-aop';
+import { Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@awe-axios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {

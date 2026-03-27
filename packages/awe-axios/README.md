@@ -1,30 +1,27 @@
 # awe-axios
 
-Umbrella package for the `awe-axios` monorepo.
+Core-first package for the `awe-axios` monorepo.
 
-This package re-exports the workspace modules and also exposes subpath entry points for selective installs:
+`awe-axios` now maps to the same HTTP decorator surface as `@awe-axios/core`, so you can keep the short package name without pulling in mock or IoC/AOP dependencies.
 
-- `awe-axios/core`
-- `awe-axios/mock`
-- `awe-axios/ioc-aop`
-- `awe-axios/all`
+If you want the full bundle, install `@awe-axios/all` instead.
 
 ## Install
 
 ```bash
-npm install awe-axios @awe-axios/core axios
+npm install awe-axios axios
 ```
 
-Install optional peers only when you need them:
+For the full bundle:
 
 ```bash
-npm install msw reflect-metadata
+npm install @awe-axios/all axios msw reflect-metadata
 ```
 
 ## Quick Example
 
 ```ts
-import { type ApiCall, Get, HttpApi } from 'awe-axios/core';
+import { type ApiCall, Get, HttpApi } from 'awe-axios';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -34,6 +31,8 @@ class UserApi {
   }
 }
 ```
+
+The `awe-axios/core` subpath remains available as a compatibility alias.
 
 More documentation:
 

@@ -1,7 +1,7 @@
 {
   "name": "awe-axios",
   "version": "0.1.0",
-  "description": "Umbrella package for Awe Axios modules",
+  "description": "Core-first package alias for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -18,10 +18,8 @@
   },
   "keywords": [
     "axios",
-    "mock",
-    "ioc",
-    "aop",
     "decorator",
+    "http",
     "typescript"
   ],
   "exports": {
@@ -35,21 +33,6 @@
       "import": "./dist/core.js",
       "require": "./dist/core.cjs"
     },
-    "./mock": {
-      "types": "./dist/mock.d.ts",
-      "import": "./dist/mock.js",
-      "require": "./dist/mock.cjs"
-    },
-    "./ioc-aop": {
-      "types": "./dist/ioc-aop.d.ts",
-      "import": "./dist/ioc-aop.js",
-      "require": "./dist/ioc-aop.cjs"
-    },
-    "./all": {
-      "types": "./dist/all.d.ts",
-      "import": "./dist/all.js",
-      "require": "./dist/all.cjs"
-    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -60,26 +43,15 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "^0.1.0",
-    "@awe-axios/ioc-aop": "^0.1.0",
-    "@awe-axios/mock": "^0.1.0"
+    "@awe-axios/core": "^0.1.0"
   },
   "peerDependencies": {
-    "axios": "^1.11.0",
-    "msw": "^2.11.6",
-    "reflect-metadata": "^0.2.2"
-  },
-  "peerDependenciesMeta": {
-    "msw": {
-      "optional": true
-    },
-    "reflect-metadata": {
-      "optional": true
-    }
+    "axios": "^1.11.0"
   },
   "scripts": {
     "build": "tsup --config tsup.config.ts"

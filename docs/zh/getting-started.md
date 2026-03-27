@@ -3,16 +3,22 @@
 ## 安装 core 包
 
 ```bash
-npm install @awe-axios/core axios
+npm install awe-axios axios
 ```
 
-如果你希望直接使用完整聚合包：
+如果你想显式地按功能拆包安装：
 
 ```bash
-npm install awe-axios axios msw reflect-metadata
+npm install @awe-axios/core @awe-axios/mock axios msw
 ```
 
-现在 `axios`、`msw`、`reflect-metadata` 在功能包里按对等依赖处理，所以版本控制权会留在业务项目自己手里。
+如果你希望一次安装全部能力，可以使用 full bundle：
+
+```bash
+npm install @awe-axios/all axios msw reflect-metadata
+```
+
+现在 `awe-axios` 只对应 core 能力，`@awe-axios/all` 才是明确的全家桶入口。
 
 ## 打开装饰器支持
 
@@ -36,7 +42,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from '@awe-axios/core';
+} from 'awe-axios';
 
 interface User {
   id: string;
@@ -64,7 +70,7 @@ const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
 ```
 
-推荐把方法返回值写成 `ApiCall<T>`。这样写既不会影响运行时，又能让编辑器拿到完整的 Axios 响应类型。
+推荐把方法返回值写成 `ApiCall<T>`。这样既能保留完整的 Axios 响应类型，也能让装饰器代码更清晰。
 
 ## 导入策略
 
@@ -76,10 +82,14 @@ import { Mock } from '@awe-axios/mock';
 import { Component } from '@awe-axios/ioc-aop';
 ```
 
-如果你已经安装了聚合包，也可以使用子路径导入：
+如果你只想使用短包名的 core 入口：
 
 ```ts
 import { Get, HttpApi } from 'awe-axios';
-import { Mock } from 'awe-axios/mock';
-import { Component } from 'awe-axios/ioc-aop';
+```
+
+如果你想直接从一个包里取到全部能力：
+
+```ts
+import { Component, Get, HttpApi, Mock } from '@awe-axios/all';
 ```

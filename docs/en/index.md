@@ -2,13 +2,15 @@
 
 Awe Axios is a modular Axios enhancement toolkit built around decorators.
 
-The project now ships as a monorepo with three focused feature packages:
+The project now ships as a monorepo with a sharper package split:
 
+- `awe-axios`
 - `@awe-axios/core`
 - `@awe-axios/mock`
 - `@awe-axios/ioc-aop`
+- `@awe-axios/all`
 
-If you prefer the old single-entry experience, install `awe-axios`, which re-exports all of them.
+`awe-axios` is now the lightweight core-first entry. If you want the old single-entry, full-bundle experience, install `@awe-axios/all`.
 
 ## Why this rebuild
 
@@ -25,6 +27,7 @@ This rebuild fixes those issues by separating responsibilities and simplifying t
 - Predictable request methods that always return `Promise<AxiosResponse<T>>`
 - Optional mock support powered by MSW
 - A small IoC and AOP package that can be adopted independently
+- A dedicated full-bundle package when you want everything in one install
 - Workspace-based builds and package-scoped tests
 
 Continue with [Getting Started](./getting-started).

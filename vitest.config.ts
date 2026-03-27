@@ -4,13 +4,11 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: [
+      { find: '@awe-axios/all', replacement: resolve(__dirname, 'packages/all/src/index.ts') },
       { find: '@awe-axios/core', replacement: resolve(__dirname, 'packages/core/src/index.ts') },
       { find: '@awe-axios/mock', replacement: resolve(__dirname, 'packages/mock/src/index.ts') },
       { find: '@awe-axios/ioc-aop', replacement: resolve(__dirname, 'packages/ioc-aop/src/index.ts') },
-      { find: 'awe-axios/all', replacement: resolve(__dirname, 'packages/awe-axios/src/all.ts') },
       { find: 'awe-axios/core', replacement: resolve(__dirname, 'packages/awe-axios/src/core.ts') },
-      { find: 'awe-axios/mock', replacement: resolve(__dirname, 'packages/awe-axios/src/mock.ts') },
-      { find: 'awe-axios/ioc-aop', replacement: resolve(__dirname, 'packages/awe-axios/src/ioc-aop.ts') },
       { find: 'awe-axios', replacement: resolve(__dirname, 'packages/awe-axios/src/index.ts') },
     ],
   },

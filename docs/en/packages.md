@@ -37,12 +37,19 @@ Included:
 
 ## `awe-axios`
 
-Use this only if you want the convenience of a single import surface and do not mind installing the full bundle.
+Use this when you want the core HTTP decorators through the short package name without pulling mock or IoC/AOP into the install.
 
-It now also exposes subpaths:
+Included:
 
 - `awe-axios`
 - `awe-axios/core`
-- `awe-axios/mock`
-- `awe-axios/ioc-aop`
-- `awe-axios/all`
+
+## `@awe-axios/all`
+
+Use this when you want the old umbrella behavior in a package that is explicit about being the full bundle.
+
+Included:
+
+- Everything from `@awe-axios/core`
+- Everything from `@awe-axios/mock`
+- Everything from `@awe-axios/ioc-aop`

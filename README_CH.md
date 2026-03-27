@@ -1,6 +1,12 @@
 # Awe Axios
 
-Awe Axios 现在已经重构成一个 workspace monorepo。核心目标是把“HTTP 装饰器体验”保留下来，同时把 `mock`、`ioc`、`aop` 这些能力拆成按需安装的包，避免原来那种所有功能耦合在一起、类型和运行时行为都不稳定的情况。
+Awe Axios 现在是一个按能力拆分的 monorepo，而且入口策略已经进一步收紧：
+
+- `awe-axios` 现在只代表轻量的 core 能力。
+- `@awe-axios/core` 是显式的核心 HTTP 包。
+- `@awe-axios/mock` 提供基于 MSW 的 mock 能力。
+- `@awe-axios/ioc-aop` 提供 IoC / AOP 装饰器。
+- `@awe-axios/all` 是需要“一次安装拿全套”时使用的 full bundle。
 
 [English README](./README.md)
 
@@ -8,19 +14,18 @@ Awe Axios 现在已经重构成一个 workspace monorepo。核心目标是把“
 
 | 包名 | 作用 |
 | --- | --- |
-| `awe-axios` | 聚合包，一次性导出全部能力 |
-| `@awe-axios/core` | HTTP 装饰器、参数装饰器、请求工具函数、核心类型 |
+| `awe-axios` | 轻量 core 入口，适合只想安装一个包但又不想带上全家桶依赖的项目 |
+| `@awe-axios/core` | HTTP 装饰器、参数装饰器、请求策略和核心类型 |
 | `@awe-axios/mock` | 基于 MSW 的 mock 装饰器和 `MockAPI` |
 | `@awe-axios/ioc-aop` | 轻量 IoC 容器、`@Inject` 和 AOP 装饰器 |
-
-如果你很在意安装体积，优先直接安装 scoped 子包。
+| `@awe-axios/all` | full bundle，内部依赖 `core`、`mock` 和 `ioc-aop` |
 
 ## 安装方式
 
-按需安装即可：
+按你的使用场景安装：
 
 ```bash
-npm install @awe-axios/core axios
+npm install awe-axios axios
 ```
 
 ```bash
@@ -28,12 +33,12 @@ npm install @awe-axios/core @awe-axios/mock axios msw
 ```
 
 ```bash
-npm install awe-axios axios msw reflect-metadata
+npm install @awe-axios/all axios msw reflect-metadata
 ```
 
-`axios`、`msw`、`reflect-metadata` 现在在功能包里按对等依赖处理，版本由宿主项目自己控制。
+现在 `awe-axios` 不会再偷偷把 mock / IoC / AOP 一起带进来；如果你需要完整能力，请直接安装 `@awe-axios/all`。
 
-如果你要使用 `@awe-axios/ioc-aop`，请在应用入口只引入一次：
+如果你要使用 `@awe-axios/ioc-aop` 或 `@awe-axios/all`，请在应用入口只引入一次：
 
 ```ts
 import 'reflect-metadata';
@@ -52,7 +57,7 @@ import 'reflect-metadata';
 }
 ```
 
-## Core 使用示例
+## Core 示例
 
 ```ts
 import {
@@ -63,7 +68,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from '@awe-axios/core';
+} from 'awe-axios';
 
 interface User {
   id: string;
@@ -90,14 +95,14 @@ const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
 ```
 
-这里最关键的变化是：你可以直接把方法返回值声明成 `ApiCall<T>`，真实请求和 mock 请求都会稳定返回 `Promise<AxiosResponse<T>>`，不会再出现原来那种有时还要再调用一次函数的情况。
+推荐把方法返回值声明成 `ApiCall<T>`。这样既保留了完整的 Axios 响应类型，又让装饰器写法更清晰。
 
-## 策略装饰器示例
+## 请求策略装饰器
 
-除了工具函数，core 现在也提供正式的请求策略装饰器：
+core 现在内置正式的请求策略装饰器：
 
 ```ts
-import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from '@awe-axios/core';
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from 'awe-axios';
 
 @HttpApi('https://api.example.com')
 class SearchApi {
@@ -121,10 +126,10 @@ class SearchApi {
 }
 ```
 
-## Mock 使用示例
+## Mock 示例
 
 ```ts
-import { Get, HttpApi, type ApiCall } from '@awe-axios/core';
+import { Get, HttpApi, type ApiCall } from 'awe-axios';
 import { HttpResponse, Mock, MockAPI } from '@awe-axios/mock';
 
 await MockAPI.on();
@@ -145,7 +150,9 @@ MockAPI.useNextHandler('empty');
 const { data } = await new UserApi().listUsers();
 ```
 
-## IoC / AOP 使用示例
+mock 请求和真实请求的调用方式保持一致，都会返回 `Promise<AxiosResponse<T>>`。
+
+## IoC / AOP 示例
 
 ```ts
 import 'reflect-metadata';
@@ -201,6 +208,43 @@ class UserService {
 }
 ```
 
+## Full Bundle 示例
+
+```ts
+import 'reflect-metadata';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@awe-axios/all';
+
+@HttpApi('https://api.example.com/users')
+class UserApi {
+  @Get('/')
+  @Mock({
+    default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
+  })
+  listUsers() {
+    return undefined as never;
+  }
+}
+
+@Component()
+class LoggerService {}
+```
+
+## 导入建议
+
+如果你更在意按需安装：
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+如果你更在意统一入口：
+
+```ts
+import { Get, HttpApi, Mock, Component } from '@awe-axios/all';
+```
+
 ## 工作区命令
 
 ```bash
@@ -210,7 +254,7 @@ npm test
 npm run docs:dev
 ```
 
-如果你要准备发布或做发包前检查，也可以直接使用：
+如果你要做发版前检查：
 
 ```bash
 npm run changeset
@@ -218,52 +262,33 @@ npm run version-packages
 npm run release:check
 ```
 
-## 导入方式
+## 这次重构之后的重点
 
-如果你要最强的按需安装能力：
+- 项目已经切成 npm workspaces monorepo。
+- `awe-axios` 现在是真正的 core-first 入口。
+- full bundle 被独立成了 `@awe-axios/all`。
+- mock 调用不再出现双重函数返回的问题。
+- IoC / AOP 继续保持可选安装。
 
-```ts
-import { Get, HttpApi } from '@awe-axios/core';
-import { Mock } from '@awe-axios/mock';
-import { Component } from '@awe-axios/ioc-aop';
-```
+## 自动发包
 
-如果你已经安装了聚合包，也支持子路径导入：
+仓库已经接好了两套 GitHub Actions：
 
-```ts
-import { Get, HttpApi } from 'awe-axios';
-import { Mock } from 'awe-axios/mock';
-import { Component } from 'awe-axios/ioc-aop';
-```
+- [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) 负责安装、构建、类型检查、测试、文档构建和 `npm pack --dry-run`
+- [`.github/workflows/release.yml`](./.github/workflows/release.yml) 负责通过 Changesets 生成版本 PR，并在版本 PR 合并后发布到 npm
 
-## 这次重构的重点
+推荐流程：
 
-- 改成了 npm workspaces monorepo。
-- `core`、`mock`、`ioc-aop` 能力彻底拆开，可以按需安装。
-- HTTP 运行时改成统一 Promise 返回，TS 提示更稳定。
-- mock 逻辑从 HTTP 核心中解耦成插件式能力。
-- IoC / AOP 不再依赖旧的状态管理和杂糅的工厂类。
-- 测试按包拆分，构建和测试都已经打通。
+1. 开发完成后执行 `npm run changeset`
+2. 把功能分支合并到 `master`
+3. 等待 Release workflow 自动生成版本 PR
+4. 合并版本 PR，自动发包
 
-## 自动发包工作流
+启用 npm 自动发布时：
 
-仓库现在已经补好了两套 GitHub Actions：
+- 推荐：给每个包配置 npm Trusted Publishing，并指向 `release.yml`
+- 兜底：在 GitHub 仓库里配置 `NPM_TOKEN`
 
-- [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) 负责安装依赖、构建、类型检查、测试、文档构建和 `npm pack --dry-run`。
-- [`.github/workflows/release.yml`](./.github/workflows/release.yml) 负责通过 Changesets 自动创建或更新版本 PR，并在版本 PR 合并后发布到 npm。
+`npm run version-packages` 会在版本号更新后同步刷新 `package-lock.json`，保证 release PR 一致。
 
-推荐的发版流程是：
-
-1. 开发完成后执行 `npm run changeset` 生成版本说明。
-2. 把功能分支合并到 `master`。
-3. Release workflow 自动创建或更新版本 PR。
-4. 合并版本 PR，自动发布所有需要发布的包。
-
-启用 npm 自动发布时，建议这样配置：
-
-- 推荐方案：在 npm 上为每个包配置 Trusted Publishing，并把 workflow 文件名填成 `release.yml`。
-- 兜底方案：在 GitHub 仓库里配置 `NPM_TOKEN` secret。
-
-现在 `npm run version-packages` 会在执行 `changeset version` 后同步刷新 `package-lock.json`，这样版本 PR 不会遗漏锁文件更新。
-
-如果你想看更完整的发版步骤、分支保护建议和 release PR 合并策略，可以直接看 [RELEASING.md](./RELEASING.md)。
+更完整的发布清单和分支保护建议见 [RELEASING.md](./RELEASING.md)。

@@ -37,12 +37,19 @@
 
 ## `awe-axios`
 
-如果你更在意统一入口，而不是极致按需安装，可以直接使用这个聚合包。
+如果你希望用短包名直接使用 core 能力，可以用 `awe-axios`。它现在不会再带上 mock 和 IoC / AOP 依赖。
 
-它现在也提供了子路径导出：
+包含：
 
 - `awe-axios`
 - `awe-axios/core`
-- `awe-axios/mock`
-- `awe-axios/ioc-aop`
-- `awe-axios/all`
+
+## `@awe-axios/all`
+
+如果你想要明确地安装一个 full bundle，可以使用 `@awe-axios/all`。
+
+包含：
+
+- `@awe-axios/core` 的全部导出
+- `@awe-axios/mock` 的全部导出
+- `@awe-axios/ioc-aop` 的全部导出

@@ -3,16 +3,22 @@
 ## Install the core package
 
 ```bash
-npm install @awe-axios/core axios
+npm install awe-axios axios
+```
+
+If you want explicit package splits:
+
+```bash
+npm install @awe-axios/core @awe-axios/mock axios msw
 ```
 
 If you want everything in one package:
 
 ```bash
-npm install awe-axios axios msw reflect-metadata
+npm install @awe-axios/all axios msw reflect-metadata
 ```
 
-The scoped feature packages treat `axios`, `msw`, and `reflect-metadata` as peer dependencies so the app keeps ownership of those versions.
+`awe-axios` now maps to the core runtime only. `@awe-axios/all` is the intentional full bundle.
 
 ## Enable decorators
 
@@ -36,7 +42,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from '@awe-axios/core';
+} from 'awe-axios';
 
 interface User {
   id: string;
@@ -76,10 +82,14 @@ import { Mock } from '@awe-axios/mock';
 import { Component } from '@awe-axios/ioc-aop';
 ```
 
-If you install the umbrella package instead, subpath imports are also available:
+If you want a core-first convenience import, use `awe-axios`:
 
 ```ts
 import { Get, HttpApi } from 'awe-axios';
-import { Mock } from 'awe-axios/mock';
-import { Component } from 'awe-axios/ioc-aop';
+```
+
+If you want a single package that also includes mock and IoC/AOP exports:
+
+```ts
+import { Component, Get, HttpApi, Mock } from '@awe-axios/all';
 ```

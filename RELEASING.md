@@ -27,6 +27,14 @@ The release flow is:
 4. The version PR merges into `master`.
 5. The Release workflow publishes the packages to npm.
 
+## Published packages
+
+- `awe-axios`
+- `@awe-axios/all`
+- `@awe-axios/core`
+- `@awe-axios/mock`
+- `@awe-axios/ioc-aop`
+
 ## Recommended GitHub repository settings
 
 ### 1. Enable Actions and auto-merge
@@ -92,6 +100,7 @@ Preferred option:
 
 - Configure npm Trusted Publishing for each package:
   - `awe-axios`
+  - `@awe-axios/all`
   - `@awe-axios/core`
   - `@awe-axios/mock`
   - `@awe-axios/ioc-aop`
@@ -181,9 +190,17 @@ Check:
 4. 版本 PR 合并到 `master`。
 5. Release workflow 自动把包发布到 npm。
 
+## 当前发布的包
+
+- `awe-axios`
+- `@awe-axios/all`
+- `@awe-axios/core`
+- `@awe-axios/mock`
+- `@awe-axios/ioc-aop`
+
 ## 推荐的 GitHub 仓库设置
 
-### 1. 先打开 Actions 和 auto-merge
+### 1. 打开 Actions 和 auto-merge
 
 在 GitHub 仓库设置里建议这样开：
 
@@ -193,7 +210,7 @@ Check:
 
 ### 2. 优先使用 `master` 的 ruleset
 
-GitHub 现在更推荐用 repository rulesets，而不是旧式 branch protection rule。如果你的仓库还在用旧的 branch protection，也可以按同样的配置去勾。
+GitHub 现在更推荐 repository rulesets，而不是旧的 branch protection rule。如果你的仓库还在用旧的 branch protection，也可以按同样的配置去勾。
 
 推荐目标分支：
 
@@ -244,13 +261,14 @@ GitHub 现在更推荐用 repository rulesets，而不是旧式 branch protectio
 
 推荐方案：
 
-- 在 npm 上给下面 4 个包分别配置 Trusted Publishing：
+- 在 npm 上给下面 5 个包分别配置 Trusted Publishing：
   - `awe-axios`
+  - `@awe-axios/all`
   - `@awe-axios/core`
   - `@awe-axios/mock`
   - `@awe-axios/ioc-aop`
 - 仓库指向当前 GitHub 仓库
-- workflow 文件名填写 `release.yml`
+- workflow 文件名填 `release.yml`
 
 兜底方案：
 
@@ -277,7 +295,7 @@ GitHub 现在更推荐用 repository rulesets，而不是旧式 branch protectio
 1. 在功能分支上开发。
 2. 如果改动会影响发布，先本地跑 `npm run release:check`。
 3. 用 `npm run changeset` 生成版本说明。
-4. 发 PR 并合并到 `master`。
+4. 开 PR 并合并到 `master`。
 5. 等 Changesets 自动生成版本 PR。
 6. CI 通过后合并版本 PR。
 

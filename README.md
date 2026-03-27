@@ -1,6 +1,12 @@
 # Awe Axios
 
-Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. It keeps the HTTP API definition experience lightweight, while making `mock`, `ioc`, and `aop` opt-in packages instead of one tightly coupled runtime.
+Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. The package split is now intentionally sharper:
+
+- `awe-axios` is the lightweight core-first entry.
+- `@awe-axios/core` is the explicit core package.
+- `@awe-axios/mock` adds MSW-powered mock support.
+- `@awe-axios/ioc-aop` adds IoC and AOP decorators.
+- `@awe-axios/all` is the full bundle when you want everything from one import surface.
 
 [中文说明](./README_CH.md)
 
@@ -8,19 +14,18 @@ Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. It
 
 | Package | Purpose |
 | --- | --- |
-| `awe-axios` | Umbrella package that re-exports everything |
+| `awe-axios` | Core-first package alias for lightweight installs |
 | `@awe-axios/core` | HTTP decorators, parameter decorators, request helpers, and typed runtime |
 | `@awe-axios/mock` | MSW-powered mock decorators and `MockAPI` |
 | `@awe-axios/ioc-aop` | Lightweight IoC container, `@Inject`, and AOP decorators |
-
-For install-size-sensitive projects, prefer the scoped packages directly.
+| `@awe-axios/all` | Full bundle package that depends on `core`, `mock`, and `ioc-aop` |
 
 ## Install
 
-Install only what you need:
+Choose the distribution style that matches your app:
 
 ```bash
-npm install @awe-axios/core axios
+npm install awe-axios axios
 ```
 
 ```bash
@@ -28,18 +33,18 @@ npm install @awe-axios/core @awe-axios/mock axios msw
 ```
 
 ```bash
-npm install awe-axios axios msw reflect-metadata
+npm install @awe-axios/all axios msw reflect-metadata
 ```
 
-`axios`, `msw`, and `reflect-metadata` are treated as peer dependencies in the feature packages, so the host application controls their versions.
+`awe-axios` now represents the same runtime surface as `@awe-axios/core`, so installing it no longer drags in mock or IoC/AOP dependencies.
 
-For `@awe-axios/ioc-aop`, make sure `reflect-metadata` is loaded once in your app entry:
+For `@awe-axios/ioc-aop` and `@awe-axios/all`, make sure `reflect-metadata` is loaded once in your app entry:
 
 ```ts
 import 'reflect-metadata';
 ```
 
-## TypeScript setup
+## TypeScript Setup
 
 Enable decorators in `tsconfig.json`:
 
@@ -52,7 +57,7 @@ Enable decorators in `tsconfig.json`:
 }
 ```
 
-## Core example
+## Core Example
 
 ```ts
 import {
@@ -63,7 +68,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from '@awe-axios/core';
+} from 'awe-axios';
 
 interface User {
   id: string;
@@ -90,12 +95,12 @@ const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
 ```
 
-## Strategy decorators
+## Strategy Decorators
 
-The core package now ships first-class request strategy decorators in addition to the plain helper functions:
+The core runtime ships first-class request strategy decorators in addition to the plain helper functions:
 
 ```ts
-import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from '@awe-axios/core';
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from 'awe-axios';
 
 @HttpApi('https://api.example.com')
 class SearchApi {
@@ -119,10 +124,10 @@ class SearchApi {
 }
 ```
 
-## Mock example
+## Mock Example
 
 ```ts
-import { Get, HttpApi, type ApiCall } from '@awe-axios/core';
+import { Get, HttpApi, type ApiCall } from 'awe-axios';
 import { HttpResponse, Mock, MockAPI } from '@awe-axios/mock';
 
 await MockAPI.on();
@@ -145,7 +150,7 @@ const { data } = await new UserApi().listUsers();
 
 The call signature stays consistent: mocked and real requests both return `Promise<AxiosResponse<T>>`.
 
-## IoC and AOP example
+## IoC And AOP Example
 
 ```ts
 import 'reflect-metadata';
@@ -201,7 +206,42 @@ class UserService {
 }
 ```
 
-## Workspace commands
+## Full Bundle Example
+
+```ts
+import 'reflect-metadata';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@awe-axios/all';
+
+@HttpApi('https://api.example.com/users')
+class UserApi {
+  @Get('/')
+  @Mock({
+    default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
+  })
+  listUsers() {
+    return undefined as never;
+  }
+}
+
+@Component()
+class LoggerService {}
+```
+
+## Import Styles
+
+Choose the style that matches your distribution strategy:
+
+```ts
+import { Get, HttpApi } from 'awe-axios';
+import { Mock } from '@awe-axios/mock';
+import { Component } from '@awe-axios/ioc-aop';
+```
+
+```ts
+import { Get, HttpApi, Mock, Component } from '@awe-axios/all';
+```
+
+## Workspace Commands
 
 ```bash
 npm install
@@ -218,31 +258,15 @@ npm run version-packages
 npm run release:check
 ```
 
-## Import styles
-
-Choose the style that matches your distribution strategy:
-
-```ts
-import { Get, HttpApi } from '@awe-axios/core';
-import { Mock } from '@awe-axios/mock';
-import { Component } from '@awe-axios/ioc-aop';
-```
-
-```ts
-import { Get, HttpApi } from 'awe-axios';
-import { Mock } from 'awe-axios/mock';
-import { Component } from 'awe-axios/ioc-aop';
-```
-
-## What changed in this rebuild
+## What Changed In This Rebuild
 
 - The project is now an npm workspaces monorepo.
-- The HTTP runtime is simpler and more type-friendly.
+- `awe-axios` is now truly core-first instead of being a hidden full bundle.
+- The full bundle moved into `@awe-axios/all`.
 - Mock requests no longer switch to a double-call API.
-- IoC and AOP are decoupled from the HTTP package.
-- Tests now cover `core`, `mock`, and `ioc-aop` separately.
+- IoC and AOP stay optional unless you install them.
 
-## Release automation
+## Release Automation
 
 GitHub Actions now ships with two workflows:
 

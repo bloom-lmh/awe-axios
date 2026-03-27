@@ -1,7 +1,7 @@
 {
-  "name": "@awe-axios/ioc-aop",
+  "name": "@awe-axios/all",
   "version": "0.1.0",
-  "description": "IoC and AOP package for Awe Axios",
+  "description": "Full bundle package for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -17,6 +17,8 @@
     "url": "https://github.com/bloom-lmh/awe-axios/issues"
   },
   "keywords": [
+    "axios",
+    "mock",
     "ioc",
     "aop",
     "decorator",
@@ -42,10 +44,14 @@
     "LICENSE"
   ],
   "sideEffects": false,
-  "peerDependencies": {
-    "reflect-metadata": "^0.2.2"
+  "dependencies": {
+    "@awe-axios/core": "^0.1.0",
+    "@awe-axios/ioc-aop": "^0.1.0",
+    "@awe-axios/mock": "^0.1.0"
   },
-  "devDependencies": {
+  "peerDependencies": {
+    "axios": "^1.11.0",
+    "msw": "^2.11.6",
     "reflect-metadata": "^0.2.2"
   },
   "scripts": {
