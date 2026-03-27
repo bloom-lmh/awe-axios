@@ -1,25 +1,24 @@
 # @decoraxios/mock
 
-MSW-powered mocking support for `decoraxios`.
-
-`@decoraxios/mock` adds decorator-friendly mock handlers on top of `@decoraxios/core`, with the same runtime calling shape as real HTTP requests.
+`@decoraxios/mock` adds MSW-powered mocking to Decoraxios while keeping the same async call shape as real requests.
 
 ## Install
 
 ```bash
-npm install @decoraxios/mock @decoraxios/core msw axios
+npm install decoraxios @decoraxios/mock axios msw
 ```
 
-## Highlights
+## Includes
 
-- `@Mock(...)` decorator for method-level mock behavior
-- Browser worker and Node server support through MSW
-- Queue-based mock scenario switching with `MockAPI.useNextHandler`
+- `@Mock`
+- `MockAPI`
+- `HttpResponse`
+- `http`
 
-## Quick Example
+## Example
 
 ```ts
-import { type ApiCall, Get, HttpApi } from '@decoraxios/core';
+import { Get, HttpApi, type ApiCall } from 'decoraxios';
 import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
@@ -27,14 +26,19 @@ await MockAPI.on();
 @HttpApi('https://api.example.com/users')
 class UserApi {
   @Get('/')
-  @Mock(() => HttpResponse.json([{ id: '1', name: 'Ada' }]))
+  @Mock({
+    default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
+    empty: () => HttpResponse.json([]),
+  })
   listUsers(): ApiCall<Array<{ id: string; name: string }>> {
     return undefined as never;
   }
 }
+
+MockAPI.useNextHandler('empty');
 ```
 
-More documentation:
+## Documentation
 
-- English: <https://github.com/bloom-lmh/awe-axios#readme>
-- 中文: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>
+- English mock guide: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/mock.md>
+- 中文 Mock 文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/mock.md>

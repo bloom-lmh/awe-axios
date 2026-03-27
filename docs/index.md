@@ -3,28 +3,21 @@ layout: home
 
 hero:
   name: Decoraxios
-  text: Core-first Axios decorators with modular mock and IoC/AOP packages
-  tagline: Build typed request clients with decorators, keep your install lean, and opt into mock or aspect features only when you need them.
+  text: Decorator-first HTTP toolkit for Axios
+  tagline: Detailed guides for HTTP decorators, runtime strategies, mock flows, and IoC/AOP.
   actions:
     - theme: brand
-      text: Read in English
-      link: /en/
+      text: English docs
+      link: /en/getting-started
     - theme: alt
-      text: 阅读中文文档
-      link: /zh/
-    - theme: alt
-      text: GitHub
-      link: https://github.com/bloom-lmh/awe-axios
+      text: 中文文档
+      link: /zh/getting-started
 
 features:
-  - title: Core-first package strategy
-    details: "`decoraxios` is the recommended root package, while `@decoraxios/all` is the explicit full bundle."
-  - title: Stable request return types
-    details: "Decorated methods stay readable and consistently return `Promise<AxiosResponse<T>>` through `ApiCall<T>`."
-  - title: Opt-in runtime features
-    details: "Add `@decoraxios/mock` for MSW integration or `@decoraxios/ioc-aop` for dependency injection and aspect weaving."
-  - title: Compatibility aliases included
-    details: "The previous `awe-axios` and `@decoraxios/awe-axios-*` package names remain available as migration-friendly aliases."
-  - title: Publish-ready monorepo
-    details: "The project ships as npm workspaces with dual ESM/CJS builds, Changesets, and GitHub Actions release automation."
+  - title: HTTP decorators
+    details: Declare classes as request clients with @HttpApi, HTTP method decorators, and typed parameter binding.
+  - title: Runtime decorators
+    details: Configure retries, debounce, throttle, custom axios instances, and request transforms with decorators.
+  - title: Mock and IoC/AOP
+    details: Add MSW-based mocking or class-based dependency injection and aspect weaving only when your project needs them.
 ---

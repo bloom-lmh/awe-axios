@@ -1,34 +1,30 @@
 # 快速开始
 
-这一页只讲最短路径：安装、开启装饰器、写第一个 API 类。
+## 先选择包组合
 
-## 1. 先选安装方式
-
-如果你想用短包名的 core-first 入口：
+按你需要的能力安装对应包：
 
 ```bash
 npm install decoraxios axios
 ```
 
-如果你更偏好显式的 scoped 包：
-
 ```bash
-npm install @decoraxios/core axios
+npm install decoraxios @decoraxios/mock axios msw
 ```
 
-如果你想一次安装全套能力：
+```bash
+npm install decoraxios @decoraxios/ioc-aop axios reflect-metadata
+```
 
 ```bash
 npm install @decoraxios/all axios msw reflect-metadata
 ```
 
-::: tip
-大多数新项目可以直接从 `decoraxios` 开始。只有确定需要 mock 或 IoC/AOP 时，再继续加对应子包。
-:::
+一般项目直接装 `decoraxios` 就够了，它和 `@decoraxios/core` 暴露的是同一套核心 HTTP API，但不会默认把 Mock 和 IoC / AOP 一起带进来。
 
-## 2. 打开 TypeScript 装饰器支持
+## TypeScript 要求
 
-在 `tsconfig.json` 里开启：
+Decoraxios 依赖 TypeScript 传统装饰器能力，请在 `tsconfig.json` 中开启：
 
 ```json
 {
@@ -39,9 +35,11 @@ npm install @decoraxios/all axios msw reflect-metadata
 }
 ```
 
-如果你不会用到 `@decoraxios/ioc-aop`，`emitDecoratorMetadata` 可以先不开。
+只有在你使用 `@Inject()` 并希望通过属性类型自动解析依赖时，`emitDecoratorMetadata` 才是必需的。
 
-## 3. 定义第一个 API 类
+## 第一个请求
+
+Decoraxios 的 HTTP 方法是“声明式签名”，真正的请求会由装饰器组合生成，所以方法体通常只是一个占位实现。
 
 ```ts
 import {
@@ -51,7 +49,6 @@ import {
   HttpApi,
   PathParam,
   Post,
-  QueryParam,
 } from 'decoraxios';
 
 interface User {
@@ -59,74 +56,52 @@ interface User {
   name: string;
 }
 
-@HttpApi('https://api.example.com/users')
-class UserApi {
-  @Get('/:id')
-  getUser(
-    @PathParam('id') id: string,
-    @QueryParam('expand') expand?: 'profile' | 'teams',
-  ): ApiCall<User> {
-    return undefined as never;
-  }
-
-  @Post('/')
-  createUser(@BodyParam() payload: Pick<User, 'name'>): ApiCall<User> {
-    return undefined as never;
-  }
+interface CreateUserInput {
+  name: string;
 }
-```
 
-## 4. 像普通异步方法一样调用
-
-```ts
-const api = new UserApi();
-
-const { data: user } = await api.getUser('42', 'profile');
-const { data: created } = await api.createUser({ name: 'Ada' });
-```
-
-装饰器不会改变方法的调用方式，它只是帮你组织请求配置和执行流程。
-
-## 5. 推荐把返回值写成 `ApiCall<T>`
-
-这是当前最推荐的写法：
-
-```ts
+@HttpApi({
+  baseURL: 'https://api.example.com',
+  url: '/users',
+  timeout: 5000,
+})
 class UserApi {
   @Get('/:id')
   getUser(@PathParam('id') id: string): ApiCall<User> {
     return undefined as never;
   }
-}
-```
 
-它本质上等价于 `Promise<AxiosResponse<T>>`，只是更适合装饰器风格的 API 类。
-
-## 6. 需要时绑定自定义 axios 实例
-
-如果你的项目已经有统一配置好的 axios 实例，可以直接绑定到类上：
-
-```ts
-import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
-
-const request = axios.create({
-  baseURL: 'https://api.example.com',
-  timeout: 5000,
-});
-
-@RefAxios(request)
-@HttpApi('/users')
-class UserApi {
-  @Get('/')
-  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
+  @Post('/')
+  createUser(@BodyParam() payload: CreateUserInput): ApiCall<User, CreateUserInput> {
     return undefined as never;
   }
 }
+
+const api = new UserApi();
+const { data } = await api.getUser('42');
 ```
 
-## 下一步看什么
+## 返回值类型
 
-- 看 [包选择](./packages) 决定是否要上 `@decoraxios/all` 或 scoped 子包。
-- 看 [Core HTTP](./core) 了解 transform、策略装饰器和自定义装饰器。
-- 看 [Mock](./mock) 学习如何在不改变调用方式的前提下接入 MSW。
+`ApiCall<TResponse, TRequest>` 最终等价于 `Promise<AxiosResponse<TResponse, TRequest>>`。
+
+- `TResponse` 对应 `response.data`
+- `TRequest` 对应请求体类型
+
+```ts
+createUser(@BodyParam() payload: CreateUserInput): ApiCall<User, CreateUserInput>
+```
+
+## 推荐组合
+
+- `decoraxios` 或 `@decoraxios/core`：只需要核心 HTTP 装饰器
+- `decoraxios` + `@decoraxios/mock`：需要核心 HTTP + Mock
+- `decoraxios` + `@decoraxios/ioc-aop`：需要核心 HTTP + 依赖注入 / AOP
+- `@decoraxios/all`：希望一个包导入全部能力
+
+## 下一步阅读
+
+- [HTTP 装饰器](./core.md)
+- [运行时装饰器](./extensions.md)
+- [Mock](./mock.md)
+- [IoC / AOP](./ioc-aop.md)

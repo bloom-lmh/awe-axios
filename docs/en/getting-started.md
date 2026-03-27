@@ -1,34 +1,30 @@
 # Getting Started
 
-This page shows the shortest path from installation to a typed request method.
+## Choose a package layout
 
-## 1. Install the package style you want
-
-For the short core-first entry:
+Pick the smallest package surface that matches your project:
 
 ```bash
 npm install decoraxios axios
 ```
 
-For the fully scoped core package:
-
 ```bash
-npm install @decoraxios/core axios
+npm install decoraxios @decoraxios/mock axios msw
 ```
 
-For the full bundle:
+```bash
+npm install decoraxios @decoraxios/ioc-aop axios reflect-metadata
+```
 
 ```bash
 npm install @decoraxios/all axios msw reflect-metadata
 ```
 
-::: tip
-If you are starting fresh and only need HTTP decorators, `decoraxios` is the recommended default.
-:::
+Use `decoraxios` for the common case. It re-exports the same core HTTP API as `@decoraxios/core`, but keeps mock and IoC/AOP out of the dependency graph.
 
-## 2. Enable decorators in TypeScript
+## TypeScript requirements
 
-Set these compiler options in `tsconfig.json`:
+Decoraxios relies on legacy TypeScript decorators. Enable them in `tsconfig.json`:
 
 ```json
 {
@@ -39,9 +35,11 @@ Set these compiler options in `tsconfig.json`:
 }
 ```
 
-`emitDecoratorMetadata` is only required if you also plan to use `@decoraxios/ioc-aop`.
+`emitDecoratorMetadata` is only required when you use `@Inject()` and want type-based resolution.
 
-## 3. Define your first API class
+## First request
+
+Decorated methods are signatures. The request is built from the decorators, so the method body is usually a placeholder.
 
 ```ts
 import {
@@ -51,7 +49,6 @@ import {
   HttpApi,
   PathParam,
   Post,
-  QueryParam,
 } from 'decoraxios';
 
 interface User {
@@ -59,74 +56,52 @@ interface User {
   name: string;
 }
 
-@HttpApi('https://api.example.com/users')
-class UserApi {
-  @Get('/:id')
-  getUser(
-    @PathParam('id') id: string,
-    @QueryParam('expand') expand?: 'profile' | 'teams',
-  ): ApiCall<User> {
-    return undefined as never;
-  }
-
-  @Post('/')
-  createUser(@BodyParam() payload: Pick<User, 'name'>): ApiCall<User> {
-    return undefined as never;
-  }
+interface CreateUserInput {
+  name: string;
 }
-```
 
-## 4. Call it like a normal async API
-
-```ts
-const api = new UserApi();
-
-const { data: user } = await api.getUser('42', 'profile');
-const { data: created } = await api.createUser({ name: 'Ada' });
-```
-
-The decorated method itself is still called like a normal method. The decorator layer is only shaping request metadata and execution.
-
-## 5. Use `ApiCall<T>` as the default return type
-
-This pattern gives the best balance between readability and editor hints:
-
-```ts
+@HttpApi({
+  baseURL: 'https://api.example.com',
+  url: '/users',
+  timeout: 5000,
+})
 class UserApi {
   @Get('/:id')
   getUser(@PathParam('id') id: string): ApiCall<User> {
     return undefined as never;
   }
-}
-```
 
-It is equivalent to returning `Promise<AxiosResponse<User>>`, but is easier to scan in decorator-based classes.
-
-## 6. Add a custom axios instance when needed
-
-If your project already has a configured axios instance, bind it once at the class level:
-
-```ts
-import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
-
-const request = axios.create({
-  baseURL: 'https://api.example.com',
-  timeout: 5000,
-});
-
-@RefAxios(request)
-@HttpApi('/users')
-class UserApi {
-  @Get('/')
-  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
+  @Post('/')
+  createUser(@BodyParam() payload: CreateUserInput): ApiCall<User, CreateUserInput> {
     return undefined as never;
   }
 }
+
+const api = new UserApi();
+const { data } = await api.getUser('42');
 ```
+
+## Return typing
+
+`ApiCall<TResponse, TRequest>` resolves to `Promise<AxiosResponse<TResponse, TRequest>>`.
+
+- `TResponse` describes `response.data`
+- `TRequest` describes the request body type when the method sends data
+
+```ts
+createUser(@BodyParam() payload: CreateUserInput): ApiCall<User, CreateUserInput>
+```
+
+## Package combinations
+
+- `decoraxios` or `@decoraxios/core`: core HTTP decorators only
+- `decoraxios` + `@decoraxios/mock`: core HTTP plus MSW-based mocking
+- `decoraxios` + `@decoraxios/ioc-aop`: core HTTP plus dependency injection and AOP
+- `@decoraxios/all`: everything from one package
 
 ## Next steps
 
-- Read [Package Selection](./packages) to choose between `decoraxios`, scoped packages, and `@decoraxios/all`.
-- Read [Core HTTP](./core) for request transforms, strategy decorators, and custom decorators.
-- Read [Mock](./mock) if you want request-level mocking without changing call sites.
+- Read [HTTP Decorators](./core.md) for `@HttpApi`, HTTP method decorators, and parameter decorators
+- Read [Runtime Decorators](./extensions.md) for axios instance binding, transforms, retry, debounce, throttle, and custom plugin decorators
+- Read [Mock](./mock.md) for `@Mock` and `MockAPI`
+- Read [IoC and AOP](./ioc-aop.md) for `@Component`, `@Inject`, and aspect decorators

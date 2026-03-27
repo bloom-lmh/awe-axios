@@ -1,6 +1,6 @@
 # IoC / AOP
 
-`@decoraxios/ioc-aop` 提供的是一套轻量级依赖注入和切面能力，适合已经广泛使用装饰器的项目。
+`@decoraxios/ioc-aop` 为类风格项目提供了一个轻量容器和切面系统。
 
 ## 安装
 
@@ -8,42 +8,64 @@
 npm install @decoraxios/ioc-aop reflect-metadata
 ```
 
-并且在应用入口只引入一次：
+在装饰器执行前，只加载一次 `reflect-metadata`：
 
 ```ts
 import 'reflect-metadata';
 ```
 
-## 组件注册
+## `@Component`
 
-使用 `@Component()` 注册一个类：
+`@Component` 用于把类注册进容器。
+
+### 默认注册
+
+不传参数时，会使用默认模块，并根据类名推导 alias。
 
 ```ts
 import { Component } from '@decoraxios/ioc-aop';
 
 @Component()
-class LoggerService {
-  info(message: string) {
-    console.log(message);
-  }
-}
+class UserService {}
 ```
 
-如果你需要更显式的标识，也可以传 alias 或 module 名。
+例如 `UserService` 默认会以 `userService` 这个 alias 注册。
 
-## 属性注入
+### 字符串参数
 
-在属性上使用 `@Inject(...)`：
+字符串参数支持两种形式：
+
+- 只写 alias，比如 `'logger'`
+- 写成 `module.alias`，比如 `'admin.logger'`
+
+```ts
+@Component('admin.logger')
+class LoggerService {}
+```
+
+### 对象参数
+
+对象形式适合显式指定模块和别名。
+
+```ts
+@Component({
+  module: 'admin',
+  alias: 'logger',
+})
+class LoggerService {}
+```
+
+## `@Inject`
+
+`@Inject` 用于把依赖注入到属性上，一共支持三种形式。
+
+### 构造函数形式
 
 ```ts
 import { Component, Inject } from '@decoraxios/ioc-aop';
 
 @Component()
-class LoggerService {
-  info(message: string) {
-    console.log(message);
-  }
-}
+class LoggerService {}
 
 @Component()
 class UserService {
@@ -52,98 +74,215 @@ class UserService {
 }
 ```
 
-## 注入 scope
+### 字符串形式
 
-当前支持这些作用域：
-
-- `TRANSIENT`
-- `SINGLETON`
-- `PROTOTYPE`
-- `SHALLOWCLONE`
-- `DEEPCLONE`
-
-例如：
+可以直接按 alias 或 `module.alias` 注入。
 
 ```ts
-@Inject({
-  ctor: LoggerService,
-  scope: 'SINGLETON',
-})
-logger!: LoggerService;
+class UserService {
+  @Inject('admin.logger')
+  logger!: LoggerService;
+}
 ```
 
-## AOP 基础
+### 配置对象形式
 
-用 `@Aspect(order)` 定义切面，再配 advice 装饰器：
+完整配置支持：
+
+- `module`
+- `alias`
+- `ctor`
+- `scope`
+- `backups`
 
 ```ts
+class UserService {
+  @Inject({
+    module: 'admin',
+    alias: 'logger',
+    scope: 'SINGLETON',
+    backups: { log: console.log },
+  })
+  logger!: LoggerService;
+}
+```
+
+### 可用 scope
+
+- `SINGLETON`：始终返回同一个实例
+- `TRANSIENT`：每次注入都新建实例，默认值
+- `PROTOTYPE`：以已存实例为原型创建新对象
+- `SHALLOWCLONE`：对已存实例做浅拷贝
+- `DEEPCLONE`：对已存实例做深拷贝
+
+## `@Aspect`
+
+`@Aspect(order)` 用于注册切面类。`order` 越小，执行顺序越靠前。
+
+```ts
+import { Aspect } from '@decoraxios/ioc-aop';
+
+@Aspect(1)
+class AuditAspect {}
+```
+
+## 切点表达式
+
+通知装饰器接收字符串形式的切点表达式。
+
+常见写法：
+
+- `UserService.save`
+- `UserService.*`
+- `*.save`
+- `*.*`
+
+类名和方法名都支持通配符。
+
+## `@Before`
+
+在目标方法执行前触发。
+
+```ts
+import { Before } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @Before('UserService.save')
+  beforeSave() {
+    console.log('before save');
+  }
+}
+```
+
+## `@After`
+
+在目标方法结束后触发，不区分成功还是失败。
+
+```ts
+import { After } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @After('UserService.save')
+  afterSave() {
+    console.log('after save');
+  }
+}
+```
+
+## `@Around`
+
+环绕通知会拿到 `AspectContext` 和 `AdviceChain`。
+
+```ts
+import { AdviceChain, Around, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @Around('UserService.save')
+  aroundSave(context: AspectContext, chain: AdviceChain) {
+    console.log('around before', context.methodName);
+    const result = chain.proceed(context);
+    console.log('around after');
+    return result;
+  }
+}
+```
+
+它适合做耗时统计、日志包裹、结果包装和自定义错误流转。
+
+## `@AfterReturning`
+
+只在目标方法成功返回时执行，第二个参数就是返回值。
+
+```ts
+import { AfterReturning, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @AfterReturning('UserService.save')
+  afterReturning(context: AspectContext, result: unknown) {
+    console.log('saved result', result);
+  }
+}
+```
+
+## `@AfterThrowing`
+
+只在目标方法抛错或 Promise reject 时执行，第二个参数是错误对象。
+
+```ts
+import { AfterThrowing, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @AfterThrowing('UserService.save')
+  afterThrowing(context: AspectContext, error: unknown) {
+    console.error('save failed', context.methodName, error);
+  }
+}
+```
+
+## 组合示例
+
+```ts
+import 'reflect-metadata';
+
 import {
   AdviceChain,
   After,
+  AfterReturning,
+  AfterThrowing,
   Around,
   Aspect,
   AspectContext,
   Before,
+  Component,
+  Inject,
 } from '@decoraxios/ioc-aop';
+
+@Component()
+class LoggerService {
+  log(message: string) {
+    console.log(message);
+  }
+}
 
 @Aspect(1)
 class AuditAspect {
   @Before('UserService.save')
-  before() {
-    console.log('before');
+  beforeSave() {
+    console.log('before save');
   }
 
   @Around('UserService.save')
-  around(context: AspectContext, chain: AdviceChain) {
+  aroundSave(context: AspectContext, chain: AdviceChain) {
     console.log('around before');
     const result = chain.proceed(context);
     console.log('around after');
     return result;
   }
 
+  @AfterReturning('UserService.save')
+  afterReturning(_context: AspectContext, result: unknown) {
+    console.log('result', result);
+  }
+
+  @AfterThrowing('UserService.save')
+  afterThrowing(_context: AspectContext, error: unknown) {
+    console.error(error);
+  }
+
   @After('UserService.save')
-  after() {
-    console.log('after');
+  afterSave() {
+    console.log('after save');
+  }
+}
+
+@Component()
+class UserService {
+  @Inject(LoggerService)
+  logger!: LoggerService;
+
+  save() {
+    this.logger.log('saving user');
+    return 'ok';
   }
 }
 ```
-
-## 支持的 advice 类型
-
-- `@Before`
-- `@After`
-- `@Around`
-- `@AfterReturning`
-- `@AfterThrowing`
-
-## Pointcut 匹配规则
-
-支持通配符匹配，例如：
-
-- `save*`
-- `UserService.*`
-- `*Service.save*`
-
-## 异步方法也能织入
-
-如果原方法返回的是 Promise，advice 链会跟着异步生命周期继续执行，不需要你再手动包装一层。
-
-## 如何和 HTTP API 类一起用
-
-如果你希望一个 API 类既有 HTTP 装饰器能力，又能参与切面织入，常见写法是：
-
-```ts
-@Component()
-@HttpApi('https://api.example.com/users')
-class UserApi {}
-```
-
-这样这个类同时处在 HTTP 装饰器系统和 IoC / AOP 系统里。
-
-## 什么时候适合引入它
-
-这个包比较适合这些场景：
-
-- 你想要装饰器风格的 DI，但不想上更重的框架
-- 你有日志、审计、缓存这类横切逻辑要统一织入
-- 你希望 IoC / AOP 始终保持可选，而不是和 HTTP 包强耦合

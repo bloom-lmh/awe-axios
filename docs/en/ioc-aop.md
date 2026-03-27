@@ -1,6 +1,6 @@
 # IoC and AOP
 
-`@decoraxios/ioc-aop` provides lightweight dependency injection and aspect weaving for decorator-heavy projects.
+`@decoraxios/ioc-aop` adds a lightweight container and aspect system for class-based applications.
 
 ## Install
 
@@ -8,42 +8,64 @@
 npm install @decoraxios/ioc-aop reflect-metadata
 ```
 
-Load `reflect-metadata` once in the app entry:
+Load `reflect-metadata` once before decorators run:
 
 ```ts
 import 'reflect-metadata';
 ```
 
-## Component registration
+## `@Component`
 
-Register a class with `@Component()`:
+`@Component` registers a class in the container.
+
+### Default registration
+
+Without options, Decoraxios uses the default module and derives the alias from the class name.
 
 ```ts
 import { Component } from '@decoraxios/ioc-aop';
 
 @Component()
-class LoggerService {
-  info(message: string) {
-    console.log(message);
-  }
-}
+class UserService {}
 ```
 
-You can also pass an alias or module name if you need more explicit registration.
+`UserService` becomes available under the alias `userService`.
 
-## Property injection
+### String option
 
-Use `@Inject(...)` on class properties:
+The string form supports either:
+
+- Alias only, for example `'logger'`
+- `module.alias`, for example `'admin.logger'`
+
+```ts
+@Component('admin.logger')
+class LoggerService {}
+```
+
+### Object option
+
+Use the object form for explicit module and alias naming.
+
+```ts
+@Component({
+  module: 'admin',
+  alias: 'logger',
+})
+class LoggerService {}
+```
+
+## `@Inject`
+
+`@Inject` resolves a dependency onto a property. It supports three forms.
+
+### Constructor form
 
 ```ts
 import { Component, Inject } from '@decoraxios/ioc-aop';
 
 @Component()
-class LoggerService {
-  info(message: string) {
-    console.log(message);
-  }
-}
+class LoggerService {}
 
 @Component()
 class UserService {
@@ -52,100 +74,217 @@ class UserService {
 }
 ```
 
-## Injection scopes
+### String form
 
-The package supports these scopes:
-
-- `TRANSIENT`
-- `SINGLETON`
-- `PROTOTYPE`
-- `SHALLOWCLONE`
-- `DEEPCLONE`
-
-Example:
+Use the alias or `module.alias`.
 
 ```ts
-@Inject({
-  ctor: LoggerService,
-  scope: 'SINGLETON',
-})
-logger!: LoggerService;
+class UserService {
+  @Inject('admin.logger')
+  logger!: LoggerService;
+}
 ```
 
-## AOP basics
+### Config object form
 
-Define an aspect with `@Aspect(order)` and advice decorators:
+The full object supports:
+
+- `module`
+- `alias`
+- `ctor`
+- `scope`
+- `backups`
 
 ```ts
+class UserService {
+  @Inject({
+    module: 'admin',
+    alias: 'logger',
+    scope: 'SINGLETON',
+    backups: { log: console.log },
+  })
+  logger!: LoggerService;
+}
+```
+
+### Scope values
+
+Available scopes:
+
+- `SINGLETON`: reuse the same stored instance
+- `TRANSIENT`: create a new instance on each injection, default behavior
+- `PROTOTYPE`: create a new object with the stored instance as its prototype
+- `SHALLOWCLONE`: shallow-copy the stored instance
+- `DEEPCLONE`: deep-clone the stored instance
+
+## `@Aspect`
+
+`@Aspect(order)` registers an aspect class. Lower `order` values run first.
+
+```ts
+import { Aspect } from '@decoraxios/ioc-aop';
+
+@Aspect(1)
+class AuditAspect {}
+```
+
+## Pointcut syntax
+
+Advice decorators accept a pointcut expression string.
+
+Common patterns:
+
+- `UserService.save`
+- `UserService.*`
+- `*.save`
+- `*.*`
+
+Wildcard matching is supported for class names and method names.
+
+## `@Before`
+
+Runs before the target method.
+
+```ts
+import { Before } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @Before('UserService.save')
+  beforeSave() {
+    console.log('before save');
+  }
+}
+```
+
+## `@After`
+
+Runs after the target method finishes, regardless of success or failure.
+
+```ts
+import { After } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @After('UserService.save')
+  afterSave() {
+    console.log('after save');
+  }
+}
+```
+
+## `@Around`
+
+Wraps the target method and receives `AspectContext` plus `AdviceChain`.
+
+```ts
+import { AdviceChain, Around, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @Around('UserService.save')
+  aroundSave(context: AspectContext, chain: AdviceChain) {
+    console.log('before around', context.methodName);
+    const result = chain.proceed(context);
+    console.log('after around');
+    return result;
+  }
+}
+```
+
+Use `@Around` when you need timing, tracing, wrapping return values, or custom error flow.
+
+## `@AfterReturning`
+
+Runs only when the target method succeeds. The resolved return value is passed as the second argument.
+
+```ts
+import { AfterReturning, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @AfterReturning('UserService.save')
+  afterReturning(context: AspectContext, result: unknown) {
+    console.log('saved result', result);
+  }
+}
+```
+
+## `@AfterThrowing`
+
+Runs only when the target method throws or rejects. The thrown error is passed as the second argument.
+
+```ts
+import { AfterThrowing, AspectContext } from '@decoraxios/ioc-aop';
+
+class AuditAspect {
+  @AfterThrowing('UserService.save')
+  afterThrowing(context: AspectContext, error: unknown) {
+    console.error('save failed', context.methodName, error);
+  }
+}
+```
+
+## Combined example
+
+```ts
+import 'reflect-metadata';
+
 import {
   AdviceChain,
   After,
+  AfterReturning,
+  AfterThrowing,
   Around,
   Aspect,
   AspectContext,
   Before,
+  Component,
+  Inject,
 } from '@decoraxios/ioc-aop';
+
+@Component()
+class LoggerService {
+  log(message: string) {
+    console.log(message);
+  }
+}
 
 @Aspect(1)
 class AuditAspect {
   @Before('UserService.save')
-  before() {
-    console.log('before');
+  beforeSave() {
+    console.log('before save');
   }
 
   @Around('UserService.save')
-  around(context: AspectContext, chain: AdviceChain) {
+  aroundSave(context: AspectContext, chain: AdviceChain) {
     console.log('around before');
     const result = chain.proceed(context);
     console.log('around after');
     return result;
   }
 
+  @AfterReturning('UserService.save')
+  afterReturning(_context: AspectContext, result: unknown) {
+    console.log('result', result);
+  }
+
+  @AfterThrowing('UserService.save')
+  afterThrowing(_context: AspectContext, error: unknown) {
+    console.error(error);
+  }
+
   @After('UserService.save')
-  after() {
-    console.log('after');
+  afterSave() {
+    console.log('after save');
+  }
+}
+
+@Component()
+class UserService {
+  @Inject(LoggerService)
+  logger!: LoggerService;
+
+  save() {
+    this.logger.log('saving user');
+    return 'ok';
   }
 }
 ```
-
-## Supported advice types
-
-- `@Before`
-- `@After`
-- `@Around`
-- `@AfterReturning`
-- `@AfterThrowing`
-
-## Pointcut matching
-
-Pointcuts support wildcard matching.
-
-Examples:
-
-- `save*`
-- `UserService.*`
-- `*Service.save*`
-
-## Async behavior
-
-Advice execution supports both sync and async methods. If the underlying method returns a promise, the advice chain follows that async lifecycle.
-
-## Combining with HTTP API classes
-
-If you want an API class to participate in aspect weaving, the common pattern is:
-
-```ts
-@Component()
-@HttpApi('https://api.example.com/users')
-class UserApi {}
-```
-
-That keeps the class available to both the HTTP decorator system and the IoC/AOP layer.
-
-## When to use it
-
-This package is a good fit when:
-
-- you want decorator-based DI without adopting a larger framework
-- you need lightweight cross-cutting concerns such as logging or auditing
-- you want IoC/AOP to stay optional instead of being built into the HTTP package

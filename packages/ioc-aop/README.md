@@ -1,8 +1,6 @@
 # @decoraxios/ioc-aop
 
-Lightweight IoC and AOP decorators for `decoraxios`.
-
-`@decoraxios/ioc-aop` provides component registration, dependency injection, and aspect weaving utilities built around `reflect-metadata`.
+`@decoraxios/ioc-aop` provides component registration, dependency injection, and aspect decorators for class-based applications.
 
 ## Install
 
@@ -10,20 +8,36 @@ Lightweight IoC and AOP decorators for `decoraxios`.
 npm install @decoraxios/ioc-aop reflect-metadata
 ```
 
-## Highlights
-
-- `@Component()` and `@Inject(...)`
-- `@Aspect()`, `@Before()`, `@After()`, and `@Around()`
-- Singleton, transient, prototype, shallow clone, and deep clone scopes
-
-## Quick Example
+Load `reflect-metadata` once before decorators run:
 
 ```ts
 import 'reflect-metadata';
-import { Component, Inject } from '@decoraxios/ioc-aop';
+```
+
+## Includes
+
+- `@Component`
+- `@Inject`
+- `@Aspect`
+- `@Before`, `@After`, `@Around`
+- `@AfterReturning`, `@AfterThrowing`
+
+## Example
+
+```ts
+import 'reflect-metadata';
+import { Aspect, Before, Component, Inject } from '@decoraxios/ioc-aop';
 
 @Component()
 class LoggerService {}
+
+@Aspect(1)
+class AuditAspect {
+  @Before('UserService.save')
+  beforeSave() {
+    console.log('before save');
+  }
+}
 
 @Component()
 class UserService {
@@ -32,7 +46,7 @@ class UserService {
 }
 ```
 
-More documentation:
+## Documentation
 
-- English: <https://github.com/bloom-lmh/awe-axios#readme>
-- 中文: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>
+- English IoC/AOP guide: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/ioc-aop.md>
+- 中文 IoC/AOP 文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/ioc-aop.md>

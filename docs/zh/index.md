@@ -1,73 +1,28 @@
-# 概览
+# Decoraxios
 
-Decoraxios 是一个构建在 Axios 之上的装饰器风格工具集。它的目标不是把 HTTP、mock、IoC、AOP 强行绑成一个大包，而是让你按项目需要组合能力。
+Decoraxios 是一套偏工程化的 Axios 装饰器工具库，适合把接口层写成声明式类 API 的项目。仓库按能力拆成核心包、Mock 包、IoC / AOP 包，以及一个全量聚合包，方便按需选择。
 
-## 当前架构的核心变化
+## 包说明
 
-现在的 monorepo 采用了更明确的 core-first 设计：
-
-- `decoraxios` 是轻量根入口，只代表核心 HTTP 能力。
-- `@decoraxios/core` 是显式的 scoped core 包。
-- `@decoraxios/mock` 提供基于 MSW 的 mock。
-- `@decoraxios/ioc-aop` 提供依赖注入和切面能力。
-- `@decoraxios/all` 是显式的 full bundle，用于“一次安装拿全套”。
-
-这次重构主要解决了两个长期问题：
-
-- 用短包名安装时，不会再把 mock / IoC / AOP 依赖偷偷一起带进来。
-- mock 请求和真实请求终于拥有了统一的方法调用方式和返回类型。
-
-## 为什么这种拆分更适合真实项目
-
-### 装饰器代码更接近业务
-
-你可以把接口定义写成类和方法，而不是到处散落请求构造逻辑。
-
-```ts
-import { type ApiCall, Get, HttpApi, PathParam } from 'decoraxios';
-
-interface User {
-  id: string;
-  name: string;
-}
-
-@HttpApi('https://api.example.com/users')
-class UserApi {
-  @Get('/:id')
-  getUser(@PathParam('id') id: string): ApiCall<User> {
-    return undefined as never;
-  }
-}
-```
-
-### TypeScript 提示更稳定
-
-`ApiCall<T>` 会把真实返回类型固定成：
-
-```ts
-type ApiCall<T> = Promise<AxiosResponse<T>>
-```
-
-### 运行时能力是按需的
-
-你可以先只使用核心 HTTP 层，后面再按需要引入 mock 或 AOP，而不是一开始就背上所有依赖。
-
-## 推荐起点
-
-| 需求 | 推荐包 |
+| 包名 | 适用场景 |
 | --- | --- |
-| 只要核心 HTTP，而且想用短包名 | `decoraxios` |
-| 只要核心 HTTP，而且更喜欢 scoped import | `@decoraxios/core` |
-| 核心 HTTP + mock | `@decoraxios/core` + `@decoraxios/mock` |
-| 核心 HTTP + IoC/AOP | `@decoraxios/core` + `@decoraxios/ioc-aop` |
-| 一次拿全套 | `@decoraxios/all` |
+| `decoraxios` | 推荐主包，只暴露核心 HTTP 装饰器能力。 |
+| `@decoraxios/core` | 需要显式引用核心包时使用。 |
+| `@decoraxios/mock` | 需要基于 MSW 做接口 Mock 时使用。 |
+| `@decoraxios/ioc-aop` | 需要依赖注入和切面编程时使用。 |
+| `@decoraxios/all` | 希望从一个包统一导入全部公开装饰器时使用。 |
 
-## 文档导览
+## 文档结构
 
-- 从 [快速开始](./getting-started) 开始，先跑通第一个例子。
-- 看 [包选择](./packages) 判断项目该装哪一个包。
-- 看 [Core HTTP](./core) 了解装饰器、策略、transform 和自定义扩展。
-- 看 [Mock](./mock) 学习 MSW 集成方式。
-- 看 [IoC / AOP](./ioc-aop) 了解组件、注入和切面。
-- 看 [Recipes](./recipes) 获取常见落地方案。
-- 看 [迁移指南](./migration) 处理从旧结构到新结构的迁移。
+- [快速开始](./getting-started.md)
+- [HTTP 装饰器](./core.md)
+- [运行时装饰器](./extensions.md)
+- [Mock](./mock.md)
+- [IoC / AOP](./ioc-aop.md)
+
+## 设计原则
+
+- 被装饰的 HTTP 方法是声明，不负责写真实请求逻辑。
+- 根包保持轻量，只提供核心 HTTP 能力。
+- Mock 与 IoC / AOP 是可选增强，不会默认给普通项目引入额外依赖。
+- 所有请求入口都围绕 `ApiCall<TResponse, TRequest>` 保持明确的类型约束。

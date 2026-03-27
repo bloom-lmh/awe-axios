@@ -1,8 +1,6 @@
 # @decoraxios/all
 
-Full bundle package for the `decoraxios` monorepo.
-
-Install this package when you want a single import surface that includes the core HTTP decorators, the MSW mock layer, and the IoC/AOP helpers.
+`@decoraxios/all` is the full bundle package for Decoraxios. It re-exports the core HTTP decorators, the mock package, and the IoC/AOP package from one import surface.
 
 ## Install
 
@@ -10,16 +8,11 @@ Install this package when you want a single import surface that includes the cor
 npm install @decoraxios/all axios msw reflect-metadata
 ```
 
-Load `reflect-metadata` once in your app entry before using IoC or AOP decorators:
+## Example
 
 ```ts
 import 'reflect-metadata';
-```
-
-## Quick Example
-
-```ts
-import { type ApiCall, Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@decoraxios/all';
+import { Component, Get, HttpApi, HttpResponse, Inject, Mock, type ApiCall } from '@decoraxios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -40,7 +33,7 @@ class UserService {
 }
 ```
 
-More documentation:
+## Documentation
 
-- English: <https://github.com/bloom-lmh/awe-axios#readme>
-- 中文: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>
+- English overview: <https://github.com/bloom-lmh/awe-axios/blob/master/README.md>
+- 中文说明: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>

@@ -1,79 +1,56 @@
 # Mock
 
-`@decoraxios/mock` adds MSW-backed request mocking on top of the core decorators.
+`@decoraxios/mock` adds decorator-friendly mocking on top of the core HTTP package. It uses MSW under the hood, but keeps the call shape consistent with real requests.
 
 ## Install
 
 ```bash
-npm install @decoraxios/core @decoraxios/mock axios msw
+npm install decoraxios @decoraxios/mock axios msw
 ```
 
-## What stays the same
+## Absolute URL requirement
 
-The most important design rule is that mocked requests do not change how you call the method.
+Mock registration needs an absolute request target. Use one of these patterns:
+
+- `@HttpApi('https://api.example.com/users')`
+- `@HttpApi({ baseURL: 'https://api.example.com', url: '/users' })`
+- `@RefAxios(axios.create({ baseURL: 'https://api.example.com' }))`
+
+If both `baseURL` and the resolved URL are relative, mock registration throws.
+
+## `@Mock`
+
+`@Mock(handlers, options?)` decorates one HTTP method with mock behavior.
+
+`handlers` accepts either:
+
+- A single handler function
+- A record of named handlers
+
+### Simplest form
 
 ```ts
-const { data } = await api.listUsers();
-```
-
-That is true whether the request is real or mocked.
-
-## Turn the mock runtime on
-
-```ts
-import { MockAPI } from '@decoraxios/mock';
+import { Get, HttpApi, type ApiCall } from 'decoraxios';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
-```
 
-Turn it off again if needed:
-
-```ts
-await MockAPI.off();
-```
-
-## Add handlers to a method
-
-You can pass either a single handler or a named handler map.
-
-### Single handler
-
-```ts
-@Get('/')
-@Mock(() => HttpResponse.json([{ id: '1', name: 'Ada' }]))
-listUsers() {
-  return undefined as never;
+@HttpApi('https://api.example.com/users')
+class UserApi {
+  @Get('/')
+  @Mock(() => HttpResponse.json([{ id: '1', name: 'Ada' }]))
+  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
+    return undefined as never;
+  }
 }
 ```
 
 ### Named handlers
 
-```ts
-@Get('/')
-@Mock({
-  default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
-  empty: () => HttpResponse.json([]),
-  error: () => HttpResponse.json({ message: 'failed' }, { status: 500 }),
-})
-listUsers() {
-  return undefined as never;
-}
-```
-
-## Pick the next handler once
+Named handlers let you switch scenarios for the next request.
 
 ```ts
-MockAPI.useNextHandler('empty');
-
-const { data } = await api.listUsers();
-```
-
-`useNextHandler(...)` is queue-based and one-shot. After that request, the method falls back to `default` again.
-
-## Full example
-
-```ts
-import { type ApiCall, Get, HttpApi } from '@decoraxios/core';
+import { Get, HttpApi, type ApiCall } from 'decoraxios';
 import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
@@ -84,38 +61,104 @@ class UserApi {
   @Mock({
     default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
     empty: () => HttpResponse.json([]),
+    failed: () => HttpResponse.json({ message: 'failed' }, { status: 500 }),
   })
   listUsers(): ApiCall<Array<{ id: string; name: string }>> {
     return undefined as never;
   }
 }
 
-const api = new UserApi();
-const first = await api.listUsers();
-
 MockAPI.useNextHandler('empty');
-const second = await api.listUsers();
 ```
 
-## Browser and Node support
+### Decorator options
 
-The package selects the MSW runtime dynamically:
+`@Mock` supports these options:
 
-- browser projects use `msw/browser`
-- Node and test environments use `msw/node`
+- `on`: local enable switch, default `true`
+- `condition`: predicate evaluated before each request
+- `count`: maximum number of mocked calls before falling back to the real request, default `Infinity`
+- `signal`: abort signal for disabling the mock once aborted
 
-That makes the same decorator API usable in both local development and automated tests.
+```ts
+@Mock(
+  {
+    default: () => HttpResponse.json([{ id: '1', name: 'Ada' }]),
+  },
+  {
+    count: 2,
+    condition: () => true,
+  },
+)
+```
 
-## Operational notes
+## `MockAPI`
 
-- Mock registration happens lazily the first time the decorated method is executed.
-- Mock paths are derived from the resolved request target, so relative request URLs still need a `baseURL` or absolute `@HttpApi(...)` target.
-- `MockAPI.resetHandlers()` clears runtime handlers and the queued next-handler state.
+`MockAPI` controls the global mock runtime.
 
-## Good fits for this package
+### `MockAPI.on()`
 
-Use `@decoraxios/mock` when:
+Starts the MSW runtime if needed and globally enables mocking.
 
-- your team already uses MSW
-- you want request mocks to live next to the API declaration
-- you want scenario switching in demos or tests without changing call sites
+```ts
+await MockAPI.on();
+```
+
+### `MockAPI.off(closeRuntime?)`
+
+Turns mocking off. Pass `true` to stop and dispose the underlying worker or server.
+
+```ts
+await MockAPI.off(true);
+```
+
+### `MockAPI.setCondition(condition)`
+
+Applies a global predicate on top of decorator-level conditions.
+
+```ts
+MockAPI.setCondition(() => process.env.NODE_ENV !== 'production');
+```
+
+### `MockAPI.useNextHandler(name)`
+
+Queues a named handler for the next matched request.
+
+```ts
+MockAPI.useNextHandler('failed');
+```
+
+### `MockAPI.clearNextHandlers()`
+
+Clears any queued named handlers.
+
+```ts
+MockAPI.clearNextHandlers();
+```
+
+### `MockAPI.resetHandlers()`
+
+Clears registered runtime handlers and the queued handler list.
+
+```ts
+MockAPI.resetHandlers();
+```
+
+### `MockAPI.listHandlers()`
+
+Returns the currently known MSW handlers, which is useful for debugging tests.
+
+```ts
+const handlers = MockAPI.listHandlers();
+```
+
+## Mocking and real requests use the same return shape
+
+A mocked call still resolves to `Promise<AxiosResponse<T>>`.
+
+```ts
+const response = await new UserApi().listUsers();
+console.log(response.data);
+```
+
+That means components and services do not need special branching just because the data is mocked.

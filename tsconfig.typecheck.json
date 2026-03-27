@@ -9,13 +9,7 @@
       "@decoraxios/mock": ["./packages/mock/src/index.ts"],
       "@decoraxios/ioc-aop": ["./packages/ioc-aop/src/index.ts"],
       "decoraxios": ["./packages/decoraxios/src/index.ts"],
-      "decoraxios/core": ["./packages/decoraxios/src/core.ts"],
-      "awe-axios": ["./packages/awe-axios/index.d.ts"],
-      "awe-axios/core": ["./packages/awe-axios/core.d.ts"],
-      "@decoraxios/awe-axios-core": ["./packages/compat-awe-axios-core/index.d.ts"],
-      "@decoraxios/awe-axios-mock": ["./packages/compat-awe-axios-mock/index.d.ts"],
-      "@decoraxios/awe-axios-ioc-aop": ["./packages/compat-awe-axios-ioc-aop/index.d.ts"],
-      "@decoraxios/awe-axios-all": ["./packages/compat-awe-axios-all/index.d.ts"]
+      "decoraxios/core": ["./packages/decoraxios/src/core.ts"]
     }
   },
   "include": [
