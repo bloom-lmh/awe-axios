@@ -1,6 +1,6 @@
 {
   "name": "@decoraxios/awe-axios-mock",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Compatibility alias for @decoraxios/mock",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
@@ -46,7 +46,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/mock": "^0.3.0"
+    "@decoraxios/mock": "^0.4.0"
   },
   "peerDependencies": {
     "msw": "^2.11.6"

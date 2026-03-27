@@ -1,5 +1,16 @@
 # awe-axios
 
+## 0.4.0
+
+### Minor Changes
+
+- 4db6829: Unify the published package family around `decoraxios` and `@decoraxios/*`, while keeping the previous `awe-axios` and `@decoraxios/awe-axios-*` names as compatibility aliases.
+
+### Patch Changes
+
+- Updated dependencies [4db6829]
+  - decoraxios@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes

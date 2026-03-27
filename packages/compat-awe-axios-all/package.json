@@ -1,6 +1,6 @@
 {
   "name": "@decoraxios/awe-axios-all",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Compatibility alias for @decoraxios/all",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
@@ -48,7 +48,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/all": "^0.3.0"
+    "@decoraxios/all": "^0.4.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0",
