@@ -1,5 +1,11 @@
 # @decoraxios/all
 
+## 0.4.1
+
+### Patch Changes
+
+- 7202fe5: Clean up the workspace to keep only the active Decoraxios package line and refresh the public documentation and package readmes with a detailed decorator reference in English and Chinese.
+
 ## 0.4.0
 
 ### Minor Changes
