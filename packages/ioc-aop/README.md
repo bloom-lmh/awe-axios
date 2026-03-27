@@ -48,5 +48,5 @@ class UserService {
 
 ## Documentation
 
-- English IoC/AOP guide: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/ioc-aop.md>
-- 中文 IoC/AOP 文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/ioc-aop.md>
+- English IoC/AOP guide: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/en/ioc-aop.md>
+- 中文 IoC/AOP 文档: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/zh/ioc-aop.md>

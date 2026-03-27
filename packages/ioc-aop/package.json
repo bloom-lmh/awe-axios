@@ -10,11 +10,11 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bloom-lmh/awe-axios.git"
+    "url": "https://github.com/bloom-lmh/decoraxios.git"
   },
-  "homepage": "https://github.com/bloom-lmh/awe-axios#readme",
+  "homepage": "https://github.com/bloom-lmh/decoraxios#readme",
   "bugs": {
-    "url": "https://github.com/bloom-lmh/awe-axios/issues"
+    "url": "https://github.com/bloom-lmh/decoraxios/issues"
   },
   "keywords": [
     "ioc",

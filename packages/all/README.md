@@ -35,5 +35,5 @@ class UserService {
 
 ## Documentation
 
-- English overview: <https://github.com/bloom-lmh/awe-axios/blob/master/README.md>
-- 中文说明: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>
+- English overview: <https://github.com/bloom-lmh/decoraxios/blob/master/README.md>
+- 中文说明: <https://github.com/bloom-lmh/decoraxios/blob/master/README_CH.md>

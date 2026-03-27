@@ -40,5 +40,5 @@ MockAPI.useNextHandler('empty');
 
 ## Documentation
 
-- English mock guide: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/mock.md>
-- 中文 Mock 文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/mock.md>
+- English mock guide: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/en/mock.md>
+- 中文 Mock 文档: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/zh/mock.md>

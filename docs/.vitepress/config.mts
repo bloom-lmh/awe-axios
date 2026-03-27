@@ -47,7 +47,7 @@ export default defineConfig({
     nav: [
       { text: 'English', link: '/en/' },
       { text: '中文', link: '/zh/' },
-      { text: 'GitHub', link: 'https://github.com/bloom-lmh/awe-axios' },
+      { text: 'GitHub', link: 'https://github.com/bloom-lmh/decoraxios' },
     ],
     sidebar: {
       '/en/': enSidebar,
@@ -60,7 +60,7 @@ export default defineConfig({
       level: [2, 3],
     },
     editLink: {
-      pattern: 'https://github.com/bloom-lmh/awe-axios/edit/master/docs/:path',
+      pattern: 'https://github.com/bloom-lmh/decoraxios/edit/master/docs/:path',
       text: 'Edit this page on GitHub',
     },
     footer: {

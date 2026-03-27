@@ -34,7 +34,7 @@ class UserApi {
 
 ## Documentation
 
-- English guide: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/core.md>
-- English runtime decorators: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/en/extensions.md>
-- 中文 HTTP 装饰器文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/core.md>
-- 中文运行时装饰器文档: <https://github.com/bloom-lmh/awe-axios/blob/master/docs/zh/extensions.md>
+- English guide: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/en/core.md>
+- English runtime decorators: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/en/extensions.md>
+- 中文 HTTP 装饰器文档: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/zh/core.md>
+- 中文运行时装饰器文档: <https://github.com/bloom-lmh/decoraxios/blob/master/docs/zh/extensions.md>
