@@ -4,10 +4,10 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@awe-axios/all": ["./packages/all/src/index.ts"],
-      "@awe-axios/core": ["./packages/core/src/index.ts"],
-      "@awe-axios/mock": ["./packages/mock/src/index.ts"],
-      "@awe-axios/ioc-aop": ["./packages/ioc-aop/src/index.ts"],
+      "@decoraxios/awe-axios-all": ["./packages/all/src/index.ts"],
+      "@decoraxios/awe-axios-core": ["./packages/core/src/index.ts"],
+      "@decoraxios/awe-axios-mock": ["./packages/mock/src/index.ts"],
+      "@decoraxios/awe-axios-ioc-aop": ["./packages/ioc-aop/src/index.ts"],
       "awe-axios": ["./packages/awe-axios/src/index.ts"],
       "awe-axios/core": ["./packages/awe-axios/src/core.ts"]
     }

@@ -7,10 +7,10 @@ Awe Axios 是一个构建在 Axios 之上的装饰器风格工具集。它的目
 现在的 monorepo 采用了更明确的 core-first 设计：
 
 - `awe-axios` 是轻量根入口，只代表核心 HTTP 能力。
-- `@awe-axios/core` 是显式的 scoped core 包。
-- `@awe-axios/mock` 提供基于 MSW 的 mock。
-- `@awe-axios/ioc-aop` 提供依赖注入和切面能力。
-- `@awe-axios/all` 是显式的 full bundle，用于“一次安装拿全套”。
+- `@decoraxios/awe-axios-core` 是显式的 scoped core 包。
+- `@decoraxios/awe-axios-mock` 提供基于 MSW 的 mock。
+- `@decoraxios/awe-axios-ioc-aop` 提供依赖注入和切面能力。
+- `@decoraxios/awe-axios-all` 是显式的 full bundle，用于“一次安装拿全套”。
 
 这次重构主要解决了两个长期问题：
 
@@ -57,10 +57,10 @@ type ApiCall<T> = Promise<AxiosResponse<T>>
 | 需求 | 推荐包 |
 | --- | --- |
 | 只要核心 HTTP，而且想用短包名 | `awe-axios` |
-| 只要核心 HTTP，而且更喜欢 scoped import | `@awe-axios/core` |
-| 核心 HTTP + mock | `@awe-axios/core` + `@awe-axios/mock` |
-| 核心 HTTP + IoC/AOP | `@awe-axios/core` + `@awe-axios/ioc-aop` |
-| 一次拿全套 | `@awe-axios/all` |
+| 只要核心 HTTP，而且更喜欢 scoped import | `@decoraxios/awe-axios-core` |
+| 核心 HTTP + mock | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-mock` |
+| 核心 HTTP + IoC/AOP | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-ioc-aop` |
+| 一次拿全套 | `@decoraxios/awe-axios-all` |
 
 ## 文档导览
 

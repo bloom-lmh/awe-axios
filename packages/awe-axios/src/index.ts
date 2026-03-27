@@ -1,1 +1,1 @@
-export * from '@awe-axios/core';
+export * from '@decoraxios/awe-axios-core';

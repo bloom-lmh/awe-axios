@@ -1,3 +1,3 @@
-export * from '@awe-axios/core';
-export * from '@awe-axios/mock';
-export * from '@awe-axios/ioc-aop';
+export * from '@decoraxios/awe-axios-core';
+export * from '@decoraxios/awe-axios-mock';
+export * from '@decoraxios/awe-axios-ioc-aop';

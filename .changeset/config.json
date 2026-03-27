@@ -5,9 +5,9 @@
   "fixed": [
     [
       "awe-axios",
-      "@awe-axios/core",
-      "@awe-axios/mock",
-      "@awe-axios/ioc-aop"
+      "@decoraxios/awe-axios-core",
+      "@decoraxios/awe-axios-mock",
+      "@decoraxios/awe-axios-ioc-aop"
     ]
   ],
   "linked": [],

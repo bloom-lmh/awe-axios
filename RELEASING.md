@@ -30,10 +30,10 @@ The release flow is:
 ## Published packages
 
 - `awe-axios`
-- `@awe-axios/all`
-- `@awe-axios/core`
-- `@awe-axios/mock`
-- `@awe-axios/ioc-aop`
+- `@decoraxios/awe-axios-all`
+- `@decoraxios/awe-axios-core`
+- `@decoraxios/awe-axios-mock`
+- `@decoraxios/awe-axios-ioc-aop`
 
 ## Recommended GitHub repository settings
 
@@ -100,10 +100,10 @@ Preferred option:
 
 - Configure npm Trusted Publishing for each package:
   - `awe-axios`
-  - `@awe-axios/all`
-  - `@awe-axios/core`
-  - `@awe-axios/mock`
-  - `@awe-axios/ioc-aop`
+  - `@decoraxios/awe-axios-all`
+  - `@decoraxios/awe-axios-core`
+  - `@decoraxios/awe-axios-mock`
+  - `@decoraxios/awe-axios-ioc-aop`
 - Point each package to this repository and the workflow file `release.yml`
 
 Fallback option:
@@ -193,10 +193,10 @@ Check:
 ## 当前发布的包
 
 - `awe-axios`
-- `@awe-axios/all`
-- `@awe-axios/core`
-- `@awe-axios/mock`
-- `@awe-axios/ioc-aop`
+- `@decoraxios/awe-axios-all`
+- `@decoraxios/awe-axios-core`
+- `@decoraxios/awe-axios-mock`
+- `@decoraxios/awe-axios-ioc-aop`
 
 ## 推荐的 GitHub 仓库设置
 
@@ -263,10 +263,10 @@ GitHub 现在更推荐 repository rulesets，而不是旧的 branch protection r
 
 - 在 npm 上给下面 5 个包分别配置 Trusted Publishing：
   - `awe-axios`
-  - `@awe-axios/all`
-  - `@awe-axios/core`
-  - `@awe-axios/mock`
-  - `@awe-axios/ioc-aop`
+  - `@decoraxios/awe-axios-all`
+  - `@decoraxios/awe-axios-core`
+  - `@decoraxios/awe-axios-mock`
+  - `@decoraxios/awe-axios-ioc-aop`
 - 仓库指向当前 GitHub 仓库
 - workflow 文件名填 `release.yml`
 

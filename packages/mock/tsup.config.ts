@@ -8,7 +8,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   splitting: false,
-  external: ['@awe-axios/core', 'msw', 'msw/node', 'msw/browser'],
+  external: ['@decoraxios/awe-axios-core', 'msw', 'msw/node', 'msw/browser'],
   outExtension({ format }) {
     return {
       js: format === 'cjs' ? '.cjs' : '.js',

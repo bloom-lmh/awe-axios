@@ -1,11 +1,11 @@
 # IoC and AOP
 
-`@awe-axios/ioc-aop` provides lightweight dependency injection and aspect weaving for decorator-heavy projects.
+`@decoraxios/awe-axios-ioc-aop` provides lightweight dependency injection and aspect weaving for decorator-heavy projects.
 
 ## Install
 
 ```bash
-npm install @awe-axios/ioc-aop reflect-metadata
+npm install @decoraxios/awe-axios-ioc-aop reflect-metadata
 ```
 
 Load `reflect-metadata` once in the app entry:
@@ -19,7 +19,7 @@ import 'reflect-metadata';
 Register a class with `@Component()`:
 
 ```ts
-import { Component } from '@awe-axios/ioc-aop';
+import { Component } from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {
@@ -36,7 +36,7 @@ You can also pass an alias or module name if you need more explicit registration
 Use `@Inject(...)` on class properties:
 
 ```ts
-import { Component, Inject } from '@awe-axios/ioc-aop';
+import { Component, Inject } from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {
@@ -84,7 +84,7 @@ import {
   Aspect,
   AspectContext,
   Before,
-} from '@awe-axios/ioc-aop';
+} from '@decoraxios/awe-axios-ioc-aop';
 
 @Aspect(1)
 class AuditAspect {

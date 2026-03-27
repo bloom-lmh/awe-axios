@@ -2,7 +2,7 @@ import {
   type HttpRuntimePlugin,
   resolveAbsoluteHttpTarget,
   withHttpMethodConfig,
-} from '@awe-axios/core';
+} from '@decoraxios/awe-axios-core';
 import {
   type DefaultBodyType,
   HttpResponse,

@@ -1,5 +1,5 @@
 {
-  "name": "@awe-axios/all",
+  "name": "@decoraxios/awe-axios-all",
   "version": "0.2.0",
   "description": "Full bundle package for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",
@@ -45,9 +45,9 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "^0.2.0",
-    "@awe-axios/ioc-aop": "^0.2.0",
-    "@awe-axios/mock": "^0.2.0"
+    "@decoraxios/awe-axios-core": "^0.2.0",
+    "@decoraxios/awe-axios-ioc-aop": "^0.2.0",
+    "@decoraxios/awe-axios-mock": "^0.2.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0",

@@ -1,4 +1,4 @@
-import { type ApiCall, BodyParam, Get, HttpApi, PathParam, Post, QueryParam } from '@awe-axios/core';
+import { type ApiCall, BodyParam, Get, HttpApi, PathParam, Post, QueryParam } from '@decoraxios/awe-axios-core';
 
 interface User {
   id: string;

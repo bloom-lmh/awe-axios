@@ -11,7 +11,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   splitting: false,
-  external: ['@awe-axios/core'],
+  external: ['@decoraxios/awe-axios-core'],
   outExtension({ format }) {
     return {
       js: format === 'cjs' ? '.cjs' : '.js',

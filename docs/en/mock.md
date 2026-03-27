@@ -1,11 +1,11 @@
 # Mock
 
-`@awe-axios/mock` adds MSW-backed request mocking on top of the core decorators.
+`@decoraxios/awe-axios-mock` adds MSW-backed request mocking on top of the core decorators.
 
 ## Install
 
 ```bash
-npm install @awe-axios/core @awe-axios/mock axios msw
+npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-mock axios msw
 ```
 
 ## What stays the same
@@ -21,7 +21,7 @@ That is true whether the request is real or mocked.
 ## Turn the mock runtime on
 
 ```ts
-import { MockAPI } from '@awe-axios/mock';
+import { MockAPI } from '@decoraxios/awe-axios-mock';
 
 await MockAPI.on();
 ```
@@ -73,8 +73,8 @@ const { data } = await api.listUsers();
 ## Full example
 
 ```ts
-import { type ApiCall, Get, HttpApi } from '@awe-axios/core';
-import { HttpResponse, Mock, MockAPI } from '@awe-axios/mock';
+import { type ApiCall, Get, HttpApi } from '@decoraxios/awe-axios-core';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/awe-axios-mock';
 
 await MockAPI.on();
 
@@ -114,7 +114,7 @@ That makes the same decorator API usable in both local development and automated
 
 ## Good fits for this package
 
-Use `@awe-axios/mock` when:
+Use `@decoraxios/awe-axios-mock` when:
 
 - your team already uses MSW
 - you want request mocks to live next to the API declaration

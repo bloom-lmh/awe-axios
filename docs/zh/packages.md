@@ -7,10 +7,10 @@
 | 场景 | 安装方式 |
 | --- | --- |
 | 只要核心 HTTP，且想用短包名 | `npm install awe-axios axios` |
-| 只要核心 HTTP，且想保持 scoped imports | `npm install @awe-axios/core axios` |
-| 核心 HTTP + mock | `npm install @awe-axios/core @awe-axios/mock axios msw` |
-| 核心 HTTP + IoC/AOP | `npm install @awe-axios/core @awe-axios/ioc-aop axios reflect-metadata` |
-| 一次拿全套 | `npm install @awe-axios/all axios msw reflect-metadata` |
+| 只要核心 HTTP，且想保持 scoped imports | `npm install @decoraxios/awe-axios-core axios` |
+| 核心 HTTP + mock | `npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-mock axios msw` |
+| 核心 HTTP + IoC/AOP | `npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-ioc-aop axios reflect-metadata` |
+| 一次拿全套 | `npm install @decoraxios/awe-axios-all axios msw reflect-metadata` |
 
 ## `awe-axios`
 
@@ -22,7 +22,7 @@
 
 它现在导出的就是 core 的公开能力，同时保留了兼容子路径 `awe-axios/core`。
 
-## `@awe-axios/core`
+## `@decoraxios/awe-axios-core`
 
 适合这些场景：
 
@@ -30,7 +30,7 @@
 - 团队内部约定全部使用 scoped import
 - 你在写共享库，希望依赖表达更清楚
 
-## `@awe-axios/mock`
+## `@decoraxios/awe-axios-mock`
 
 适合这些场景：
 
@@ -42,7 +42,7 @@
 
 - `msw`
 
-## `@awe-axios/ioc-aop`
+## `@decoraxios/awe-axios-ioc-aop`
 
 适合这些场景：
 
@@ -54,7 +54,7 @@
 
 - `reflect-metadata`
 
-## `@awe-axios/all`
+## `@decoraxios/awe-axios-all`
 
 适合这些场景：
 
@@ -80,7 +80,7 @@
 可以直接这样记：
 
 - 业务应用优先：`awe-axios`
-- 共享库优先：`@awe-axios/core`
-- 演示项目优先：`@awe-axios/all`
+- 共享库优先：`@decoraxios/awe-axios-core`
+- 演示项目优先：`@decoraxios/awe-axios-all`
 
 如果后面项目真的需要 mock 或 AOP，再补 scoped 子包就够了，不需要把整个项目切回 full bundle。

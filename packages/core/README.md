@@ -1,13 +1,13 @@
-# @awe-axios/core
+# @decoraxios/awe-axios-core
 
 Decorator-first HTTP primitives for `awe-axios`.
 
-`@awe-axios/core` provides the base request decorators, parameter decorators, runtime plugins, and TypeScript-first `ApiCall<T>` signatures.
+`@decoraxios/awe-axios-core` provides the base request decorators, parameter decorators, runtime plugins, and TypeScript-first `ApiCall<T>` signatures.
 
 ## Install
 
 ```bash
-npm install @awe-axios/core axios
+npm install @decoraxios/awe-axios-core axios
 ```
 
 ## Highlights
@@ -20,7 +20,7 @@ npm install @awe-axios/core axios
 ## Quick Example
 
 ```ts
-import { type ApiCall, Get, HttpApi, PathParam } from '@awe-axios/core';
+import { type ApiCall, Get, HttpApi, PathParam } from '@decoraxios/awe-axios-core';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {

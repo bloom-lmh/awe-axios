@@ -51,7 +51,7 @@ class UserApi {
 ## Create a reusable decorator
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@awe-axios/core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -68,7 +68,7 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 
 ```ts
 import 'reflect-metadata';
-import { Component, Get, HttpApi, HttpResponse, Mock } from '@awe-axios/all';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/awe-axios-all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -119,7 +119,7 @@ class DemoApi {
 If you want a custom execution rule, attach plugins directly:
 
 ```ts
-import { withHttpMethodPlugins, createRetryPlugin } from '@awe-axios/core';
+import { withHttpMethodPlugins, createRetryPlugin } from '@decoraxios/awe-axios-core';
 
 function RetryTwice() {
   return withHttpMethodPlugins(createRetryPlugin({ count: 2, delay: 200 }));

@@ -1,13 +1,13 @@
-# @awe-axios/ioc-aop
+# @decoraxios/awe-axios-ioc-aop
 
 Lightweight IoC and AOP decorators for `awe-axios`.
 
-`@awe-axios/ioc-aop` provides component registration, dependency injection, and aspect weaving utilities built around `reflect-metadata`.
+`@decoraxios/awe-axios-ioc-aop` provides component registration, dependency injection, and aspect weaving utilities built around `reflect-metadata`.
 
 ## Install
 
 ```bash
-npm install @awe-axios/ioc-aop reflect-metadata
+npm install @decoraxios/awe-axios-ioc-aop reflect-metadata
 ```
 
 ## Highlights
@@ -20,7 +20,7 @@ npm install @awe-axios/ioc-aop reflect-metadata
 
 ```ts
 import 'reflect-metadata';
-import { Component, Inject } from '@awe-axios/ioc-aop';
+import { Component, Inject } from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {}

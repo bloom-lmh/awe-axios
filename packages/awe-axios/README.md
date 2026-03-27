@@ -2,9 +2,9 @@
 
 Core-first package for the `awe-axios` monorepo.
 
-`awe-axios` now maps to the same HTTP decorator surface as `@awe-axios/core`, so you can keep the short package name without pulling in mock or IoC/AOP dependencies.
+`awe-axios` now maps to the same HTTP decorator surface as `@decoraxios/awe-axios-core`, so you can keep the short package name without pulling in mock or IoC/AOP dependencies.
 
-If you want the full bundle, install `@awe-axios/all` instead.
+If you want the full bundle, install `@decoraxios/awe-axios-all` instead.
 
 ## Install
 
@@ -15,7 +15,7 @@ npm install awe-axios axios
 For the full bundle:
 
 ```bash
-npm install @awe-axios/all axios msw reflect-metadata
+npm install @decoraxios/awe-axios-all axios msw reflect-metadata
 ```
 
 ## Quick Example

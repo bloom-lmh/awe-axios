@@ -9,7 +9,7 @@ import {
   Before,
   Component,
   Inject,
-} from '@awe-axios/ioc-aop';
+} from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {

@@ -1,5 +1,5 @@
 {
-  "name": "@awe-axios/ioc-aop",
+  "name": "@decoraxios/awe-axios-ioc-aop",
   "version": "0.2.0",
   "description": "IoC and AOP package for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",

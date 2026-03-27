@@ -7,10 +7,10 @@ Awe Axios is a decorator-first toolkit built on top of Axios. It keeps API clien
 The current monorepo is intentionally core-first:
 
 - `awe-axios` is the lightweight entry and maps to the core HTTP decorators.
-- `@awe-axios/core` is the explicit core package if you prefer fully scoped imports.
-- `@awe-axios/mock` adds MSW-backed mocking.
-- `@awe-axios/ioc-aop` adds dependency injection and aspect weaving.
-- `@awe-axios/all` is the explicit full bundle when you want one package that re-exports everything.
+- `@decoraxios/awe-axios-core` is the explicit core package if you prefer fully scoped imports.
+- `@decoraxios/awe-axios-mock` adds MSW-backed mocking.
+- `@decoraxios/awe-axios-ioc-aop` adds dependency injection and aspect weaving.
+- `@decoraxios/awe-axios-all` is the explicit full bundle when you want one package that re-exports everything.
 
 This solves the two biggest problems from the older design:
 
@@ -59,10 +59,10 @@ Choose one of these depending on the kind of project you are building:
 | Need | Recommended package |
 | --- | --- |
 | Short package name, core HTTP only | `awe-axios` |
-| Explicit scoped core package | `@awe-axios/core` |
-| Core + MSW mocking | `@awe-axios/core` + `@awe-axios/mock` |
-| Core + IoC/AOP | `@awe-axios/core` + `@awe-axios/ioc-aop` |
-| Single full bundle | `@awe-axios/all` |
+| Explicit scoped core package | `@decoraxios/awe-axios-core` |
+| Core + MSW mocking | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-mock` |
+| Core + IoC/AOP | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-ioc-aop` |
+| Single full bundle | `@decoraxios/awe-axios-all` |
 
 ## Documentation map
 

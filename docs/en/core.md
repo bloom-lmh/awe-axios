@@ -11,7 +11,7 @@ import { Get, HttpApi, QueryParam } from 'awe-axios';
 ```
 
 ```ts
-import { Get, HttpApi, QueryParam } from '@awe-axios/core';
+import { Get, HttpApi, QueryParam } from '@decoraxios/awe-axios-core';
 ```
 
 ## Decorator model
@@ -158,7 +158,7 @@ getStats() {
 `withHttpMethodConfig(...)` is the lowest-friction way to build your own higher-level decorators.
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@awe-axios/core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -189,4 +189,4 @@ Core-only is enough when:
 - mocking is handled elsewhere
 - dependency injection is managed by another framework
 
-If that describes your project, `awe-axios` or `@awe-axios/core` is the right long-term choice.
+If that describes your project, `awe-axios` or `@decoraxios/awe-axios-core` is the right long-term choice.

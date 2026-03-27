@@ -48,7 +48,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@awe-axios/core": "^0.2.0"
+    "@decoraxios/awe-axios-core": "^0.2.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0"

@@ -1,4 +1,4 @@
-# @awe-axios/mock
+# @decoraxios/awe-axios-mock
 
 ## 0.2.0
 
@@ -9,4 +9,4 @@
 ### Patch Changes
 
 - Updated dependencies [2321d2f]
-  - @awe-axios/core@0.2.0
+  - @decoraxios/awe-axios-core@0.2.0

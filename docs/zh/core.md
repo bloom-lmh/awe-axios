@@ -11,7 +11,7 @@ import { Get, HttpApi, QueryParam } from 'awe-axios';
 ```
 
 ```ts
-import { Get, HttpApi, QueryParam } from '@awe-axios/core';
+import { Get, HttpApi, QueryParam } from '@decoraxios/awe-axios-core';
 ```
 
 ## 装饰器模型
@@ -158,7 +158,7 @@ getStats() {
 如果你想给团队封装一套自己的语义层，`withHttpMethodConfig(...)` 是最直接的入口。
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@awe-axios/core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -189,4 +189,4 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 - mock 由别的层负责
 - 依赖注入已经由其他框架处理
 
-如果你的项目符合这些条件，`awe-axios` 或 `@awe-axios/core` 通常就是长期最稳的选择。
+如果你的项目符合这些条件，`awe-axios` 或 `@decoraxios/awe-axios-core` 通常就是长期最稳的选择。

@@ -1,4 +1,4 @@
-# @awe-axios/ioc-aop
+# @decoraxios/awe-axios-ioc-aop
 
 ## 0.2.0
 

@@ -12,7 +12,7 @@
 现在：
 
 - `awe-axios` 只代表 core-first 能力
-- `@awe-axios/all` 才是显式的 full bundle
+- `@decoraxios/awe-axios-all` 才是显式的 full bundle
 
 ### 推荐迁移方式
 
@@ -25,7 +25,7 @@ import { Get, HttpApi } from 'awe-axios';
 如果你明确想保留旧的“一包导出全部”体验：
 
 ```ts
-import { Get, HttpApi, Mock, Component } from '@awe-axios/all';
+import { Get, HttpApi, Mock, Component } from '@decoraxios/awe-axios-all';
 ```
 
 ## 2. mock 不再切换成二次函数调用
@@ -60,12 +60,23 @@ const { data } = await api.listUsers();
 
 ### 新思路
 
-- 用 `awe-axios` 或 `@awe-axios/core` 处理 HTTP
-- 需要 mock 时再加 `@awe-axios/mock`
-- 需要 DI / AOP 时再加 `@awe-axios/ioc-aop`
-- 只有明确想要 full bundle 时才用 `@awe-axios/all`
+- 用 `awe-axios` 或 `@decoraxios/awe-axios-core` 处理 HTTP
+- 需要 mock 时再加 `@decoraxios/awe-axios-mock`
+- 需要 DI / AOP 时再加 `@decoraxios/awe-axios-ioc-aop`
+- 只有明确想要 full bundle 时才用 `@decoraxios/awe-axios-all`
 
-## 5. 发布和文档结构也变了
+## 5. scoped 包名迁移到了 `@decoraxios`
+
+之前文档里出现过的 `@awe-axios/*` 不再是当前推荐的发布目标。
+
+现在请统一使用：
+
+- `@decoraxios/awe-axios-core`
+- `@decoraxios/awe-axios-mock`
+- `@decoraxios/awe-axios-ioc-aop`
+- `@decoraxios/awe-axios-all`
+
+## 6. 发布和文档结构也变了
 
 现在仓库已经接上了：
 
@@ -75,12 +86,13 @@ const { data } = await api.listUsers();
 - VitePress 文档
 - GitHub Actions 发包流程
 
-如果你维护脚手架、模板或者自动发版配置，记得把 `@awe-axios/all` 这个新包也纳入进去。
+如果你维护脚手架、模板或者自动发版配置，记得把 `@decoraxios/awe-axios-all` 这个新包也纳入进去。
 
 ## 迁移检查清单
 
 - 把“根包就是全家桶”的假设改成新的 core-first 结构
+- 把旧的 `@awe-axios/*` scoped import 全部替换成 `@decoraxios/*`
 - 更新 README、demo 和模板里的安装命令
 - 只有在真正使用 mock 时才加 `msw`
 - 只有在真正使用 IoC/AOP 时才加 `reflect-metadata`
-- 把 full bundle 示例迁到 `@awe-axios/all`
+- 把 full bundle 示例迁到 `@decoraxios/awe-axios-all`

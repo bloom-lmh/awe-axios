@@ -1,4 +1,4 @@
-# @awe-axios/all
+# @decoraxios/awe-axios-all
 
 Full bundle package for the `awe-axios` monorepo.
 
@@ -7,7 +7,7 @@ Install this package when you want a single import surface that includes the cor
 ## Install
 
 ```bash
-npm install @awe-axios/all axios msw reflect-metadata
+npm install @decoraxios/awe-axios-all axios msw reflect-metadata
 ```
 
 Load `reflect-metadata` once in your app entry before using IoC or AOP decorators:
@@ -19,7 +19,7 @@ import 'reflect-metadata';
 ## Quick Example
 
 ```ts
-import { type ApiCall, Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@awe-axios/all';
+import { type ApiCall, Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@decoraxios/awe-axios-all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {

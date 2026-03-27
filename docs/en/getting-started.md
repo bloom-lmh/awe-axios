@@ -13,13 +13,13 @@ npm install awe-axios axios
 For the fully scoped core package:
 
 ```bash
-npm install @awe-axios/core axios
+npm install @decoraxios/awe-axios-core axios
 ```
 
 For the full bundle:
 
 ```bash
-npm install @awe-axios/all axios msw reflect-metadata
+npm install @decoraxios/awe-axios-all axios msw reflect-metadata
 ```
 
 ::: tip
@@ -39,7 +39,7 @@ Set these compiler options in `tsconfig.json`:
 }
 ```
 
-`emitDecoratorMetadata` is only required if you also plan to use `@awe-axios/ioc-aop`.
+`emitDecoratorMetadata` is only required if you also plan to use `@decoraxios/awe-axios-ioc-aop`.
 
 ## 3. Define your first API class
 
@@ -127,6 +127,6 @@ class UserApi {
 
 ## Next steps
 
-- Read [Package Selection](./packages) to choose between `awe-axios`, scoped packages, and `@awe-axios/all`.
+- Read [Package Selection](./packages) to choose between `awe-axios`, scoped packages, and `@decoraxios/awe-axios-all`.
 - Read [Core HTTP](./core) for request transforms, strategy decorators, and custom decorators.
 - Read [Mock](./mock) if you want request-level mocking without changing call sites.

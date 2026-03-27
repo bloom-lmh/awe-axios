@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "./packages/all" },
     { "path": "./packages/core" },
     { "path": "./packages/mock" },
     { "path": "./packages/ioc-aop" },

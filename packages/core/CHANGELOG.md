@@ -1,4 +1,4 @@
-# @awe-axios/core
+# @decoraxios/awe-axios-core
 
 ## 0.2.0
 

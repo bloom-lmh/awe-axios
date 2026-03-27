@@ -1,11 +1,11 @@
 # IoC / AOP
 
-`@awe-axios/ioc-aop` 提供的是一套轻量级依赖注入和切面能力，适合已经广泛使用装饰器的项目。
+`@decoraxios/awe-axios-ioc-aop` 提供的是一套轻量级依赖注入和切面能力，适合已经广泛使用装饰器的项目。
 
 ## 安装
 
 ```bash
-npm install @awe-axios/ioc-aop reflect-metadata
+npm install @decoraxios/awe-axios-ioc-aop reflect-metadata
 ```
 
 并且在应用入口只引入一次：
@@ -19,7 +19,7 @@ import 'reflect-metadata';
 使用 `@Component()` 注册一个类：
 
 ```ts
-import { Component } from '@awe-axios/ioc-aop';
+import { Component } from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {
@@ -36,7 +36,7 @@ class LoggerService {
 在属性上使用 `@Inject(...)`：
 
 ```ts
-import { Component, Inject } from '@awe-axios/ioc-aop';
+import { Component, Inject } from '@decoraxios/awe-axios-ioc-aop';
 
 @Component()
 class LoggerService {
@@ -84,7 +84,7 @@ import {
   Aspect,
   AspectContext,
   Before,
-} from '@awe-axios/ioc-aop';
+} from '@decoraxios/awe-axios-ioc-aop';
 
 @Aspect(1)
 class AuditAspect {

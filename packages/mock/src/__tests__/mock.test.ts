@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'vitest';
 
-import { type ApiCall, Get, HttpApi } from '@awe-axios/core';
+import { type ApiCall, Get, HttpApi } from '@decoraxios/awe-axios-core';
 import { HttpResponse, Mock, MockAPI } from '../index.js';
 
 afterEach(async () => {
@@ -8,7 +8,7 @@ afterEach(async () => {
   await MockAPI.off(true);
 });
 
-describe('@awe-axios/mock', () => {
+describe('@decoraxios/awe-axios-mock', () => {
   test('intercepts requests with the default mock handler without changing the call signature', async () => {
     await MockAPI.on();
 

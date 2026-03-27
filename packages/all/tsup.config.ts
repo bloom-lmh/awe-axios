@@ -10,7 +10,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   splitting: false,
-  external: ['@awe-axios/core', '@awe-axios/mock', '@awe-axios/ioc-aop'],
+  external: ['@decoraxios/awe-axios-core', '@decoraxios/awe-axios-mock', '@decoraxios/awe-axios-ioc-aop'],
   outExtension({ format }) {
     return {
       js: format === 'cjs' ? '.cjs' : '.js',

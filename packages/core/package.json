@@ -1,5 +1,5 @@
 {
-  "name": "@awe-axios/core",
+  "name": "@decoraxios/awe-axios-core",
   "version": "0.2.0",
   "description": "Decorator-first core HTTP package for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",

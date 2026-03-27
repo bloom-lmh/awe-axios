@@ -13,13 +13,13 @@ npm install awe-axios axios
 如果你更偏好显式的 scoped 包：
 
 ```bash
-npm install @awe-axios/core axios
+npm install @decoraxios/awe-axios-core axios
 ```
 
 如果你想一次安装全套能力：
 
 ```bash
-npm install @awe-axios/all axios msw reflect-metadata
+npm install @decoraxios/awe-axios-all axios msw reflect-metadata
 ```
 
 ::: tip
@@ -39,7 +39,7 @@ npm install @awe-axios/all axios msw reflect-metadata
 }
 ```
 
-如果你不会用到 `@awe-axios/ioc-aop`，`emitDecoratorMetadata` 可以先不开。
+如果你不会用到 `@decoraxios/awe-axios-ioc-aop`，`emitDecoratorMetadata` 可以先不开。
 
 ## 3. 定义第一个 API 类
 
@@ -127,6 +127,6 @@ class UserApi {
 
 ## 下一步看什么
 
-- 看 [包选择](./packages) 决定是否要上 `@awe-axios/all` 或 scoped 子包。
+- 看 [包选择](./packages) 决定是否要上 `@decoraxios/awe-axios-all` 或 scoped 子包。
 - 看 [Core HTTP](./core) 了解 transform、策略装饰器和自定义装饰器。
 - 看 [Mock](./mock) 学习如何在不改变调用方式的前提下接入 MSW。

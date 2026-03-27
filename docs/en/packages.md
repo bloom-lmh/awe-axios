@@ -7,10 +7,10 @@ The package split is part of the product design now, so it is worth choosing int
 | Scenario | Install |
 | --- | --- |
 | Core HTTP only with short package name | `npm install awe-axios axios` |
-| Core HTTP only with fully scoped package names | `npm install @awe-axios/core axios` |
-| Core HTTP + mock | `npm install @awe-axios/core @awe-axios/mock axios msw` |
-| Core HTTP + IoC/AOP | `npm install @awe-axios/core @awe-axios/ioc-aop axios reflect-metadata` |
-| Full bundle | `npm install @awe-axios/all axios msw reflect-metadata` |
+| Core HTTP only with fully scoped package names | `npm install @decoraxios/awe-axios-core axios` |
+| Core HTTP + mock | `npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-mock axios msw` |
+| Core HTTP + IoC/AOP | `npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-ioc-aop axios reflect-metadata` |
+| Full bundle | `npm install @decoraxios/awe-axios-all axios msw reflect-metadata` |
 
 ## `awe-axios`
 
@@ -22,10 +22,10 @@ Use this when:
 
 What it exports:
 
-- the same public API surface as `@awe-axios/core`
+- the same public API surface as `@decoraxios/awe-axios-core`
 - the compatibility subpath `awe-axios/core`
 
-## `@awe-axios/core`
+## `@decoraxios/awe-axios-core`
 
 Use this when:
 
@@ -33,7 +33,7 @@ Use this when:
 - your codebase already uses scoped imports everywhere
 - you want the cleanest mental model for shared library code
 
-## `@awe-axios/mock`
+## `@decoraxios/awe-axios-mock`
 
 Use this when:
 
@@ -45,7 +45,7 @@ Peer dependency:
 
 - `msw`
 
-## `@awe-axios/ioc-aop`
+## `@decoraxios/awe-axios-ioc-aop`
 
 Use this when:
 
@@ -57,7 +57,7 @@ Peer dependency:
 
 - `reflect-metadata`
 
-## `@awe-axios/all`
+## `@decoraxios/awe-axios-all`
 
 Use this when:
 
@@ -85,7 +85,7 @@ That design keeps two important things under your control:
 Start with one of these:
 
 - application code: `awe-axios`
-- library code: `@awe-axios/core`
-- demos and playgrounds: `@awe-axios/all`
+- library code: `@decoraxios/awe-axios-core`
+- demos and playgrounds: `@decoraxios/awe-axios-all`
 
 If you later need mocking or AOP, add the scoped package instead of switching your whole app to the full bundle unless you really want the one-package experience.
