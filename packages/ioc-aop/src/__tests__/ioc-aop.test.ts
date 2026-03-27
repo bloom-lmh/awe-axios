@@ -12,7 +12,7 @@ import {
   Inject,
 } from '../index.js';
 
-describe('@decoraxios/awe-axios-ioc-aop', () => {
+describe('@decoraxios/ioc-aop', () => {
   test('resolves injected instances with alias and scope support', () => {
     @Component()
     class UserRepository {

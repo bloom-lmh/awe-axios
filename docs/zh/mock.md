@@ -1,11 +1,11 @@
 # Mock
 
-`@decoraxios/awe-axios-mock` 在 core 装饰器之上补了一层基于 MSW 的请求 mock。
+`@decoraxios/mock` 在 core 装饰器之上补了一层基于 MSW 的请求 mock。
 
 ## 安装
 
 ```bash
-npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-mock axios msw
+npm install @decoraxios/core @decoraxios/mock axios msw
 ```
 
 ## 最重要的不变点
@@ -21,7 +21,7 @@ const { data } = await api.listUsers();
 ## 打开 mock 运行时
 
 ```ts
-import { MockAPI } from '@decoraxios/awe-axios-mock';
+import { MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
 ```
@@ -73,8 +73,8 @@ const { data } = await api.listUsers();
 ## 完整例子
 
 ```ts
-import { type ApiCall, Get, HttpApi } from '@decoraxios/awe-axios-core';
-import { HttpResponse, Mock, MockAPI } from '@decoraxios/awe-axios-mock';
+import { type ApiCall, Get, HttpApi } from '@decoraxios/core';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
 
@@ -114,7 +114,7 @@ const second = await api.listUsers();
 
 ## 这个包最适合什么项目
 
-在这些场景里，`@decoraxios/awe-axios-mock` 很有价值：
+在这些场景里，`@decoraxios/mock` 很有价值：
 
 - 团队已经在用 MSW
 - 你希望 mock 逻辑跟 API 声明贴在一起

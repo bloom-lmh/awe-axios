@@ -1,7 +1,7 @@
 {
-  "name": "@decoraxios/awe-axios-mock",
+  "name": "@decoraxios/mock",
   "version": "0.3.0",
-  "description": "MSW-powered mock package for Awe Axios",
+  "description": "MSW-powered mock package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -43,7 +43,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/awe-axios-core": "^0.3.0"
+    "@decoraxios/core": "^0.3.0"
   },
   "peerDependencies": {
     "msw": "^2.11.6"

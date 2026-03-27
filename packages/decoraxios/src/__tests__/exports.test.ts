@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
-import { Get as RootGet } from 'awe-axios';
-import { Debounce, Retry, Throttle } from 'awe-axios/core';
+import { Get as RootGet } from 'decoraxios';
+import { Debounce, Retry, Throttle } from 'decoraxios/core';
 
-describe('awe-axios core-first exports', () => {
+describe('decoraxios core-first exports', () => {
   test('exposes only core exports from the root package', () => {
     expect(typeof RootGet).toBe('function');
     expect(typeof Retry).toBe('function');

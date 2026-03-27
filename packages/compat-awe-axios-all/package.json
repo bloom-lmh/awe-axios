@@ -1,0 +1,58 @@
+{
+  "name": "@decoraxios/awe-axios-all",
+  "version": "0.3.0",
+  "description": "Compatibility alias for @decoraxios/all",
+  "author": "SWUST-LMH <1357526355@qq.com>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloom-lmh/awe-axios.git"
+  },
+  "homepage": "https://github.com/bloom-lmh/awe-axios#readme",
+  "bugs": {
+    "url": "https://github.com/bloom-lmh/awe-axios/issues"
+  },
+  "keywords": [
+    "axios",
+    "mock",
+    "ioc",
+    "aop",
+    "decorator",
+    "typescript"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.js",
+    "index.cjs",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@decoraxios/all": "^0.3.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.11.0",
+    "msw": "^2.11.6",
+    "reflect-metadata": "^0.2.2"
+  }
+}

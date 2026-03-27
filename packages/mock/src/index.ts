@@ -2,7 +2,7 @@ import {
   type HttpRuntimePlugin,
   resolveAbsoluteHttpTarget,
   withHttpMethodConfig,
-} from '@decoraxios/awe-axios-core';
+} from '@decoraxios/core';
 import {
   type DefaultBodyType,
   HttpResponse,
@@ -64,7 +64,7 @@ function normalizeMockConfig(handlers: MockHandlers, options: MockDecoratorOptio
     count: Number.POSITIVE_INFINITY,
     ...options,
     handlers: {
-      default: () => HttpResponse.json({ message: 'mock response from awe-axios' }),
+      default: () => HttpResponse.json({ message: 'mock response from decoraxios' }),
       ...normalizedHandlers,
     },
   };

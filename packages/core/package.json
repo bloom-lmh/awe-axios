@@ -1,7 +1,7 @@
 {
-  "name": "@decoraxios/awe-axios-core",
+  "name": "@decoraxios/core",
   "version": "0.3.0",
-  "description": "Decorator-first core HTTP package for Awe Axios",
+  "description": "Decorator-first core HTTP package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",

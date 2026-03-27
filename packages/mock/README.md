@@ -1,13 +1,13 @@
-# @decoraxios/awe-axios-mock
+# @decoraxios/mock
 
-MSW-powered mocking support for `awe-axios`.
+MSW-powered mocking support for `decoraxios`.
 
-`@decoraxios/awe-axios-mock` adds decorator-friendly mock handlers on top of `@decoraxios/awe-axios-core`, with the same runtime calling shape as real HTTP requests.
+`@decoraxios/mock` adds decorator-friendly mock handlers on top of `@decoraxios/core`, with the same runtime calling shape as real HTTP requests.
 
 ## Install
 
 ```bash
-npm install @decoraxios/awe-axios-mock @decoraxios/awe-axios-core msw axios
+npm install @decoraxios/mock @decoraxios/core msw axios
 ```
 
 ## Highlights
@@ -19,8 +19,8 @@ npm install @decoraxios/awe-axios-mock @decoraxios/awe-axios-core msw axios
 ## Quick Example
 
 ```ts
-import { type ApiCall, Get, HttpApi } from '@decoraxios/awe-axios-core';
-import { HttpResponse, Mock, MockAPI } from '@decoraxios/awe-axios-mock';
+import { type ApiCall, Get, HttpApi } from '@decoraxios/core';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
 

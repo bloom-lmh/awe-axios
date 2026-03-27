@@ -1,12 +1,12 @@
-# Awe Axios
+# Decoraxios
 
-Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. The package split is now intentionally sharper:
+Decoraxios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. The package split is now intentionally sharper:
 
-- `awe-axios` is the lightweight core-first entry.
-- `@decoraxios/awe-axios-core` is the explicit core package.
-- `@decoraxios/awe-axios-mock` adds MSW-powered mock support.
-- `@decoraxios/awe-axios-ioc-aop` adds IoC and AOP decorators.
-- `@decoraxios/awe-axios-all` is the full bundle when you want everything from one import surface.
+- `decoraxios` is the lightweight core-first entry.
+- `@decoraxios/core` is the explicit core package.
+- `@decoraxios/mock` adds MSW-powered mock support.
+- `@decoraxios/ioc-aop` adds IoC and AOP decorators.
+- `@decoraxios/all` is the full bundle when you want everything from one import surface.
 
 [中文说明](./README_CH.md)
 
@@ -14,31 +14,31 @@ Awe Axios is a decorator-first Axios toolkit rebuilt as a workspace monorepo. Th
 
 | Package | Purpose |
 | --- | --- |
-| `awe-axios` | Core-first package alias for lightweight installs |
-| `@decoraxios/awe-axios-core` | HTTP decorators, parameter decorators, request helpers, and typed runtime |
-| `@decoraxios/awe-axios-mock` | MSW-powered mock decorators and `MockAPI` |
-| `@decoraxios/awe-axios-ioc-aop` | Lightweight IoC container, `@Inject`, and AOP decorators |
-| `@decoraxios/awe-axios-all` | Full bundle package that depends on `core`, `mock`, and `ioc-aop` |
+| `decoraxios` | Core-first package alias for lightweight installs |
+| `@decoraxios/core` | HTTP decorators, parameter decorators, request helpers, and typed runtime |
+| `@decoraxios/mock` | MSW-powered mock decorators and `MockAPI` |
+| `@decoraxios/ioc-aop` | Lightweight IoC container, `@Inject`, and AOP decorators |
+| `@decoraxios/all` | Full bundle package that depends on `core`, `mock`, and `ioc-aop` |
 
 ## Install
 
 Choose the distribution style that matches your app:
 
 ```bash
-npm install awe-axios axios
+npm install decoraxios axios
 ```
 
 ```bash
-npm install @decoraxios/awe-axios-core @decoraxios/awe-axios-mock axios msw
+npm install @decoraxios/core @decoraxios/mock axios msw
 ```
 
 ```bash
-npm install @decoraxios/awe-axios-all axios msw reflect-metadata
+npm install @decoraxios/all axios msw reflect-metadata
 ```
 
-`awe-axios` now represents the same runtime surface as `@decoraxios/awe-axios-core`, so installing it no longer drags in mock or IoC/AOP dependencies.
+`decoraxios` now represents the same runtime surface as `@decoraxios/core`, so installing it no longer drags in mock or IoC/AOP dependencies.
 
-For `@decoraxios/awe-axios-ioc-aop` and `@decoraxios/awe-axios-all`, make sure `reflect-metadata` is loaded once in your app entry:
+For `@decoraxios/ioc-aop` and `@decoraxios/all`, make sure `reflect-metadata` is loaded once in your app entry:
 
 ```ts
 import 'reflect-metadata';
@@ -68,7 +68,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from 'awe-axios';
+} from 'decoraxios';
 
 interface User {
   id: string;
@@ -100,7 +100,7 @@ const { data } = await api.getUser('42', 'profile');
 The core runtime ships first-class request strategy decorators in addition to the plain helper functions:
 
 ```ts
-import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from 'awe-axios';
+import { type ApiCall, Debounce, Get, HttpApi, QueryParam, Retry, Throttle } from 'decoraxios';
 
 @HttpApi('https://api.example.com')
 class SearchApi {
@@ -127,8 +127,8 @@ class SearchApi {
 ## Mock Example
 
 ```ts
-import { Get, HttpApi, type ApiCall } from 'awe-axios';
-import { HttpResponse, Mock, MockAPI } from '@decoraxios/awe-axios-mock';
+import { Get, HttpApi, type ApiCall } from 'decoraxios';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
 
@@ -164,7 +164,7 @@ import {
   Before,
   Component,
   Inject,
-} from '@decoraxios/awe-axios-ioc-aop';
+} from '@decoraxios/ioc-aop';
 
 @Component()
 class LoggerService {
@@ -210,7 +210,7 @@ class UserService {
 
 ```ts
 import 'reflect-metadata';
-import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/awe-axios-all';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -232,13 +232,13 @@ class LoggerService {}
 Choose the style that matches your distribution strategy:
 
 ```ts
-import { Get, HttpApi } from 'awe-axios';
-import { Mock } from '@decoraxios/awe-axios-mock';
-import { Component } from '@decoraxios/awe-axios-ioc-aop';
+import { Get, HttpApi } from 'decoraxios';
+import { Mock } from '@decoraxios/mock';
+import { Component } from '@decoraxios/ioc-aop';
 ```
 
 ```ts
-import { Get, HttpApi, Mock, Component } from '@decoraxios/awe-axios-all';
+import { Get, HttpApi, Mock, Component } from '@decoraxios/all';
 ```
 
 ## Workspace Commands
@@ -261,8 +261,8 @@ npm run release:check
 ## What Changed In This Rebuild
 
 - The project is now an npm workspaces monorepo.
-- `awe-axios` is now truly core-first instead of being a hidden full bundle.
-- The full bundle moved into `@decoraxios/awe-axios-all`.
+- `decoraxios` is now truly core-first instead of being a hidden full bundle.
+- The full bundle moved into `@decoraxios/all`.
 - Mock requests no longer switch to a double-call API.
 - IoC and AOP stay optional unless you install them.
 

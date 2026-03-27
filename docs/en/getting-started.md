@@ -7,23 +7,23 @@ This page shows the shortest path from installation to a typed request method.
 For the short core-first entry:
 
 ```bash
-npm install awe-axios axios
+npm install decoraxios axios
 ```
 
 For the fully scoped core package:
 
 ```bash
-npm install @decoraxios/awe-axios-core axios
+npm install @decoraxios/core axios
 ```
 
 For the full bundle:
 
 ```bash
-npm install @decoraxios/awe-axios-all axios msw reflect-metadata
+npm install @decoraxios/all axios msw reflect-metadata
 ```
 
 ::: tip
-If you are starting fresh and only need HTTP decorators, `awe-axios` is the recommended default.
+If you are starting fresh and only need HTTP decorators, `decoraxios` is the recommended default.
 :::
 
 ## 2. Enable decorators in TypeScript
@@ -39,7 +39,7 @@ Set these compiler options in `tsconfig.json`:
 }
 ```
 
-`emitDecoratorMetadata` is only required if you also plan to use `@decoraxios/awe-axios-ioc-aop`.
+`emitDecoratorMetadata` is only required if you also plan to use `@decoraxios/ioc-aop`.
 
 ## 3. Define your first API class
 
@@ -52,7 +52,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from 'awe-axios';
+} from 'decoraxios';
 
 interface User {
   id: string;
@@ -108,7 +108,7 @@ If your project already has a configured axios instance, bind it once at the cla
 
 ```ts
 import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://api.example.com',
@@ -127,6 +127,6 @@ class UserApi {
 
 ## Next steps
 
-- Read [Package Selection](./packages) to choose between `awe-axios`, scoped packages, and `@decoraxios/awe-axios-all`.
+- Read [Package Selection](./packages) to choose between `decoraxios`, scoped packages, and `@decoraxios/all`.
 - Read [Core HTTP](./core) for request transforms, strategy decorators, and custom decorators.
 - Read [Mock](./mock) if you want request-level mocking without changing call sites.

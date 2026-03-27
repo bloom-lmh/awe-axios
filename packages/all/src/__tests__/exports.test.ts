@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
-import { Aspect, Component, Get, HttpResponse, Inject, Mock } from '@decoraxios/awe-axios-all';
+import { Aspect, Component, Get, HttpResponse, Inject, Mock } from '@decoraxios/all';
 
-describe('@decoraxios/awe-axios-all exports', () => {
+describe('@decoraxios/all exports', () => {
   test('exposes the full bundle from a single package', () => {
     expect(typeof Get).toBe('function');
     expect(typeof Mock).toBe('function');

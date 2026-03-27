@@ -1,4 +1,4 @@
-import { Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@decoraxios/awe-axios-all';
+import { Component, Get, HttpApi, HttpResponse, Inject, Mock } from '@decoraxios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {

@@ -1,16 +1,16 @@
 # Overview
 
-Awe Axios is a decorator-first toolkit built on top of Axios. It keeps API client declarations close to application code while still letting you split runtime features into separate packages.
+Decoraxios is a decorator-first toolkit built on top of Axios. It keeps API client declarations close to application code while still letting you split runtime features into separate packages.
 
 ## What changed in the current architecture
 
 The current monorepo is intentionally core-first:
 
-- `awe-axios` is the lightweight entry and maps to the core HTTP decorators.
-- `@decoraxios/awe-axios-core` is the explicit core package if you prefer fully scoped imports.
-- `@decoraxios/awe-axios-mock` adds MSW-backed mocking.
-- `@decoraxios/awe-axios-ioc-aop` adds dependency injection and aspect weaving.
-- `@decoraxios/awe-axios-all` is the explicit full bundle when you want one package that re-exports everything.
+- `decoraxios` is the lightweight entry and maps to the core HTTP decorators.
+- `@decoraxios/core` is the explicit core package if you prefer fully scoped imports.
+- `@decoraxios/mock` adds MSW-backed mocking.
+- `@decoraxios/ioc-aop` adds dependency injection and aspect weaving.
+- `@decoraxios/all` is the explicit full bundle when you want one package that re-exports everything.
 
 This solves the two biggest problems from the older design:
 
@@ -24,7 +24,7 @@ This solves the two biggest problems from the older design:
 You describe an API with class, method, and parameter decorators instead of hand-writing request builders everywhere.
 
 ```ts
-import { type ApiCall, Get, HttpApi, PathParam } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, PathParam } from 'decoraxios';
 
 interface User {
   id: string;
@@ -58,11 +58,11 @@ Choose one of these depending on the kind of project you are building:
 
 | Need | Recommended package |
 | --- | --- |
-| Short package name, core HTTP only | `awe-axios` |
-| Explicit scoped core package | `@decoraxios/awe-axios-core` |
-| Core + MSW mocking | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-mock` |
-| Core + IoC/AOP | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-ioc-aop` |
-| Single full bundle | `@decoraxios/awe-axios-all` |
+| Short package name, core HTTP only | `decoraxios` |
+| Explicit scoped core package | `@decoraxios/core` |
+| Core + MSW mocking | `@decoraxios/core` + `@decoraxios/mock` |
+| Core + IoC/AOP | `@decoraxios/core` + `@decoraxios/ioc-aop` |
+| Single full bundle | `@decoraxios/all` |
 
 ## Documentation map
 

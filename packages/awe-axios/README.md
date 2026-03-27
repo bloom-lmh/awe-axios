@@ -1,40 +1,22 @@
 # awe-axios
 
-Core-first package for the `awe-axios` monorepo.
+Compatibility alias package for `decoraxios`.
 
-`awe-axios` now maps to the same HTTP decorator surface as `@decoraxios/awe-axios-core`, so you can keep the short package name without pulling in mock or IoC/AOP dependencies.
-
-If you want the full bundle, install `@decoraxios/awe-axios-all` instead.
+Install `awe-axios` only when you need to support the old package name. New projects should install `decoraxios` instead.
 
 ## Install
 
 ```bash
-npm install awe-axios axios
+npm install decoraxios axios
 ```
 
-For the full bundle:
+## Migration
 
-```bash
-npm install @decoraxios/awe-axios-all axios msw reflect-metadata
-```
+- `awe-axios` re-exports `decoraxios`
+- `awe-axios/core` re-exports `decoraxios/core`
+- new docs and examples use `decoraxios`
 
-## Quick Example
-
-```ts
-import { type ApiCall, Get, HttpApi } from 'awe-axios';
-
-@HttpApi('https://api.example.com/users')
-class UserApi {
-  @Get('/')
-  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
-    return undefined as never;
-  }
-}
-```
-
-The `awe-axios/core` subpath remains available as a compatibility alias.
-
-More documentation:
+## Docs
 
 - English: <https://github.com/bloom-lmh/awe-axios#readme>
 - 中文: <https://github.com/bloom-lmh/awe-axios/blob/master/README_CH.md>

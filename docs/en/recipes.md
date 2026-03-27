@@ -6,7 +6,7 @@ This page collects a few patterns that come up quickly in real projects.
 
 ```ts
 import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://api.example.com',
@@ -27,7 +27,7 @@ class UserApi {
 
 ```ts
 import axios from 'axios';
-import { AxiosRef, Get, HttpApi, RefAxios } from 'awe-axios';
+import { AxiosRef, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const primary = axios.create({ baseURL: 'https://api.example.com' });
 const backup = axios.create({ baseURL: 'https://backup.example.com' });
@@ -51,7 +51,7 @@ class UserApi {
 ## Create a reusable decorator
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -68,7 +68,7 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 
 ```ts
 import 'reflect-metadata';
-import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/awe-axios-all';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -85,11 +85,11 @@ class LoggerService {}
 
 ## Build a demo with a custom adapter
 
-For frontend demos or storybook-style examples, you can avoid a real backend by pairing `awe-axios` with a custom axios adapter:
+For frontend demos or storybook-style examples, you can avoid a real backend by pairing `decoraxios` with a custom axios adapter:
 
 ```ts
 import axios from 'axios';
-import { Get, HttpApi, RefAxios } from 'awe-axios';
+import { Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://demo.local',
@@ -119,7 +119,7 @@ class DemoApi {
 If you want a custom execution rule, attach plugins directly:
 
 ```ts
-import { withHttpMethodPlugins, createRetryPlugin } from '@decoraxios/awe-axios-core';
+import { withHttpMethodPlugins, createRetryPlugin } from '@decoraxios/core';
 
 function RetryTwice() {
   return withHttpMethodPlugins(createRetryPlugin({ count: 2, delay: 200 }));

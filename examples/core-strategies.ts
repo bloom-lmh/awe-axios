@@ -6,7 +6,7 @@ import {
   QueryParam,
   Retry,
   Throttle,
-} from '@decoraxios/awe-axios-core';
+} from '@decoraxios/core';
 
 @HttpApi('https://api.example.com')
 class SearchApi {

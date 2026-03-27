@@ -7,23 +7,23 @@
 如果你想用短包名的 core-first 入口：
 
 ```bash
-npm install awe-axios axios
+npm install decoraxios axios
 ```
 
 如果你更偏好显式的 scoped 包：
 
 ```bash
-npm install @decoraxios/awe-axios-core axios
+npm install @decoraxios/core axios
 ```
 
 如果你想一次安装全套能力：
 
 ```bash
-npm install @decoraxios/awe-axios-all axios msw reflect-metadata
+npm install @decoraxios/all axios msw reflect-metadata
 ```
 
 ::: tip
-大多数新项目可以直接从 `awe-axios` 开始。只有确定需要 mock 或 IoC/AOP 时，再继续加对应子包。
+大多数新项目可以直接从 `decoraxios` 开始。只有确定需要 mock 或 IoC/AOP 时，再继续加对应子包。
 :::
 
 ## 2. 打开 TypeScript 装饰器支持
@@ -39,7 +39,7 @@ npm install @decoraxios/awe-axios-all axios msw reflect-metadata
 }
 ```
 
-如果你不会用到 `@decoraxios/awe-axios-ioc-aop`，`emitDecoratorMetadata` 可以先不开。
+如果你不会用到 `@decoraxios/ioc-aop`，`emitDecoratorMetadata` 可以先不开。
 
 ## 3. 定义第一个 API 类
 
@@ -52,7 +52,7 @@ import {
   PathParam,
   Post,
   QueryParam,
-} from 'awe-axios';
+} from 'decoraxios';
 
 interface User {
   id: string;
@@ -108,7 +108,7 @@ class UserApi {
 
 ```ts
 import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://api.example.com',
@@ -127,6 +127,6 @@ class UserApi {
 
 ## 下一步看什么
 
-- 看 [包选择](./packages) 决定是否要上 `@decoraxios/awe-axios-all` 或 scoped 子包。
+- 看 [包选择](./packages) 决定是否要上 `@decoraxios/all` 或 scoped 子包。
 - 看 [Core HTTP](./core) 了解 transform、策略装饰器和自定义装饰器。
 - 看 [Mock](./mock) 学习如何在不改变调用方式的前提下接入 MSW。

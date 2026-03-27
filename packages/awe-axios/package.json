@@ -1,13 +1,13 @@
 {
   "name": "awe-axios",
   "version": "0.3.0",
-  "description": "Core-first package alias for Awe Axios",
+  "description": "Compatibility alias for decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/bloom-lmh/awe-axios.git"
@@ -24,14 +24,14 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
     },
     "./core": {
-      "types": "./dist/core.d.ts",
-      "import": "./dist/core.js",
-      "require": "./dist/core.cjs"
+      "types": "./core.d.ts",
+      "import": "./core.js",
+      "require": "./core.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -42,18 +42,21 @@
     "node": ">=18"
   },
   "files": [
-    "dist",
+    "index.js",
+    "index.cjs",
+    "index.d.ts",
+    "core.js",
+    "core.cjs",
+    "core.d.ts",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/awe-axios-core": "^0.3.0"
+    "decoraxios": "^0.3.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0"
-  },
-  "scripts": {
-    "build": "tsup --config tsup.config.ts"
   }
 }

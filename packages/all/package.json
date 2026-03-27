@@ -1,7 +1,7 @@
 {
-  "name": "@decoraxios/awe-axios-all",
+  "name": "@decoraxios/all",
   "version": "0.3.0",
-  "description": "Full bundle package for Awe Axios",
+  "description": "Full bundle package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -45,9 +45,9 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/awe-axios-core": "^0.3.0",
-    "@decoraxios/awe-axios-ioc-aop": "^0.3.0",
-    "@decoraxios/awe-axios-mock": "^0.3.0"
+    "@decoraxios/core": "^0.3.0",
+    "@decoraxios/ioc-aop": "^0.3.0",
+    "@decoraxios/mock": "^0.3.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0",

@@ -7,11 +7,11 @@ core 包是整个体系的中心。请求装饰器、参数绑定、transform、
 下面两种写法是等价的：
 
 ```ts
-import { Get, HttpApi, QueryParam } from 'awe-axios';
+import { Get, HttpApi, QueryParam } from 'decoraxios';
 ```
 
 ```ts
-import { Get, HttpApi, QueryParam } from '@decoraxios/awe-axios-core';
+import { Get, HttpApi, QueryParam } from '@decoraxios/core';
 ```
 
 ## 装饰器模型
@@ -60,7 +60,7 @@ import {
   Post,
   QueryParam,
   TransformResponse,
-} from 'awe-axios';
+} from 'decoraxios';
 import axios from 'axios';
 
 const request = axios.create({
@@ -158,7 +158,7 @@ getStats() {
 如果你想给团队封装一套自己的语义层，`withHttpMethodConfig(...)` 是最直接的入口。
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -189,4 +189,4 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 - mock 由别的层负责
 - 依赖注入已经由其他框架处理
 
-如果你的项目符合这些条件，`awe-axios` 或 `@decoraxios/awe-axios-core` 通常就是长期最稳的选择。
+如果你的项目符合这些条件，`decoraxios` 或 `@decoraxios/core` 通常就是长期最稳的选择。

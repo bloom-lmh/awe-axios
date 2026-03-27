@@ -4,12 +4,18 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@decoraxios/awe-axios-all": ["./packages/all/src/index.ts"],
-      "@decoraxios/awe-axios-core": ["./packages/core/src/index.ts"],
-      "@decoraxios/awe-axios-mock": ["./packages/mock/src/index.ts"],
-      "@decoraxios/awe-axios-ioc-aop": ["./packages/ioc-aop/src/index.ts"],
-      "awe-axios": ["./packages/awe-axios/src/index.ts"],
-      "awe-axios/core": ["./packages/awe-axios/src/core.ts"]
+      "@decoraxios/all": ["./packages/all/src/index.ts"],
+      "@decoraxios/core": ["./packages/core/src/index.ts"],
+      "@decoraxios/mock": ["./packages/mock/src/index.ts"],
+      "@decoraxios/ioc-aop": ["./packages/ioc-aop/src/index.ts"],
+      "decoraxios": ["./packages/decoraxios/src/index.ts"],
+      "decoraxios/core": ["./packages/decoraxios/src/core.ts"],
+      "awe-axios": ["./packages/awe-axios/index.d.ts"],
+      "awe-axios/core": ["./packages/awe-axios/core.d.ts"],
+      "@decoraxios/awe-axios-core": ["./packages/compat-awe-axios-core/index.d.ts"],
+      "@decoraxios/awe-axios-mock": ["./packages/compat-awe-axios-mock/index.d.ts"],
+      "@decoraxios/awe-axios-ioc-aop": ["./packages/compat-awe-axios-ioc-aop/index.d.ts"],
+      "@decoraxios/awe-axios-all": ["./packages/compat-awe-axios-all/index.d.ts"]
     }
   },
   "include": [

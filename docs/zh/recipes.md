@@ -6,7 +6,7 @@
 
 ```ts
 import axios from 'axios';
-import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://api.example.com',
@@ -27,7 +27,7 @@ class UserApi {
 
 ```ts
 import axios from 'axios';
-import { AxiosRef, Get, HttpApi, RefAxios } from 'awe-axios';
+import { AxiosRef, Get, HttpApi, RefAxios } from 'decoraxios';
 
 const primary = axios.create({ baseURL: 'https://api.example.com' });
 const backup = axios.create({ baseURL: 'https://backup.example.com' });
@@ -51,7 +51,7 @@ class UserApi {
 ## 封装一个复用装饰器
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -68,7 +68,7 @@ export function JsonPost(config: HttpMethodDecoratorConfig) {
 
 ```ts
 import 'reflect-metadata';
-import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/awe-axios-all';
+import { Component, Get, HttpApi, HttpResponse, Mock } from '@decoraxios/all';
 
 @HttpApi('https://api.example.com/users')
 class UserApi {
@@ -89,7 +89,7 @@ class LoggerService {}
 
 ```ts
 import axios from 'axios';
-import { Get, HttpApi, RefAxios } from 'awe-axios';
+import { Get, HttpApi, RefAxios } from 'decoraxios';
 
 const request = axios.create({
   baseURL: 'https://demo.local',
@@ -119,7 +119,7 @@ class DemoApi {
 如果你想给团队封装一层统一执行规则，可以直接挂插件：
 
 ```ts
-import { withHttpMethodPlugins, createRetryPlugin } from '@decoraxios/awe-axios-core';
+import { withHttpMethodPlugins, createRetryPlugin } from '@decoraxios/core';
 
 function RetryTwice() {
   return withHttpMethodPlugins(createRetryPlugin({ count: 2, delay: 200 }));

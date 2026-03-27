@@ -4,10 +4,16 @@
   "commit": false,
   "fixed": [
     [
+      "decoraxios",
+      "@decoraxios/core",
+      "@decoraxios/mock",
+      "@decoraxios/ioc-aop",
+      "@decoraxios/all",
       "awe-axios",
       "@decoraxios/awe-axios-core",
       "@decoraxios/awe-axios-mock",
-      "@decoraxios/awe-axios-ioc-aop"
+      "@decoraxios/awe-axios-ioc-aop",
+      "@decoraxios/awe-axios-all"
     ]
   ],
   "linked": [],

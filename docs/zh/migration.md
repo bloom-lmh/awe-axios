@@ -1,98 +1,77 @@
 # 迁移指南
 
-这一页主要说明如何从旧的“单包思维”迁移到现在的 monorepo 和 core-first 结构。
+这份文档说明的是：如何从旧包名迁移到新的 Decoraxios 包体系。
 
-## 1. 根包不再是隐藏的全家桶
+## 1. 根包改名了
 
-过去：
+旧名字：
 
-- `awe-axios` 更像一个 umbrella package
-- 安装它时，mock 和 IoC/AOP 依赖可能会间接被带进来
+- `awe-axios`
 
-现在：
+新名字：
 
-- `awe-axios` 只代表 core-first 能力
-- `@decoraxios/awe-axios-all` 才是显式的 full bundle
+- `decoraxios`
 
-### 推荐迁移方式
-
-如果你只用 HTTP 装饰器：
+大多数项目只需要把导入改成这样：
 
 ```ts
-import { Get, HttpApi } from 'awe-axios';
+import { Get, HttpApi } from 'decoraxios';
 ```
 
-如果你明确想保留旧的“一包导出全部”体验：
+兼容说明：
 
-```ts
-import { Get, HttpApi, Mock, Component } from '@decoraxios/awe-axios-all';
-```
+- `awe-axios` 仍然保留为兼容别名包
+- `awe-axios/core` 仍然会转发到 `decoraxios/core`
 
-## 2. mock 不再切换成二次函数调用
+## 2. scoped 子包也统一改名了
 
-旧实现里，mock 打开以后方法返回形式可能会变化。现在统一成：
-
-```ts
-const { data } = await api.listUsers();
-```
-
-真实请求和 mock 请求都保持这一种形状。
-
-## 3. 对等依赖现在是显式的
-
-现在由宿主项目自己控制这些依赖版本：
-
-- `axios`
-- `msw`
-- `reflect-metadata`
-
-这样做的好处是：
-
-- axios 版本和实例行为由你的应用自己决定
-- mock 和 metadata 相关依赖只有真的需要时才会进入项目
-
-## 4. 导入习惯需要更新
-
-### 旧思路
-
-- 安装一个包
-- 全部从根入口拿
-
-### 新思路
-
-- 用 `awe-axios` 或 `@decoraxios/awe-axios-core` 处理 HTTP
-- 需要 mock 时再加 `@decoraxios/awe-axios-mock`
-- 需要 DI / AOP 时再加 `@decoraxios/awe-axios-ioc-aop`
-- 只有明确想要 full bundle 时才用 `@decoraxios/awe-axios-all`
-
-## 5. scoped 包名迁移到了 `@decoraxios`
-
-之前文档里出现过的 `@awe-axios/*` 不再是当前推荐的发布目标。
-
-现在请统一使用：
+旧名字：
 
 - `@decoraxios/awe-axios-core`
 - `@decoraxios/awe-axios-mock`
 - `@decoraxios/awe-axios-ioc-aop`
 - `@decoraxios/awe-axios-all`
 
-## 6. 发布和文档结构也变了
+新名字：
 
-现在仓库已经接上了：
+- `@decoraxios/core`
+- `@decoraxios/mock`
+- `@decoraxios/ioc-aop`
+- `@decoraxios/all`
 
-- npm workspaces
-- Changesets
-- 包级 README
-- VitePress 文档
-- GitHub Actions 发包流程
+示例：
 
-如果你维护脚手架、模板或者自动发版配置，记得把 `@decoraxios/awe-axios-all` 这个新包也纳入进去。
+```ts
+import { Mock } from '@decoraxios/mock';
+import { Component } from '@decoraxios/ioc-aop';
+```
 
-## 迁移检查清单
+兼容说明：
 
-- 把“根包就是全家桶”的假设改成新的 core-first 结构
-- 把旧的 `@awe-axios/*` scoped import 全部替换成 `@decoraxios/*`
-- 更新 README、demo 和模板里的安装命令
-- 只有在真正使用 mock 时才加 `msw`
-- 只有在真正使用 IoC/AOP 时才加 `reflect-metadata`
-- 把 full bundle 示例迁到 `@decoraxios/awe-axios-all`
+- 旧的 scoped 包名仍然会继续发布一段时间，作为转发别名存在
+
+## 3. 依然保持 core-first
+
+这次只是统一品牌，不改变之前已经确定的拆包思路：
+
+- `decoraxios` 默认只代表 core 能力
+- `@decoraxios/all` 才是显式的 full bundle
+
+只有你明确想要“一次安装拿全套”时，才应该使用 `@decoraxios/all`。
+
+## 4. peerDependencies 归应用自己管理
+
+这些依赖依然由宿主应用自己控制：
+
+- `axios`
+- `msw`
+- `reflect-metadata`
+
+这样可以避免库偷偷内置运行时依赖，也更方便你自己管理版本。
+
+## 5. 迁移清单
+
+- 把 `awe-axios` 替换成 `decoraxios`
+- 把 `@decoraxios/awe-axios-*` 替换成 `@decoraxios/*`
+- 把脚手架、示例、模板里的安装命令同步改掉
+- 如果你还在逐步迁移，可以暂时继续用旧名字，但新项目建议直接上新名字

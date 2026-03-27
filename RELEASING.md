@@ -1,326 +1,168 @@
-# Releasing Awe Axios
+# Releasing Decoraxios
 
 [中文说明](#中文发布手册)
 
 This repository uses Changesets plus GitHub Actions for versioning and npm publishing.
 
-## Current status
+## Current publish targets
 
-Publishing does not start until all of the following are true:
+Primary packages:
 
-- The local commits have been pushed to GitHub.
-- The workflows in `.github/workflows` are present on the default branch.
-- npm authentication is configured through Trusted Publishing or `NPM_TOKEN`.
-- A changeset-backed release PR has been merged into `master`.
+- `decoraxios`
+- `@decoraxios/core`
+- `@decoraxios/mock`
+- `@decoraxios/ioc-aop`
+- `@decoraxios/all`
 
-## Release architecture
-
-- CI workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
-- Release workflow: [`.github/workflows/release.yml`](./.github/workflows/release.yml)
-- Versioning source: [`.changeset`](./.changeset)
-
-The release flow is:
-
-1. Feature PRs include a changeset file.
-2. The feature PR merges into `master`.
-3. The Release workflow creates or updates a version PR titled `chore: version packages`.
-4. The version PR merges into `master`.
-5. The Release workflow publishes the packages to npm.
-
-## Published packages
+Compatibility packages:
 
 - `awe-axios`
-- `@decoraxios/awe-axios-all`
 - `@decoraxios/awe-axios-core`
 - `@decoraxios/awe-axios-mock`
 - `@decoraxios/awe-axios-ioc-aop`
+- `@decoraxios/awe-axios-all`
 
-## Recommended GitHub repository settings
+## Release flow
 
-### 1. Enable Actions and auto-merge
+1. Add a changeset with `npm run changeset`.
+2. Merge the feature PR into `master`.
+3. GitHub Actions opens or updates `chore: version packages`.
+4. Merge that version PR.
+5. GitHub Actions publishes the packages to npm.
 
-In GitHub repository settings:
+## Recommended GitHub settings
 
-- Enable GitHub Actions for the repository.
-- Allow `GITHUB_TOKEN` to have read and write permissions.
-- Enable auto-merge if you want the release PR to merge automatically after CI passes.
+- Enable GitHub Actions.
+- Give `GITHUB_TOKEN` read and write permissions.
+- Allow GitHub Actions to create pull requests.
+- Protect `master` with a ruleset.
 
-### 2. Prefer a branch ruleset for `master`
+Required protections:
 
-GitHub now prefers repository rulesets over legacy branch protection rules. If your repository still uses branch protection rules, you can apply the same settings there.
+- `Require a pull request before merging`
+- `Require status checks to pass`
+- `Require branches to be up to date before merging`
+- `Require conversation resolution before merging`
+- block force pushes
+- block branch deletion
 
-Recommended branch target:
+Required status check:
 
-- Branch name pattern: `master`
+- `Verify`
 
-Recommended protections:
+Recommended merge strategy:
 
-- Require a pull request before merging: on
-- Require status checks to pass: on
-- Required status check: select the CI check from the `Verify` job
-- Require branches to be up to date before merging: on
-- Require conversation resolution before merging: on
-- Block force pushes: on
-- Block branch deletion: on
-- Allow bypass only for repository admins or release maintainers
+- feature PRs: squash merge
+- release PRs: squash merge or auto-merge
 
-Optional, depending on team size:
+## npm authentication
 
-- Require approvals: `0` for solo maintenance, `1` for a small team
-- Require code owner review: off unless you already maintain CODEOWNERS
-- Merge queue: off for now, unless your repository gets a high PR volume
+Preferred:
 
-## Recommended merge strategy
+- configure npm Trusted Publishing for each published package
+- point each package to this repository and `release.yml`
 
-Use these repository merge settings:
+Fallback:
 
-- Allow squash merge: on
-- Allow merge commit: off or on, based on your preference
-- Allow rebase merge: off or on, based on your preference
-- Auto-delete head branches: on
-
-Recommended policy:
-
-- Feature PRs: prefer squash merge
-- Release PRs: prefer squash merge or auto-merge after CI passes
-- Do not manually edit the release PR unless you are fixing release metadata
-- Do not add feature code to the release PR
-
-## Required status checks
-
-For branch protection, require the CI job only:
-
-- Required check: `Verify`
-
-Do not require the release workflow itself as a merge gate for `master`, because that workflow runs after pushes to `master` and also manages publishing.
-
-## npm publishing authentication
-
-Preferred option:
-
-- Configure npm Trusted Publishing for each package:
-  - `awe-axios`
-  - `@decoraxios/awe-axios-all`
-  - `@decoraxios/awe-axios-core`
-  - `@decoraxios/awe-axios-mock`
-  - `@decoraxios/awe-axios-ioc-aop`
-- Point each package to this repository and the workflow file `release.yml`
-
-Fallback option:
-
-- Add a repository secret named `NPM_TOKEN`
+- add a repository secret named `NPM_TOKEN`
 
 ## First release checklist
 
-1. Push the local branch history to GitHub.
-2. Merge the current work into `master`.
-3. Configure branch rules or a ruleset for `master`.
-4. Configure npm Trusted Publishing or `NPM_TOKEN`.
-5. Confirm the `Release` workflow appears in the Actions tab.
-6. Merge a PR that includes a changeset.
-7. Wait for the release PR titled `chore: version packages`.
-8. Review the release PR:
-   - version bumps are expected
-   - `package-lock.json` is updated
-   - no unexpected source changes are present
-9. Merge the release PR.
-10. Confirm the published versions on npm.
+1. Push the branch to GitHub.
+2. Make sure Trusted Publishing or `NPM_TOKEN` is configured.
+3. Merge a PR that includes a changeset.
+4. Wait for `chore: version packages`.
+5. Review the release PR for version bumps and lockfile updates.
+6. Merge the release PR.
+7. Confirm the published versions on npm.
 
-## Day-to-day maintainer workflow
+## Maintenance checklist
 
-1. Make code changes on a feature branch.
-2. Run `npm run release:check` locally if the change affects publishing.
-3. Add a changeset with `npm run changeset`.
-4. Open and merge the feature PR into `master`.
-5. Wait for the version PR from Changesets.
-6. Merge the version PR after CI passes.
-
-## Troubleshooting
-
-### No release PR appears
-
-Check:
-
-- A changeset file exists in `.changeset/`.
-- The workflow files are already on `master`.
-- GitHub Actions is enabled.
-- The repository default branch matches the Changesets base branch.
-
-### The release PR appears but does not publish
-
-Check:
-
-- npm Trusted Publishing is configured correctly, or `NPM_TOKEN` exists.
-- The workflow has `id-token: write` permission for Trusted Publishing.
-- The version PR was merged into `master`.
-
-### CI blocks the release PR
-
-Check:
-
-- The required status check is the `Verify` job only.
-- The version PR does not contain unrelated file changes.
+- run `npm run release:check` before shipping larger publish-related changes
+- keep package names in `.changeset/config.json` aligned with the real publish list
+- if package names change again, update both the primary package list and compatibility package list
 
 ---
 
 ## 中文发布手册
 
-这个仓库现在使用 `Changesets + GitHub Actions` 来做版本管理和 npm 发布。
+这个仓库使用 `Changesets + GitHub Actions` 做版本管理和 npm 发布。
 
-## 当前状态
+## 当前发版目标
 
-只有满足下面这些条件，才会开始真正发包：
+主包：
 
-- 你本地的提交已经 push 到 GitHub。
-- `.github/workflows` 已经存在于默认分支。
-- npm 的发布认证已经配置好，方式是 Trusted Publishing 或 `NPM_TOKEN`。
-- 带 changeset 的版本 PR 已经合并到 `master`。
+- `decoraxios`
+- `@decoraxios/core`
+- `@decoraxios/mock`
+- `@decoraxios/ioc-aop`
+- `@decoraxios/all`
 
-## 发布链路
-
-- CI 工作流：[`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
-- Release 工作流：[`.github/workflows/release.yml`](./.github/workflows/release.yml)
-- 版本来源：[`.changeset`](./.changeset)
-
-整体流程是：
-
-1. 功能 PR 带上 changeset 文件。
-2. 功能 PR 合并到 `master`。
-3. Release workflow 自动创建或更新一个标题为 `chore: version packages` 的版本 PR。
-4. 版本 PR 合并到 `master`。
-5. Release workflow 自动把包发布到 npm。
-
-## 当前发布的包
+兼容包：
 
 - `awe-axios`
-- `@decoraxios/awe-axios-all`
 - `@decoraxios/awe-axios-core`
 - `@decoraxios/awe-axios-mock`
 - `@decoraxios/awe-axios-ioc-aop`
+- `@decoraxios/awe-axios-all`
 
-## 推荐的 GitHub 仓库设置
+## 发版流程
 
-### 1. 打开 Actions 和 auto-merge
+1. 先执行 `npm run changeset` 生成 changeset。
+2. 把功能 PR 合并到 `master`。
+3. GitHub Actions 会创建或更新 `chore: version packages`。
+4. 合并这个版本 PR。
+5. GitHub Actions 自动发布 npm 包。
 
-在 GitHub 仓库设置里建议这样开：
+## 推荐的 GitHub 配置
 
 - 打开 GitHub Actions
-- 允许 `GITHUB_TOKEN` 具备读写权限
-- 如果你想让 release PR 在 CI 通过后自动合并，就打开 auto-merge
+- 给 `GITHUB_TOKEN` 配置读写权限
+- 允许 GitHub Actions 创建 PR
+- 给 `master` 配 ruleset / branch protection
 
-### 2. 优先使用 `master` 的 ruleset
+建议开启的保护项：
 
-GitHub 现在更推荐 repository rulesets，而不是旧的 branch protection rule。如果你的仓库还在用旧的 branch protection，也可以按同样的配置去勾。
+- `Require a pull request before merging`
+- `Require status checks to pass`
+- `Require branches to be up to date before merging`
+- `Require conversation resolution before merging`
+- 禁止 force push
+- 禁止删除分支
 
-推荐目标分支：
+必过检查：
 
-- 分支模式：`master`
+- `Verify`
 
-推荐保护项：
+建议的合并策略：
 
-- `Require a pull request before merging`：开启
-- `Require status checks to pass`：开启
-- 必选状态检查：选择 CI 里的 `Verify` 这个 job
-- `Require branches to be up to date before merging`：开启
-- `Require conversation resolution before merging`：开启
-- 禁止 force push：开启
-- 禁止删除分支：开启
-- 只给仓库管理员或 release 维护者保留 bypass 权限
+- 功能 PR：`squash merge`
+- release PR：`squash merge` 或 `auto-merge`
 
-按团队规模选配：
+## npm 认证
 
-- `Require approvals`：单人维护可以设 `0`，小团队建议 `1`
-- `Require code owner review`：如果你还没有维护 `CODEOWNERS`，先不要开
-- `Merge queue`：现在可以先不开，除非 PR 非常多
+优先方案：
 
-## 推荐的合并策略
-
-仓库级 merge 设置建议：
-
-- `Allow squash merge`：开启
-- `Allow merge commit`：按你的习惯决定
-- `Allow rebase merge`：按你的习惯决定
-- `Auto-delete head branches`：开启
-
-推荐策略：
-
-- 功能 PR：优先 `squash merge`
-- 版本 PR：优先 `squash merge`，或者 CI 通过后用 `auto-merge`
-- 不要手动往版本 PR 里塞功能代码
-- 除了修 release 元数据，不要手改版本 PR
-
-## 分支保护里该要求哪些检查
-
-建议只把 CI 检查设成必过项：
-
-- 必选检查：`Verify`
-
-不要把 release workflow 本身设成 `master` 的必过检查，因为它是在代码已经 push 到 `master` 之后才运行，而且它自己还负责发包。
-
-## npm 发布认证怎么配
-
-推荐方案：
-
-- 在 npm 上给下面 5 个包分别配置 Trusted Publishing：
-  - `awe-axios`
-  - `@decoraxios/awe-axios-all`
-  - `@decoraxios/awe-axios-core`
-  - `@decoraxios/awe-axios-mock`
-  - `@decoraxios/awe-axios-ioc-aop`
+- 给每个包配置 npm Trusted Publishing
 - 仓库指向当前 GitHub 仓库
-- workflow 文件名填 `release.yml`
+- workflow 文件填 `release.yml`
 
 兜底方案：
 
-- 在 GitHub 仓库 secrets 里加一个 `NPM_TOKEN`
+- 在 GitHub Secrets 里配置 `NPM_TOKEN`
 
-## 第一次发版检查清单
+## 首次发版检查清单
 
-1. 先把本地提交 push 到 GitHub。
-2. 把当前工作合并到 `master`。
-3. 给 `master` 配好 ruleset 或 branch protection。
-4. 配好 npm Trusted Publishing 或 `NPM_TOKEN`。
-5. 确认 Actions 页能看到 `Release` workflow。
-6. 合并一个带 changeset 的 PR。
-7. 等待标题为 `chore: version packages` 的版本 PR 自动出现。
-8. 检查版本 PR：
-   - 版本号提升是预期的
-   - `package-lock.json` 已更新
-   - 没有混入奇怪的源码改动
-9. 合并版本 PR。
-10. 去 npm 确认发布结果。
+1. 把分支推到 GitHub
+2. 确认 Trusted Publishing 或 `NPM_TOKEN` 已配置
+3. 合并一个带 changeset 的 PR
+4. 等待 `chore: version packages`
+5. 检查版本 PR 里的版本号和 `package-lock.json`
+6. 合并版本 PR
+7. 去 npm 确认发布结果
 
-## 日常维护流程
+## 日常维护提醒
 
-1. 在功能分支上开发。
-2. 如果改动会影响发布，先本地跑 `npm run release:check`。
-3. 用 `npm run changeset` 生成版本说明。
-4. 开 PR 并合并到 `master`。
-5. 等 Changesets 自动生成版本 PR。
-6. CI 通过后合并版本 PR。
-
-## 常见问题
-
-### 为什么没有自动出现 release PR
-
-先检查：
-
-- `.changeset/` 里确实有 changeset 文件
-- workflow 文件已经在 `master` 上
-- GitHub Actions 已启用
-- Changesets 的 base branch 和仓库默认分支一致
-
-### 为什么 release PR 出现了，但没有发包
-
-先检查：
-
-- npm Trusted Publishing 配置是否正确，或者 `NPM_TOKEN` 是否存在
-- workflow 是否保留了 `id-token: write` 权限
-- 版本 PR 是否真的已经合并进 `master`
-
-### 为什么 release PR 被保护规则卡住了
-
-先检查：
-
-- 必选状态检查是不是只配置了 `Verify`
-- 版本 PR 里有没有混入不相关的文件改动
+- 涉及发布链路的大改动前，先跑 `npm run release:check`
+- `.changeset/config.json` 里的包名要和真实发版列表保持一致
+- 如果后面再次改名，记得同时更新主包和兼容包两套列表

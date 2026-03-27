@@ -1,95 +1,77 @@
 # Migration Guide
 
-This guide covers the main changes from the older single-package structure to the current monorepo and package split.
+This guide covers the move from the older package names to the new Decoraxios package family.
 
-## 1. The root package is no longer the hidden full bundle
+## 1. Root package rename
 
 Before:
 
-- `awe-axios` behaved like an umbrella package
-- installing it could indirectly pull mock and IoC/AOP dependencies
+- `awe-axios`
 
 Now:
 
-- `awe-axios` is core-first only
-- `@decoraxios/awe-axios-all` is the explicit full bundle
+- `decoraxios`
 
-### Recommended migration
-
-If you only use HTTP decorators:
+For most projects, the code change is just:
 
 ```ts
-import { Get, HttpApi } from 'awe-axios';
+import { Get, HttpApi } from 'decoraxios';
 ```
 
-If you really want the old one-package model:
+Compatibility note:
 
-```ts
-import { Get, HttpApi, Mock, Component } from '@decoraxios/awe-axios-all';
-```
+- `awe-axios` still exists as an alias package
+- `awe-axios/core` still forwards to `decoraxios/core`
 
-## 2. Mock calls no longer switch to a second function call
+## 2. Scoped package rename
 
-The older design could behave differently when mock mode was enabled. The rebuilt implementation keeps one method shape:
-
-```ts
-const { data } = await api.listUsers();
-```
-
-That is now true for both real and mocked execution.
-
-## 3. Peer dependencies are now intentional
-
-The host project owns versions of:
-
-- `axios`
-- `msw`
-- `reflect-metadata`
-
-This keeps runtime ownership in the application instead of hiding it inside the library.
-
-## 4. Import style recommendations changed
-
-### Old mental model
-
-- install one package
-- import everything from the root
-
-### New mental model
-
-- use `awe-axios` or `@decoraxios/awe-axios-core` for HTTP
-- add `@decoraxios/awe-axios-mock` only if mocking is needed
-- add `@decoraxios/awe-axios-ioc-aop` only if DI/AOP is needed
-- use `@decoraxios/awe-axios-all` only when you explicitly want the full bundle
-
-## 5. Scoped package names moved under `@decoraxios`
-
-The previous scoped names under `@awe-axios/*` are no longer the publish target.
-
-Use these package names instead:
+Before:
 
 - `@decoraxios/awe-axios-core`
 - `@decoraxios/awe-axios-mock`
 - `@decoraxios/awe-axios-ioc-aop`
 - `@decoraxios/awe-axios-all`
 
-## 6. Release and docs structure changed too
+Now:
 
-The project now ships with:
+- `@decoraxios/core`
+- `@decoraxios/mock`
+- `@decoraxios/ioc-aop`
+- `@decoraxios/all`
 
-- npm workspaces
-- Changesets
-- package-level README files
-- VitePress docs
-- GitHub Actions release workflows
+Example:
 
-If you maintain automation around publishing, update it to account for the new package list, especially `@decoraxios/awe-axios-all`.
+```ts
+import { Mock } from '@decoraxios/mock';
+import { Component } from '@decoraxios/ioc-aop';
+```
 
-## Migration checklist
+Compatibility note:
 
-- Replace umbrella assumptions with the core-first package split.
-- Replace old `@awe-axios/*` scoped imports with `@decoraxios/*`.
-- Update install commands in READMEs, demos, and starter templates.
-- Add `msw` only where mock support is actually used.
-- Add `reflect-metadata` only where IoC/AOP is actually used.
-- Move full-bundle demos to `@decoraxios/awe-axios-all`.
+- the old scoped package names are still published as forwarding aliases
+
+## 3. Core-first stays the default
+
+The architectural decision from the previous rebuild still stands:
+
+- `decoraxios` is core-first only
+- `@decoraxios/all` is the explicit full bundle
+
+Use the full bundle only when you intentionally want one package that re-exports everything.
+
+## 4. Peer dependencies remain app-owned
+
+The host project still owns:
+
+- `axios`
+- `msw`
+- `reflect-metadata`
+
+That keeps runtime ownership and versioning in the application instead of hiding it inside the library.
+
+## 5. Migration checklist
+
+- Replace `awe-axios` with `decoraxios`
+- Replace `@decoraxios/awe-axios-*` with `@decoraxios/*`
+- Update install commands in templates, demos, and docs
+- Keep old names only when you need a gradual migration window

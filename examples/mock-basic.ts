@@ -1,5 +1,5 @@
-import { type ApiCall, Get, HttpApi } from '@decoraxios/awe-axios-core';
-import { HttpResponse, Mock, MockAPI } from '@decoraxios/awe-axios-mock';
+import { type ApiCall, Get, HttpApi } from '@decoraxios/core';
+import { HttpResponse, Mock, MockAPI } from '@decoraxios/mock';
 
 await MockAPI.on();
 

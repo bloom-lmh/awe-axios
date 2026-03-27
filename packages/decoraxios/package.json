@@ -1,0 +1,59 @@
+{
+  "name": "decoraxios",
+  "version": "0.3.0",
+  "description": "Core-first package for Decoraxios",
+  "author": "SWUST-LMH <1357526355@qq.com>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloom-lmh/awe-axios.git"
+  },
+  "homepage": "https://github.com/bloom-lmh/awe-axios#readme",
+  "bugs": {
+    "url": "https://github.com/bloom-lmh/awe-axios/issues"
+  },
+  "keywords": [
+    "axios",
+    "decorator",
+    "http",
+    "typescript"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@decoraxios/core": "^0.3.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.11.0"
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts"
+  }
+}

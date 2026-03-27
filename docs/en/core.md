@@ -7,11 +7,11 @@ The core package is where request decorators, parameter binding, transforms, and
 These two imports are equivalent:
 
 ```ts
-import { Get, HttpApi, QueryParam } from 'awe-axios';
+import { Get, HttpApi, QueryParam } from 'decoraxios';
 ```
 
 ```ts
-import { Get, HttpApi, QueryParam } from '@decoraxios/awe-axios-core';
+import { Get, HttpApi, QueryParam } from '@decoraxios/core';
 ```
 
 ## Decorator model
@@ -60,7 +60,7 @@ import {
   Post,
   QueryParam,
   TransformResponse,
-} from 'awe-axios';
+} from 'decoraxios';
 import axios from 'axios';
 
 const request = axios.create({
@@ -158,7 +158,7 @@ getStats() {
 `withHttpMethodConfig(...)` is the lowest-friction way to build your own higher-level decorators.
 
 ```ts
-import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/awe-axios-core';
+import { Post, type HttpMethodDecoratorConfig } from '@decoraxios/core';
 
 export function JsonPost(config: HttpMethodDecoratorConfig) {
   return Post({
@@ -189,4 +189,4 @@ Core-only is enough when:
 - mocking is handled elsewhere
 - dependency injection is managed by another framework
 
-If that describes your project, `awe-axios` or `@decoraxios/awe-axios-core` is the right long-term choice.
+If that describes your project, `decoraxios` or `@decoraxios/core` is the right long-term choice.

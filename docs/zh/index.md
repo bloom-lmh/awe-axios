@@ -1,16 +1,16 @@
 # 概览
 
-Awe Axios 是一个构建在 Axios 之上的装饰器风格工具集。它的目标不是把 HTTP、mock、IoC、AOP 强行绑成一个大包，而是让你按项目需要组合能力。
+Decoraxios 是一个构建在 Axios 之上的装饰器风格工具集。它的目标不是把 HTTP、mock、IoC、AOP 强行绑成一个大包，而是让你按项目需要组合能力。
 
 ## 当前架构的核心变化
 
 现在的 monorepo 采用了更明确的 core-first 设计：
 
-- `awe-axios` 是轻量根入口，只代表核心 HTTP 能力。
-- `@decoraxios/awe-axios-core` 是显式的 scoped core 包。
-- `@decoraxios/awe-axios-mock` 提供基于 MSW 的 mock。
-- `@decoraxios/awe-axios-ioc-aop` 提供依赖注入和切面能力。
-- `@decoraxios/awe-axios-all` 是显式的 full bundle，用于“一次安装拿全套”。
+- `decoraxios` 是轻量根入口，只代表核心 HTTP 能力。
+- `@decoraxios/core` 是显式的 scoped core 包。
+- `@decoraxios/mock` 提供基于 MSW 的 mock。
+- `@decoraxios/ioc-aop` 提供依赖注入和切面能力。
+- `@decoraxios/all` 是显式的 full bundle，用于“一次安装拿全套”。
 
 这次重构主要解决了两个长期问题：
 
@@ -24,7 +24,7 @@ Awe Axios 是一个构建在 Axios 之上的装饰器风格工具集。它的目
 你可以把接口定义写成类和方法，而不是到处散落请求构造逻辑。
 
 ```ts
-import { type ApiCall, Get, HttpApi, PathParam } from 'awe-axios';
+import { type ApiCall, Get, HttpApi, PathParam } from 'decoraxios';
 
 interface User {
   id: string;
@@ -56,11 +56,11 @@ type ApiCall<T> = Promise<AxiosResponse<T>>
 
 | 需求 | 推荐包 |
 | --- | --- |
-| 只要核心 HTTP，而且想用短包名 | `awe-axios` |
-| 只要核心 HTTP，而且更喜欢 scoped import | `@decoraxios/awe-axios-core` |
-| 核心 HTTP + mock | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-mock` |
-| 核心 HTTP + IoC/AOP | `@decoraxios/awe-axios-core` + `@decoraxios/awe-axios-ioc-aop` |
-| 一次拿全套 | `@decoraxios/awe-axios-all` |
+| 只要核心 HTTP，而且想用短包名 | `decoraxios` |
+| 只要核心 HTTP，而且更喜欢 scoped import | `@decoraxios/core` |
+| 核心 HTTP + mock | `@decoraxios/core` + `@decoraxios/mock` |
+| 核心 HTTP + IoC/AOP | `@decoraxios/core` + `@decoraxios/ioc-aop` |
+| 一次拿全套 | `@decoraxios/all` |
 
 ## 文档导览
 

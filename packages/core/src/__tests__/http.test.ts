@@ -89,7 +89,7 @@ afterAll(() => {
   server.close();
 });
 
-describe('@decoraxios/awe-axios-core', () => {
+describe('@decoraxios/core', () => {
   test('builds requests from class, method, and parameter decorators', async () => {
     @HttpApi('http://localhost:3000/users')
     class UserApi {

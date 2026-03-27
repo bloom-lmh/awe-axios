@@ -43,14 +43,14 @@ const zhSidebar = [
 ];
 
 export default defineConfig({
-  title: 'Awe Axios',
+  title: 'Decoraxios',
   description: 'Decorator-first Axios toolkit with a core-first package split',
   cleanUrls: true,
   lastUpdated: true,
   themeConfig: {
     logo: {
       src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%23f66b3d%22/%3E%3Cpath d=%22M20 43 32 16l12 27h-7l-2.2-5.5h-5.6L27 43Z%22 fill=%22white%22/%3E%3C/svg%3E',
-      alt: 'Awe Axios',
+      alt: 'Decoraxios',
     },
     nav: [
       { text: 'English', link: '/en/' },
@@ -76,7 +76,7 @@ export default defineConfig({
       text: 'Edit this page on GitHub',
     },
     footer: {
-      message: 'Built with VitePress and published from the Awe Axios monorepo.',
+      message: 'Built with VitePress and published from the Decoraxios monorepo.',
       copyright: 'MIT Licensed',
     },
     sidebar: {
