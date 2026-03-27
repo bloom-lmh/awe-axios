@@ -1,11 +1,17 @@
 # Deploying Decoraxios Docs
 
-This repository ships the documentation site as a static VitePress build.
+This repository publishes the documentation site as a static VitePress build.
 
 ## Build output
 
+Use either of the following commands from the repository root:
+
 ```bash
 npm run docs:build
+```
+
+```bash
+node scripts/build-docs.mjs
 ```
 
 The generated site is written to:
@@ -22,39 +28,33 @@ Use the GitHub repository:
 
 Recommended project settings:
 
-- Framework preset: Other
+- Framework preset: `Other`
+- Root directory: repository root
 - Install command: `npm install`
 - Build command: `npm run docs:build`
 - Output directory: `docs/.vitepress/dist`
 - Node.js version: `20` or newer
 
-The repository root contains `vercel.json`, so asset caching headers are configured automatically for built static assets.
+The repository root contains `vercel.json`, so asset caching headers are configured automatically for the generated static files.
 
-If you enable extra Vercel HTML minification features, make sure they do not strip Vue hydration comments from generated HTML.
+## Maoziyun
 
-## 帽子云
+Maoziyun can deploy the same VitePress build for the mainland China site, but it may run npm in workspace mode for monorepos. When that happens, `npm run docs:build` is executed for every workspace package and fails because only the repository root defines that script.
 
-帽子云适合直接部署同一份静态构建产物到国内访问线路。
+Use these settings instead:
 
-推荐配置：
+- Repository: `bloom-lmh/decoraxios`
+- Branch: `master`
+- Root directory: `.`
+- Install command: `npm install`
+- Build command: `node scripts/build-docs.mjs`
+- Output directory: `docs/.vitepress/dist`
 
-- 仓库：`bloom-lmh/decoraxios`
-- 分支：`master`
-- 构建命令：`npm run docs:build`
-- 输出目录：`docs/.vitepress/dist`
-- 部署方式：按需要选择自动部署或手动部署
+Do not set the root directory to `./docs`. The `docs` directory does not contain its own `package.json`, so Maoziyun cannot identify it as a buildable project by itself.
 
-如果不手动填写构建配置，帽子云可以尝试自动识别前端框架；但对 VitePress 项目，建议仍然显式填写上面的构建命令和输出目录，避免识别偏差。
-
-如需绑定自定义域名，帽子云当前要求：
-
-- 先申请域名证书
-- 将域名 CNAME 到 `cname.maozi-dns.com`
-- 在应用环境中绑定域名
-
-## Dual-site suggestion
+## Dual-site deployment
 
 - International site: Vercel
-- Mainland China site: 帽子云
+- Mainland China site: Maoziyun
 
-Keep both sites built from the same `master` branch so the docs content stays identical across regions.
+Keep both sites on the same `master` branch so the documentation content stays aligned across regions.

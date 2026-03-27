@@ -31,6 +31,7 @@
     "pack:main": "npm pack --dry-run -w decoraxios",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
+    "docs:build:direct": "node scripts/build-docs.mjs",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
