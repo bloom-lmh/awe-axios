@@ -24,8 +24,8 @@ If both `baseURL` and the resolved URL are relative, mock registration throws.
 
 `handlers` accepts either:
 
-- A single handler function
-- A record of named handlers
+- one handler function
+- a record of named handlers
 
 ### Simplest form
 
@@ -47,7 +47,7 @@ class UserApi {
 
 ### Named handlers
 
-Named handlers let you switch scenarios for the next request.
+Named handlers let you switch scenarios for the next matched request.
 
 ```ts
 import { Get, HttpApi, type ApiCall } from 'decoraxios';
@@ -91,6 +91,16 @@ MockAPI.useNextHandler('empty');
   },
 )
 ```
+
+### Fallback behavior
+
+Mock decorators wrap the same request execution pipeline as real calls:
+
+- if mocking is enabled and the handler conditions pass, the request is redirected to the MSW runtime
+- if mocking is disabled, the request falls back to the real axios request
+- if `count` is exhausted, the request falls back to the real axios request
+
+That makes it easy to use mocks temporarily without changing call sites.
 
 ## `MockAPI`
 
@@ -146,13 +156,13 @@ MockAPI.resetHandlers();
 
 ### `MockAPI.listHandlers()`
 
-Returns the currently known MSW handlers, which is useful for debugging tests.
+Returns the currently known MSW handlers. This is mainly useful when debugging tests.
 
 ```ts
 const handlers = MockAPI.listHandlers();
 ```
 
-## Mocking and real requests use the same return shape
+## Mocking and real requests share the same return shape
 
 A mocked call still resolves to `Promise<AxiosResponse<T>>`.
 
@@ -161,4 +171,4 @@ const response = await new UserApi().listUsers();
 console.log(response.data);
 ```
 
-That means components and services do not need special branching just because the data is mocked.
+Components and services do not need a separate branch just because the data is mocked.

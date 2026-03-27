@@ -1,6 +1,6 @@
 # IoC / AOP
 
-`@decoraxios/ioc-aop` 为类风格项目提供了一个轻量容器和切面系统。
+`@decoraxios/ioc-aop` 为类式应用提供轻量级容器和切面系统。
 
 ## 安装
 
@@ -8,7 +8,7 @@
 npm install @decoraxios/ioc-aop reflect-metadata
 ```
 
-在装饰器执行前，只加载一次 `reflect-metadata`：
+在装饰器执行前先加载一次 `reflect-metadata`：
 
 ```ts
 import 'reflect-metadata';
@@ -20,7 +20,7 @@ import 'reflect-metadata';
 
 ### 默认注册
 
-不传参数时，会使用默认模块，并根据类名推导 alias。
+不传参数时，Decoraxios 会使用默认模块，并根据类名生成别名。
 
 ```ts
 import { Component } from '@decoraxios/ioc-aop';
@@ -29,23 +29,23 @@ import { Component } from '@decoraxios/ioc-aop';
 class UserService {}
 ```
 
-例如 `UserService` 默认会以 `userService` 这个 alias 注册。
+`UserService` 默认会以 `userService` 这个别名注册。
 
-### 字符串参数
+### 字符串形式
 
-字符串参数支持两种形式：
+字符串形式支持两种写法：
 
-- 只写 alias，比如 `'logger'`
-- 写成 `module.alias`，比如 `'admin.logger'`
+- 仅别名，例如 `'logger'`
+- `module.alias`，例如 `'admin.logger'`
 
 ```ts
 @Component('admin.logger')
 class LoggerService {}
 ```
 
-### 对象参数
+### 对象形式
 
-对象形式适合显式指定模块和别名。
+当你想显式指定模块和别名时，使用对象形式：
 
 ```ts
 @Component({
@@ -57,9 +57,11 @@ class LoggerService {}
 
 ## `@Inject`
 
-`@Inject` 用于把依赖注入到属性上，一共支持三种形式。
+`@Inject` 用于把依赖注入到属性上。
 
-### 构造函数形式
+### 空参数形式
+
+不传参数时，会依赖属性的反射类型自动解析：
 
 ```ts
 import { Component, Inject } from '@decoraxios/ioc-aop';
@@ -69,6 +71,18 @@ class LoggerService {}
 
 @Component()
 class UserService {
+  @Inject()
+  logger!: LoggerService;
+}
+```
+
+这种写法要求开启 `emitDecoratorMetadata: true`。
+
+### 构造函数形式
+
+```ts
+@Component()
+class UserService {
   @Inject(LoggerService)
   logger!: LoggerService;
 }
@@ -76,7 +90,7 @@ class UserService {
 
 ### 字符串形式
 
-可以直接按 alias 或 `module.alias` 注入。
+可以直接写别名，或者 `module.alias`：
 
 ```ts
 class UserService {
@@ -87,7 +101,7 @@ class UserService {
 
 ### 配置对象形式
 
-完整配置支持：
+对象形式支持：
 
 - `module`
 - `alias`
@@ -107,13 +121,15 @@ class UserService {
 }
 ```
 
-### 可用 scope
+### 作用域
 
-- `SINGLETON`：始终返回同一个实例
-- `TRANSIENT`：每次注入都新建实例，默认值
-- `PROTOTYPE`：以已存实例为原型创建新对象
-- `SHALLOWCLONE`：对已存实例做浅拷贝
-- `DEEPCLONE`：对已存实例做深拷贝
+可选作用域：
+
+- `SINGLETON`：复用同一个实例
+- `TRANSIENT`：每次注入都创建新实例，默认值
+- `PROTOTYPE`：以已有实例为原型创建新对象
+- `SHALLOWCLONE`：对已有实例做浅拷贝
+- `DEEPCLONE`：对已有实例做深拷贝
 
 ## `@Aspect`
 
@@ -128,7 +144,7 @@ class AuditAspect {}
 
 ## 切点表达式
 
-通知装饰器接收字符串形式的切点表达式。
+通知装饰器接收切点表达式字符串。
 
 常见写法：
 
@@ -137,11 +153,11 @@ class AuditAspect {}
 - `*.save`
 - `*.*`
 
-类名和方法名都支持通配符。
+类名和方法名都支持通配符匹配。
 
 ## `@Before`
 
-在目标方法执行前触发。
+在目标方法执行前运行：
 
 ```ts
 import { Before } from '@decoraxios/ioc-aop';
@@ -156,7 +172,7 @@ class AuditAspect {
 
 ## `@After`
 
-在目标方法结束后触发，不区分成功还是失败。
+在目标方法结束后运行，不区分成功或失败：
 
 ```ts
 import { After } from '@decoraxios/ioc-aop';
@@ -171,7 +187,7 @@ class AuditAspect {
 
 ## `@Around`
 
-环绕通知会拿到 `AspectContext` 和 `AdviceChain`。
+包裹目标方法执行，并接收 `AspectContext` 与 `AdviceChain`：
 
 ```ts
 import { AdviceChain, Around, AspectContext } from '@decoraxios/ioc-aop';
@@ -179,19 +195,19 @@ import { AdviceChain, Around, AspectContext } from '@decoraxios/ioc-aop';
 class AuditAspect {
   @Around('UserService.save')
   aroundSave(context: AspectContext, chain: AdviceChain) {
-    console.log('around before', context.methodName);
+    console.log('before around', context.methodName);
     const result = chain.proceed(context);
-    console.log('around after');
+    console.log('after around');
     return result;
   }
 }
 ```
 
-它适合做耗时统计、日志包裹、结果包装和自定义错误流转。
+适合做计时、链路追踪、返回值包装或自定义异常流转。
 
 ## `@AfterReturning`
 
-只在目标方法成功返回时执行，第二个参数就是返回值。
+仅在目标方法成功返回时执行，返回值会作为第二个参数传入：
 
 ```ts
 import { AfterReturning, AspectContext } from '@decoraxios/ioc-aop';
@@ -206,7 +222,7 @@ class AuditAspect {
 
 ## `@AfterThrowing`
 
-只在目标方法抛错或 Promise reject 时执行，第二个参数是错误对象。
+仅在目标方法抛错或拒绝时执行，异常对象会作为第二个参数传入：
 
 ```ts
 import { AfterThrowing, AspectContext } from '@decoraxios/ioc-aop';
@@ -219,7 +235,7 @@ class AuditAspect {
 }
 ```
 
-## 组合示例
+## 综合示例
 
 ```ts
 import 'reflect-metadata';
@@ -253,7 +269,7 @@ class AuditAspect {
 
   @Around('UserService.save')
   aroundSave(context: AspectContext, chain: AdviceChain) {
-    console.log('around before');
+    console.log('around before', context.methodName);
     const result = chain.proceed(context);
     console.log('around after');
     return result;

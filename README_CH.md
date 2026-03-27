@@ -1,22 +1,27 @@
 # Decoraxios
 
-Decoraxios 是一套基于 Axios 的装饰器优先 HTTP 工具库。它把请求声明、Mock、IoC 和 AOP 按能力拆成独立包，使用时可以按需安装，保持主包轻量，同时又能覆盖真实项目里常见的请求封装场景。
+Decoraxios 是一套基于 Axios 的装饰器优先 HTTP 工具库。它把请求声明保持为类和方法的形式，在核心包之外按需提供 MSW Mock 与 IoC / AOP 能力，适合想要声明式接口层、又不希望引入重型框架的项目。
 
 [English README](./README.md)
+
+## 官方文档
+
+- 英文站点：[https://awe-axios.vercel.app/](https://awe-axios.vercel.app/)
+- 中文站点：[https://decoraxios-lh0tx0sk.maozi.io/](https://decoraxios-lh0tx0sk.maozi.io/)
 
 ## 包结构
 
 | 包名 | 作用 |
 | --- | --- |
-| `decoraxios` | 推荐主包，直接导出核心 HTTP 装饰器。 |
+| `decoraxios` | 推荐主包，直接导出核心 HTTP 装饰器能力。 |
 | `@decoraxios/core` | 显式核心包，包含 HTTP 装饰器、参数装饰器和运行时装饰器。 |
 | `@decoraxios/mock` | 基于 MSW 的 Mock 装饰器与 `MockAPI`。 |
-| `@decoraxios/ioc-aop` | 依赖注入、组件注册和切面装饰器。 |
-| `@decoraxios/all` | 全量聚合包，统一导出 core、mock 和 ioc-aop。 |
+| `@decoraxios/ioc-aop` | IoC 容器、依赖注入和切面装饰器。 |
+| `@decoraxios/all` | 全量聚合包，统一导出所有公开装饰器。 |
 
 ## 安装
 
-按需求安装对应能力即可。
+按需要安装对应功能即可：
 
 ```bash
 npm install decoraxios axios
@@ -42,7 +47,7 @@ import 'reflect-metadata';
 
 ## TypeScript 配置
 
-在 `tsconfig.json` 中开启装饰器支持：
+Decoraxios 依赖 TypeScript 传统装饰器语法：
 
 ```json
 {
@@ -53,11 +58,9 @@ import 'reflect-metadata';
 }
 ```
 
-如果你要让 `@Inject()` 通过属性类型自动推断依赖，`emitDecoratorMetadata` 是必须的。
+当你希望 `@Inject()` 依据属性类型自动解析依赖时，`emitDecoratorMetadata` 是必须的。
 
-## 快速开始
-
-Decoraxios 里的 HTTP 方法本质上是“声明式接口”，真正的请求由装饰器组合生成，因此方法体通常直接写成 `return undefined as never;`。
+## 快速示例
 
 ```ts
 import {
@@ -105,24 +108,24 @@ const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
 ```
 
-## 覆盖的装饰器能力
+## 能力范围
 
 - HTTP 声明：`@HttpApi`、`@Get`、`@Post`、`@Put`、`@Delete`、`@Patch`、`@Options`、`@Head`
 - 参数绑定：`@PathParam`、`@QueryParam`、`@BodyParam`
-- 请求配置：`@RefAxios`、`@AxiosRef`、`@TransformRequest`、`@TransformResponse`
+- 运行时配置：`@RefAxios`、`@AxiosRef`、`@TransformRequest`、`@TransformResponse`
 - 运行时策略：`@Retry`、`@Debounce`、`@Throttle`
 - Mock：`@Mock`、`MockAPI`
 - IoC / AOP：`@Component`、`@Inject`、`@Aspect`、`@Before`、`@After`、`@Around`、`@AfterReturning`、`@AfterThrowing`
 
-## 文档入口
+## 文档导航
 
-更完整的装饰器说明和配置示例在 `docs/` 中：
-
-- [English getting started](./docs/en/getting-started.md)
-- [English HTTP decorators](./docs/en/core.md)
-- [English runtime decorators](./docs/en/extensions.md)
-- [English mock guide](./docs/en/mock.md)
-- [English IoC and AOP guide](./docs/en/ioc-aop.md)
+- [英文总览](./docs/en/index.md)
+- [英文快速开始](./docs/en/getting-started.md)
+- [英文 HTTP 装饰器](./docs/en/core.md)
+- [英文运行时装饰器](./docs/en/extensions.md)
+- [英文 Mock 指南](./docs/en/mock.md)
+- [英文 IoC / AOP 指南](./docs/en/ioc-aop.md)
+- [中文总览](./docs/zh/index.md)
 - [中文快速开始](./docs/zh/getting-started.md)
 - [中文 HTTP 装饰器](./docs/zh/core.md)
 - [中文运行时装饰器](./docs/zh/extensions.md)

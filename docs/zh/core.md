@@ -1,6 +1,6 @@
 # HTTP 装饰器
 
-这一页覆盖 Decoraxios 的核心声明装饰器：
+这一页覆盖核心声明式 HTTP 装饰器：
 
 - `@HttpApi`
 - `@Get`
@@ -16,7 +16,7 @@
 
 ## `@HttpApi`
 
-`@HttpApi` 是类装饰器，用于定义共享请求配置。它支持四种传入方式：
+`@HttpApi` 是类装饰器，用来定义共享请求配置。它支持四种写法：
 
 - 绝对 URL 字符串
 - 相对 URL 字符串
@@ -25,7 +25,7 @@
 
 ### 绝对 URL 字符串
 
-传入绝对 URL 时，Decoraxios 会把它视为 `baseURL`。
+当你传入绝对 URL 字符串时，Decoraxios 会把它作为 `baseURL`：
 
 ```ts
 @HttpApi('https://api.example.com')
@@ -34,18 +34,18 @@ class UserApi {}
 
 ### 相对 URL 字符串
 
-传入相对字符串时，它会作为类级路径前缀。
+相对字符串会被当成类级路径前缀：
 
 ```ts
 @HttpApi('/users')
 class UserApi {}
 ```
 
-这种写法适合你的 axios 实例已经提供了绝对 `baseURL` 的情况。
+当 axios 实例已经提供了绝对 `baseURL` 时，这种写法最常见。
 
 ### Axios 实例
 
-传入 axios 实例等价于设置类级 `refAxios`。
+直接传入 axios 实例，等价于在类级绑定 `refAxios`：
 
 ```ts
 import axios from 'axios';
@@ -62,7 +62,7 @@ class UserApi {}
 
 ### 配置对象
 
-当你需要类级 headers、params、transform、plugins 或路径前缀时，使用对象形式最直观。
+当你需要共享请求头、参数、转换器、插件或路径前缀时，使用对象形式：
 
 ```ts
 @HttpApi({
@@ -79,9 +79,26 @@ class UserApi {}
 class UserApi {}
 ```
 
+### 常用 `HttpApiConfig` 字段
+
+`HttpApiConfig` 继承自 `AxiosRequestConfig`，只是类级不允许定义 `method`。
+
+常用字段：
+
+- `baseURL`
+- `url`
+- `timeout`
+- `headers`
+- `params`
+- `responseType`
+- `transformRequest`
+- `transformResponse`
+- `refAxios`
+- `plugins`
+
 ## HTTP 方法装饰器
 
-Decoraxios 为每个 HTTP 动词都提供了装饰器：
+Decoraxios 为每个 HTTP 动词提供一个装饰器：
 
 - `@Get`
 - `@Post`
@@ -93,10 +110,10 @@ Decoraxios 为每个 HTTP 动词都提供了装饰器：
 
 每个装饰器都支持两种写法：
 
-- 字符串简写，表示 `url`
-- 完整 `HttpMethodConfig` 对象，底层兼容 `AxiosRequestConfig`，并额外支持 `refAxios`、`plugins` 等 Decoraxios 扩展字段
+- 字符串简写，直接视为 `url`
+- 完整的 `HttpMethodConfig` 对象，它基于 `AxiosRequestConfig`，并额外支持 `refAxios` 与 `plugins`
 
-### 方法装饰器一览
+### 方法装饰器总览
 
 ```ts
 class UserApi {
@@ -164,21 +181,42 @@ searchUsers(@QueryParam('q') q: string): ApiCall<User[]> {
 }
 ```
 
-### 配置合并规则
+### 常用 `HttpMethodConfig` 字段
 
-类级和方法级配置会按以下规则合并：
+`HttpMethodConfig` 包含你在 `AxiosRequestConfig` 中常用的大部分字段，并额外提供两个 Decoraxios 自有字段：
 
-- `timeout`、`responseType`、`baseURL` 等标量字段由方法级覆盖类级
+- `refAxios`：为单个方法绑定专用 axios 实例
+- `plugins`：为单个方法追加运行时插件
+
+常见字段：
+
+- `url`
+- `timeout`
+- `headers`
+- `params`
+- `data`
+- `responseType`
+- `transformRequest`
+- `transformResponse`
+- `refAxios`
+- `plugins`
+
+## 配置合并规则
+
+类级和方法级配置会按如下规则合并：
+
+- `timeout`、`responseType`、`baseURL` 这类标量字段由方法级覆盖类级
 - `headers` 做浅合并
-- `params` 做浅合并，最后再叠加 `@QueryParam`
-- `transformRequest` 和 `transformResponse` 会拼接
-- `plugins` 会拼接
+- `params` 做浅合并，并且 `@QueryParam` 最后覆盖
+- `transformRequest` / `transformResponse` 采用追加方式
+- `plugins` 采用追加方式
+- 只要 `@BodyParam` 解析出了请求体，就会覆盖静态 `data`
 
-如果最终既没有可用的 `baseURL`，`url` 本身又不是绝对地址，运行时会直接抛错。
+如果最终 `baseURL` 为空，并且最终 `url` 也不是绝对地址，运行时会报错，因为 Decoraxios 无法解析出有效请求目标。
 
 ## `@PathParam`
 
-`@PathParam(name)` 用于替换 URL 中的 `:name` 占位符。
+`@PathParam(name)` 用于替换 URL 中的 `:name` 占位符：
 
 ```ts
 @Get('/:id')
@@ -187,11 +225,11 @@ getUser(@PathParam('id') id: string): ApiCall<User> {
 }
 ```
 
-如果值是 `undefined` 或 `null`，占位符会被原样保留；替换时会自动做 URL 编码。
+当参数值为 `undefined` 或 `null` 时，占位符会保持原样。实际替换前会做 URL 编码。
 
 ## `@QueryParam`
 
-`@QueryParam(name)` 把参数绑定到请求 query。
+`@QueryParam(name)` 会把参数值写入查询字符串：
 
 ```ts
 @Get('/search')
@@ -203,7 +241,7 @@ search(
 }
 ```
 
-同一个 query 名如果绑定多次，会被收集成数组。
+如果同一个查询名被绑定多次，Decoraxios 会把它收集成数组：
 
 ```ts
 @Get('/search')
@@ -217,11 +255,11 @@ search(
 
 ## `@BodyParam`
 
-`@BodyParam()` 用于绑定请求体，可以匿名，也可以命名。
+`@BodyParam()` 用于绑定请求体数据。它支持无名和具名两种形式。
 
-### 匿名 body
+### 无名请求体
 
-匿名形式表示整个参数就是请求体。
+当整个参数都应该作为请求体时，使用无名形式：
 
 ```ts
 @Post('/')
@@ -230,9 +268,9 @@ createUser(@BodyParam() payload: CreateUserInput): ApiCall<User, CreateUserInput
 }
 ```
 
-### 命名 body 字段
+### 具名请求体字段
 
-命名形式适合把多个参数拼成一个 body 对象。
+当你想把多个参数合成为一个对象时，使用具名形式：
 
 ```ts
 @Post('/')
@@ -244,17 +282,17 @@ createUser(
 }
 ```
 
-### Body 合并规则
+### 请求体合并规则
 
-Decoraxios 对 body 参数的处理规则如下：
+Decoraxios 对请求体参数的处理规则如下：
 
-- 只有一个匿名 `@BodyParam()` 时，这个值直接作为 `data`
-- 多个匿名 plain object 会浅合并
-- 多个匿名非对象值会组成数组
-- 使用命名 body 参数时，会组合成一个对象
-- 如果命名参数和匿名 plain object 混用，会先合并匿名对象，再用命名字段覆盖同名 key
+- 单个无名 `@BodyParam()` 会直接成为整个请求体
+- 多个无名普通对象会做浅合并
+- 多个无名非对象值会组成数组
+- 多个具名请求体参数会合并为一个对象
+- 当具名参数与无名普通对象混用时，会先合并无名对象，再由具名字段覆盖同名键
 
-例如：
+示例：
 
 ```ts
 @Post('/')
@@ -267,7 +305,7 @@ createUser(
 }
 ```
 
-最终 body 会是：
+最终请求体：
 
 ```ts
 {
@@ -277,9 +315,59 @@ createUser(
 }
 ```
 
+## 综合示例
+
+```ts
+import {
+  type ApiCall,
+  BodyParam,
+  Get,
+  Head,
+  HttpApi,
+  PathParam,
+  Post,
+  QueryParam,
+} from 'decoraxios';
+
+interface User {
+  id: string;
+  name: string;
+}
+
+@HttpApi({
+  baseURL: 'https://api.example.com',
+  url: '/users',
+  headers: {
+    'X-App': 'console',
+  },
+})
+class UserApi {
+  @Get('/:id')
+  detail(
+    @PathParam('id') id: string,
+    @QueryParam('include') include?: string,
+  ): ApiCall<User> {
+    return undefined as never;
+  }
+
+  @Head('/:id')
+  exists(@PathParam('id') id: string): ApiCall<void> {
+    return undefined as never;
+  }
+
+  @Post('/')
+  create(
+    @BodyParam('name') name: string,
+    @BodyParam('email') email: string,
+  ): ApiCall<User> {
+    return undefined as never;
+  }
+}
+```
+
 ## 声明式写法说明
 
-Decoraxios 不会执行你原来的方法体来生成请求。最推荐的写法就是把方法体当成类型占位：
+Decoraxios 不会执行你原始的方法体来构建请求，所以方法体应该被视为类型占位：
 
 ```ts
 @Get('/:id')
@@ -288,4 +376,4 @@ getUser(@PathParam('id') id: string): ApiCall<User> {
 }
 ```
 
-这样接口定义清晰，真正的请求配置也能完全由装饰器驱动。
+这样类的 API 结构依然清晰，而真正的请求配置完全由装饰器驱动。

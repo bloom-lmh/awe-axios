@@ -64,7 +64,7 @@ export default defineConfig({
       text: 'Edit this page on GitHub',
     },
     footer: {
-      message: 'Decoraxios documentation',
+      message: 'Official docs: awe-axios.vercel.app / decoraxios-lh0tx0sk.maozi.io',
       copyright: 'MIT Licensed',
     },
   },

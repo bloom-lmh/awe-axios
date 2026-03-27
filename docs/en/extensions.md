@@ -1,6 +1,6 @@
 # Runtime Decorators
 
-This page covers the core runtime and configuration decorators:
+This page covers the runtime and configuration decorators:
 
 - `@RefAxios`
 - `@AxiosRef`
@@ -70,7 +70,12 @@ Method-level `@AxiosRef` overrides class-level `@RefAxios`.
 
 ## `@TransformRequest`
 
-`@TransformRequest` appends one or more axios request transformers.
+`@TransformRequest(transformer)` appends one or more axios request transformers.
+
+Accepted forms:
+
+- one transformer function
+- an array of transformer functions
 
 ```ts
 import { BodyParam, Post, TransformRequest } from 'decoraxios';
@@ -84,7 +89,7 @@ class UserApi {
 }
 ```
 
-You can also pass an array:
+Array form:
 
 ```ts
 @TransformRequest([
@@ -93,9 +98,16 @@ You can also pass an array:
 ])
 ```
 
+Request transformers are appended after the axios instance defaults and after any class-level transforms.
+
 ## `@TransformResponse`
 
-`@TransformResponse` appends one or more axios response transformers.
+`@TransformResponse(transformer)` appends one or more axios response transformers.
+
+Accepted forms:
+
+- one transformer function
+- an array of transformer functions
 
 ```ts
 import { Get, TransformResponse } from 'decoraxios';
@@ -112,15 +124,15 @@ class MetricsApi {
 }
 ```
 
-Like `@TransformRequest`, it accepts a single function or an array.
+Like `@TransformRequest`, response transformers are appended in order.
 
 ## `@Retry`
 
-`@Retry(options)` retries the decorated request when the wrapped executor throws.
+`@Retry(options)` retries the decorated request when the wrapped executor throws or rejects.
 
 Available options:
 
-- `count`: maximum attempts, default `3`
+- `count`: maximum execution attempts, default `3`
 - `delay`: delay between attempts in milliseconds, default `100`
 - `signal`: abort signal for stopping retries
 - `shouldRetry(error, attempt)`: custom retry predicate
@@ -140,6 +152,8 @@ class HealthApi {
   }
 }
 ```
+
+Use `shouldRetry` when you only want to retry selected failures, such as network errors or `5xx` responses.
 
 ## `@Debounce`
 
@@ -162,11 +176,19 @@ class SearchApi {
 }
 ```
 
-When multiple callers enter the debounce window, they receive the same eventual result.
+When multiple callers enter the same debounce window, they receive the same eventual result.
+
+Immediate mode:
+
+```ts
+@Debounce({ delay: 300, immediate: true })
+```
+
+Use it when the first interaction should respond immediately but subsequent rapid calls should be merged.
 
 ## `@Throttle`
 
-`@Throttle(options)` limits request execution frequency.
+`@Throttle(options)` limits execution frequency.
 
 Available options:
 
@@ -184,11 +206,15 @@ class MetricsApi {
 }
 ```
 
-If calls arrive while one run is active, Decoraxios keeps the latest trailing call and executes it after the interval.
+If more calls arrive while one run is active, Decoraxios keeps the latest trailing call and executes it after the interval.
 
-## `withHttpClassConfig`
+## Low-level configuration decorators
 
-`withHttpClassConfig(config)` is the low-level class decorator for applying shared HTTP config without introducing a higher-level convenience decorator.
+The following decorators are lower-level building blocks for custom wrappers.
+
+### `withHttpClassConfig`
+
+`withHttpClassConfig(config)` appends shared HTTP config at the class level.
 
 ```ts
 import { HttpApi, withHttpClassConfig } from 'decoraxios';
@@ -203,11 +229,9 @@ import { HttpApi, withHttpClassConfig } from 'decoraxios';
 class UserApi {}
 ```
 
-Use this when you want to compose your own class decorators around Decoraxios.
+### `withHttpMethodConfig`
 
-## `withHttpMethodConfig`
-
-`withHttpMethodConfig(config)` is the low-level method decorator for appending request config.
+`withHttpMethodConfig(config)` appends request config at the method level.
 
 ```ts
 import { Get, withHttpMethodConfig } from 'decoraxios';
@@ -226,7 +250,7 @@ class UserApi {
 }
 ```
 
-## `withHttpClassPlugins`
+### `withHttpClassPlugins`
 
 `withHttpClassPlugins(...plugins)` appends runtime plugins at the class level.
 
@@ -248,7 +272,7 @@ const tracePlugin: HttpRuntimePlugin = (next, context) => async config => {
 class UserApi {}
 ```
 
-## `withHttpMethodPlugins`
+### `withHttpMethodPlugins`
 
 `withHttpMethodPlugins(...plugins)` appends runtime plugins for one method.
 
@@ -274,9 +298,9 @@ class UserApi {
 }
 ```
 
-## Advanced composition pattern
+## Building your own decorator
 
-The low-level decorators make it easy to build your own opinionated wrappers:
+The low-level decorators make it easy to build project-specific wrappers:
 
 ```ts
 import { Post, withHttpMethodConfig } from 'decoraxios';
@@ -293,4 +317,4 @@ function JsonPost(url: string): MethodDecorator {
 }
 ```
 
-That keeps project-specific conventions in one place while still using the Decoraxios runtime.
+That keeps conventions such as auth headers, content types, or tracing rules in one place while still using the Decoraxios runtime.

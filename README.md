@@ -1,22 +1,25 @@
 # Decoraxios
 
-Decoraxios is a decorator-first HTTP toolkit built on top of Axios. It keeps the common request flow declarative, adds opt-in mocking with MSW, and provides a small IoC/AOP layer when you need cross-cutting behavior in class-based code.
+Decoraxios is a decorator-first HTTP toolkit built on top of Axios. It keeps API declarations class-based and typed, adds opt-in MSW mocking, and provides a lightweight IoC/AOP layer for teams that want class-level composition without pulling in a large framework.
 
-[中文说明](./README_CH.md)
+## Official docs
+
+- English site: [https://awe-axios.vercel.app/](https://awe-axios.vercel.app/)
+- Chinese site: [https://decoraxios-lh0tx0sk.maozi.io/](https://decoraxios-lh0tx0sk.maozi.io/)
 
 ## Packages
 
 | Package | Purpose |
 | --- | --- |
-| `decoraxios` | Recommended root package. Re-exports the core HTTP decorators. |
+| `decoraxios` | Recommended root package. Re-exports the core HTTP decorator surface. |
 | `@decoraxios/core` | Explicit core package with HTTP decorators, parameter decorators, and runtime decorators. |
-| `@decoraxios/mock` | Mock decorators and `MockAPI`, powered by MSW. |
-| `@decoraxios/ioc-aop` | IoC container, dependency injection, and aspect decorators. |
-| `@decoraxios/all` | Full bundle that re-exports core, mock, and IoC/AOP. |
+| `@decoraxios/mock` | MSW-powered mock decorators and `MockAPI`. |
+| `@decoraxios/ioc-aop` | IoC container, dependency injection, and AOP decorators. |
+| `@decoraxios/all` | Full bundle that re-exports every public decorator. |
 
-## Install
+## Installation
 
-Install only the package surface you need.
+Install only the packages you need:
 
 ```bash
 npm install decoraxios axios
@@ -42,7 +45,7 @@ import 'reflect-metadata';
 
 ## TypeScript setup
 
-Enable decorators in your `tsconfig.json`:
+Decoraxios uses legacy TypeScript decorators:
 
 ```json
 {
@@ -55,9 +58,7 @@ Enable decorators in your `tsconfig.json`:
 
 `emitDecoratorMetadata` is required when you want `@Inject()` to resolve dependencies from reflected property types.
 
-## Quick start
-
-Decorated HTTP methods are declarations, not imperative request handlers. Their bodies are usually `return undefined as never;`, and the runtime request is assembled from the decorators.
+## Quick example
 
 ```ts
 import {
@@ -105,24 +106,24 @@ const api = new UserApi();
 const { data } = await api.getUser('42', 'profile');
 ```
 
-## What the decorators cover
+## What is covered
 
 - HTTP declaration: `@HttpApi`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`, `@Options`, `@Head`
 - Parameter binding: `@PathParam`, `@QueryParam`, `@BodyParam`
-- Request configuration: `@RefAxios`, `@AxiosRef`, `@TransformRequest`, `@TransformResponse`
+- Runtime configuration: `@RefAxios`, `@AxiosRef`, `@TransformRequest`, `@TransformResponse`
 - Runtime strategies: `@Retry`, `@Debounce`, `@Throttle`
 - Mocking: `@Mock`, `MockAPI`
 - IoC and AOP: `@Component`, `@Inject`, `@Aspect`, `@Before`, `@After`, `@Around`, `@AfterReturning`, `@AfterThrowing`
 
-## Documentation
+## Documentation map
 
-The detailed decorator reference lives in `docs/` and is split by concern:
-
+- [English overview](./docs/en/index.md)
 - [English getting started](./docs/en/getting-started.md)
 - [English HTTP decorators](./docs/en/core.md)
 - [English runtime decorators](./docs/en/extensions.md)
 - [English mock guide](./docs/en/mock.md)
 - [English IoC and AOP guide](./docs/en/ioc-aop.md)
+- [中文总览](./docs/zh/index.md)
 - [中文快速开始](./docs/zh/getting-started.md)
 - [中文 HTTP 装饰器](./docs/zh/core.md)
 - [中文运行时装饰器](./docs/zh/extensions.md)

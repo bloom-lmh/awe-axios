@@ -1,15 +1,20 @@
 # Decoraxios
 
-Decoraxios is a focused Axios toolkit for teams that prefer decorator-based API declarations. The project is split into a small core package, an optional MSW mock package, an optional IoC/AOP package, and a full bundle for teams that want a single import surface.
+Decoraxios is a focused Axios toolkit for teams that prefer decorator-based API declarations. The project stays modular: use the core HTTP decorators by default, add mocking only when you need MSW, and bring in IoC / AOP only when your application benefits from class-level dependency wiring and advice composition.
 
-## Packages
+## Official sites
+
+- English site: [https://awe-axios.vercel.app/](https://awe-axios.vercel.app/)
+- Chinese site: [https://decoraxios-lh0tx0sk.maozi.io/](https://decoraxios-lh0tx0sk.maozi.io/)
+
+## Package guide
 
 | Package | Use it when |
 | --- | --- |
 | `decoraxios` | You want the default root package with the core HTTP decorator surface. |
-| `@decoraxios/core` | You prefer importing the explicit core package directly. |
-| `@decoraxios/mock` | You want request-level mocking with MSW and decorator syntax. |
-| `@decoraxios/ioc-aop` | You need dependency injection and aspect weaving. |
+| `@decoraxios/core` | You want the explicit core package name in imports or package manifests. |
+| `@decoraxios/mock` | You want decorator-friendly MSW mocking for local development or tests. |
+| `@decoraxios/ioc-aop` | You want dependency injection and aspect weaving in class-based application code. |
 | `@decoraxios/all` | You want one package that re-exports every public decorator. |
 
 ## Documentation map
@@ -22,7 +27,7 @@ Decoraxios is a focused Axios toolkit for teams that prefer decorator-based API 
 
 ## Design principles
 
-- Decorated methods are declarations. Their bodies do not contain request logic.
-- The root package stays lightweight and only exposes the core HTTP feature set.
-- Mocking and IoC/AOP remain opt-in so they do not leak extra runtime dependencies into applications that do not need them.
-- Every request entry stays type-friendly by returning `ApiCall<TResponse, TRequest>`.
+- Decorated methods are declarations. Their method bodies stay as placeholders.
+- The root package remains lightweight and only exposes the core HTTP surface.
+- Mocking and IoC / AOP remain opt-in to avoid extra runtime dependencies in simple apps.
+- Every request entry point stays type-oriented through `ApiCall<TResponse, TRequest>`.

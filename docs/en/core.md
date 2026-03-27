@@ -18,8 +18,8 @@ This page covers the core declaration decorators:
 
 `@HttpApi` is the class decorator that defines shared request configuration. It accepts four shapes:
 
-- Absolute URL string
-- Relative URL string
+- absolute URL string
+- relative URL string
 - `AxiosInstance`
 - `HttpApiConfig` object
 
@@ -79,6 +79,23 @@ Use the config object when you need shared headers, params, transforms, plugins,
 class UserApi {}
 ```
 
+### Common `HttpApiConfig` fields
+
+`HttpApiConfig` extends `AxiosRequestConfig`, except that `method` is not allowed at the class level.
+
+Commonly used fields:
+
+- `baseURL`
+- `url`
+- `timeout`
+- `headers`
+- `params`
+- `responseType`
+- `transformRequest`
+- `transformResponse`
+- `refAxios`
+- `plugins`
+
 ## HTTP method decorators
 
 Decoraxios provides one decorator per HTTP verb:
@@ -93,8 +110,8 @@ Decoraxios provides one decorator per HTTP verb:
 
 Each decorator accepts either:
 
-- A string shorthand, interpreted as `url`
-- A full `HttpMethodConfig`, which mirrors `AxiosRequestConfig` and adds runtime-specific fields such as `refAxios` and `plugins`
+- a string shorthand, interpreted as `url`
+- a full `HttpMethodConfig`, which mirrors `AxiosRequestConfig` and adds `refAxios` and `plugins`
 
 ### Method decorator catalog
 
@@ -164,15 +181,36 @@ searchUsers(@QueryParam('q') q: string): ApiCall<User[]> {
 }
 ```
 
-### Configuration behavior
+### Common `HttpMethodConfig` fields
+
+`HttpMethodConfig` includes the fields you normally use in `AxiosRequestConfig`, plus two Decoraxios-specific fields:
+
+- `refAxios`: bind a dedicated axios instance for one method
+- `plugins`: append runtime plugins for one method
+
+Typical fields:
+
+- `url`
+- `timeout`
+- `headers`
+- `params`
+- `data`
+- `responseType`
+- `transformRequest`
+- `transformResponse`
+- `refAxios`
+- `plugins`
+
+## Configuration merge behavior
 
 Class-level and method-level configuration are merged with these rules:
 
-- Scalar fields such as `timeout`, `responseType`, and `baseURL` are overridden by the method config
+- scalar fields such as `timeout`, `responseType`, and `baseURL` are overridden by the method config
 - `headers` are shallow-merged
 - `params` are shallow-merged, and `@QueryParam` values are applied on top
 - `transformRequest` and `transformResponse` are appended
 - `plugins` are appended
+- `@BodyParam` payload resolution overrides static `data` values when it produces a request body
 
 If neither the final `baseURL` nor the final `url` is absolute, Decoraxios throws at runtime because it cannot resolve a valid request target.
 
@@ -248,11 +286,11 @@ createUser(
 
 Decoraxios resolves body arguments with these rules:
 
-- If you only use one unnamed `@BodyParam()`, that value becomes `data`
-- If you use multiple unnamed plain objects, they are shallow-merged
-- If you use multiple unnamed non-object values, they become an array
-- If you use named body parameters, they are merged into one object
-- If you use named body parameters and unnamed plain objects together, the plain objects are merged first, then named properties override keys with the same name
+- one unnamed `@BodyParam()` becomes the whole request body
+- multiple unnamed plain objects are shallow-merged
+- multiple unnamed non-object values become an array
+- named body parameters are merged into one object
+- if named body parameters and unnamed plain objects are mixed, the unnamed plain objects are merged first and named properties override colliding keys
 
 Example:
 
@@ -277,9 +315,59 @@ This produces:
 }
 ```
 
+## Combined example
+
+```ts
+import {
+  type ApiCall,
+  BodyParam,
+  Get,
+  Head,
+  HttpApi,
+  PathParam,
+  Post,
+  QueryParam,
+} from 'decoraxios';
+
+interface User {
+  id: string;
+  name: string;
+}
+
+@HttpApi({
+  baseURL: 'https://api.example.com',
+  url: '/users',
+  headers: {
+    'X-App': 'console',
+  },
+})
+class UserApi {
+  @Get('/:id')
+  detail(
+    @PathParam('id') id: string,
+    @QueryParam('include') include?: string,
+  ): ApiCall<User> {
+    return undefined as never;
+  }
+
+  @Head('/:id')
+  exists(@PathParam('id') id: string): ApiCall<void> {
+    return undefined as never;
+  }
+
+  @Post('/')
+  create(
+    @BodyParam('name') name: string,
+    @BodyParam('email') email: string,
+  ): ApiCall<User> {
+    return undefined as never;
+  }
+}
+```
+
 ## Declaration pattern
 
-Decoraxios does not call your original method body to build the request. Treat the method body as a type placeholder:
+Decoraxios does not execute your original method body to build the request. Treat the method body as a type placeholder:
 
 ```ts
 @Get('/:id')

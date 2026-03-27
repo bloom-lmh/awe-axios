@@ -35,7 +35,7 @@ class UserService {}
 
 The string form supports either:
 
-- Alias only, for example `'logger'`
+- alias only, for example `'logger'`
 - `module.alias`, for example `'admin.logger'`
 
 ```ts
@@ -57,9 +57,11 @@ class LoggerService {}
 
 ## `@Inject`
 
-`@Inject` resolves a dependency onto a property. It supports three forms.
+`@Inject` resolves a dependency onto a property.
 
-### Constructor form
+### Empty form
+
+The empty form relies on reflected property types:
 
 ```ts
 import { Component, Inject } from '@decoraxios/ioc-aop';
@@ -69,6 +71,18 @@ class LoggerService {}
 
 @Component()
 class UserService {
+  @Inject()
+  logger!: LoggerService;
+}
+```
+
+This form requires `emitDecoratorMetadata: true`.
+
+### Constructor form
+
+```ts
+@Component()
+class UserService {
   @Inject(LoggerService)
   logger!: LoggerService;
 }
@@ -76,7 +90,7 @@ class UserService {
 
 ### String form
 
-Use the alias or `module.alias`.
+Use either the alias or `module.alias`.
 
 ```ts
 class UserService {
@@ -87,7 +101,7 @@ class UserService {
 
 ### Config object form
 
-The full object supports:
+The object form supports:
 
 - `module`
 - `alias`
@@ -139,7 +153,7 @@ Common patterns:
 - `*.save`
 - `*.*`
 
-Wildcard matching is supported for class names and method names.
+Wildcard matching is supported for both class names and method names.
 
 ## `@Before`
 
@@ -189,7 +203,7 @@ class AuditAspect {
 }
 ```
 
-Use `@Around` when you need timing, tracing, wrapping return values, or custom error flow.
+Use `@Around` when you need timing, tracing, wrapping return values, or custom error handling.
 
 ## `@AfterReturning`
 
@@ -255,7 +269,7 @@ class AuditAspect {
 
   @Around('UserService.save')
   aroundSave(context: AspectContext, chain: AdviceChain) {
-    console.log('around before');
+    console.log('around before', context.methodName);
     const result = chain.proceed(context);
     console.log('around after');
     return result;

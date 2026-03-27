@@ -1,6 +1,6 @@
 # 运行时装饰器
 
-这一页覆盖 Decoraxios 的运行时与配置装饰器：
+这一页覆盖运行时和配置相关装饰器：
 
 - `@RefAxios`
 - `@AxiosRef`
@@ -37,11 +37,11 @@ class UserApi {
 }
 ```
 
-当一个类里的大部分方法都需要共用同一个 axios 实例时，这个装饰器最合适。
+当类中的大多数方法都应该共用同一个 axios 实例时，优先使用它。
 
 ## `@AxiosRef`
 
-`@AxiosRef(instance)` 只对单个方法绑定 axios 实例。
+`@AxiosRef(instance)` 用于为单个方法绑定 axios 实例。
 
 ```ts
 import axios from 'axios';
@@ -70,7 +70,12 @@ class UserApi {
 
 ## `@TransformRequest`
 
-`@TransformRequest` 用于追加一个或多个 axios 请求转换器。
+`@TransformRequest(transformer)` 用于追加 axios 请求转换器。
+
+支持两种形式：
+
+- 单个转换函数
+- 转换函数数组
 
 ```ts
 import { BodyParam, Post, TransformRequest } from 'decoraxios';
@@ -84,7 +89,7 @@ class UserApi {
 }
 ```
 
-它也支持数组形式：
+数组形式：
 
 ```ts
 @TransformRequest([
@@ -93,9 +98,16 @@ class UserApi {
 ])
 ```
 
+请求转换器会追加在 axios 实例默认转换器和类级转换器之后。
+
 ## `@TransformResponse`
 
-`@TransformResponse` 用于追加一个或多个 axios 响应转换器。
+`@TransformResponse(transformer)` 用于追加 axios 响应转换器。
+
+支持两种形式：
+
+- 单个转换函数
+- 转换函数数组
 
 ```ts
 import { Get, TransformResponse } from 'decoraxios';
@@ -112,17 +124,17 @@ class MetricsApi {
 }
 ```
 
-同样支持单函数或数组。
+它与 `@TransformRequest` 一样，按声明顺序依次追加。
 
 ## `@Retry`
 
-`@Retry(options)` 会在请求抛错时自动重试。
+`@Retry(options)` 用于在执行器抛错或拒绝时自动重试。
 
-可用配置：
+可用选项：
 
-- `count`：最大尝试次数，默认 `3`
-- `delay`：两次重试之间的间隔，单位毫秒，默认 `100`
-- `signal`：用于中断重试过程的 `AbortSignal`
+- `count`：最大执行次数，默认 `3`
+- `delay`：每次重试之间的等待时间，单位毫秒，默认 `100`
+- `signal`：中断重试流程的 `AbortSignal`
 - `shouldRetry(error, attempt)`：自定义是否继续重试
 
 ```ts
@@ -141,13 +153,15 @@ class HealthApi {
 }
 ```
 
+当你只希望对网络错误或 `5xx` 错误进行重试时，建议通过 `shouldRetry` 做精确控制。
+
 ## `@Debounce`
 
-`@Debounce(options)` 会把短时间内的高频调用合并成一次执行。
+`@Debounce(options)` 用于把短时间内的重复调用合并成一次执行。
 
-可用配置：
+可用选项：
 
-- `delay`：防抖窗口，单位毫秒，默认 `100`
+- `delay`：防抖窗口时长，单位毫秒，默认 `100`
 - `immediate`：是否立即执行第一次调用，默认 `false`
 
 ```ts
@@ -162,13 +176,21 @@ class SearchApi {
 }
 ```
 
-在同一个防抖窗口内进入的调用，会共享最终的返回结果。
+多个调用落在同一个防抖窗口内时，会共享同一个最终结果。
+
+立即执行模式：
+
+```ts
+@Debounce({ delay: 300, immediate: true })
+```
+
+适合首个输入立即响应、后续快速输入再合并的场景。
 
 ## `@Throttle`
 
-`@Throttle(options)` 用于限制请求触发频率。
+`@Throttle(options)` 用于限制执行频率。
 
-可用配置：
+可用选项：
 
 - `interval`：节流间隔，单位毫秒，默认 `100`
 
@@ -184,11 +206,15 @@ class MetricsApi {
 }
 ```
 
-如果节流窗口内又来了新调用，Decoraxios 会保留最新那次 trailing 调用，在间隔结束后再执行。
+如果一个执行周期还没结束又来了更多调用，Decoraxios 会保留最后一次尾部调用，并在间隔结束后再执行一次。
 
-## `withHttpClassConfig`
+## 底层配置装饰器
 
-`withHttpClassConfig(config)` 是最底层的类装饰器，用来追加类级 HTTP 配置。
+下面这些装饰器适合做二次封装。
+
+### `withHttpClassConfig`
+
+`withHttpClassConfig(config)` 用于在类级追加共享 HTTP 配置。
 
 ```ts
 import { HttpApi, withHttpClassConfig } from 'decoraxios';
@@ -203,11 +229,9 @@ import { HttpApi, withHttpClassConfig } from 'decoraxios';
 class UserApi {}
 ```
 
-适合你在项目里继续封装自己的类级装饰器时使用。
+### `withHttpMethodConfig`
 
-## `withHttpMethodConfig`
-
-`withHttpMethodConfig(config)` 是最底层的方法装饰器，用来给某个方法追加请求配置。
+`withHttpMethodConfig(config)` 用于在方法级追加请求配置。
 
 ```ts
 import { Get, withHttpMethodConfig } from 'decoraxios';
@@ -226,9 +250,9 @@ class UserApi {
 }
 ```
 
-## `withHttpClassPlugins`
+### `withHttpClassPlugins`
 
-`withHttpClassPlugins(...plugins)` 用于在类级挂载运行时插件。
+`withHttpClassPlugins(...plugins)` 用于在类级追加运行时插件。
 
 ```ts
 import { HttpApi, type HttpRuntimePlugin, withHttpClassPlugins } from 'decoraxios';
@@ -248,9 +272,9 @@ const tracePlugin: HttpRuntimePlugin = (next, context) => async config => {
 class UserApi {}
 ```
 
-## `withHttpMethodPlugins`
+### `withHttpMethodPlugins`
 
-`withHttpMethodPlugins(...plugins)` 用于给单个方法挂载运行时插件。
+`withHttpMethodPlugins(...plugins)` 用于给单个方法追加运行时插件。
 
 ```ts
 import { Get, type HttpRuntimePlugin, withHttpMethodPlugins } from 'decoraxios';
@@ -274,9 +298,9 @@ class UserApi {
 }
 ```
 
-## 项目级二次封装示例
+## 自定义装饰器封装
 
-底层装饰器可以帮助你做项目规范封装：
+这些底层装饰器非常适合封装项目自己的规范：
 
 ```ts
 import { Post, withHttpMethodConfig } from 'decoraxios';
@@ -293,4 +317,4 @@ function JsonPost(url: string): MethodDecorator {
 }
 ```
 
-这样你可以把团队内部的请求规范统一沉淀成自己的装饰器。
+这样你就可以把内容类型、认证头、追踪字段这类团队约定集中维护在一个地方。
