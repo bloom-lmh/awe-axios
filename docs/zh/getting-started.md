@@ -2,8 +2,8 @@
 
 ## 官方文档
 
-- 英文站点：[https://awe-axios.vercel.app/](https://awe-axios.vercel.app/)
-- 中文站点：[https://decoraxios-lh0tx0sk.maozi.io/](https://decoraxios-lh0tx0sk.maozi.io/)
+- 英文文档：[打开英文站点](https://awe-axios.vercel.app/)
+- 中文文档：[打开中文站点](https://decoraxios-lh0tx0sk.maozi.io/)
 
 ## 如何选择包
 

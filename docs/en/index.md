@@ -4,8 +4,8 @@ Decoraxios is a focused Axios toolkit for teams that prefer decorator-based API 
 
 ## Official sites
 
-- English site: [https://awe-axios.vercel.app/](https://awe-axios.vercel.app/)
-- Chinese site: [https://decoraxios-lh0tx0sk.maozi.io/](https://decoraxios-lh0tx0sk.maozi.io/)
+- English docs: [Open the English site](https://awe-axios.vercel.app/)
+- Chinese docs: [Open the Chinese site](https://decoraxios-lh0tx0sk.maozi.io/)
 
 ## Package guide
 
