@@ -1,55 +1,91 @@
-# Package Split
+# Package Selection
 
-## `@awe-axios/core`
+The package split is part of the product design now, so it is worth choosing intentionally.
 
-Use this when you only need HTTP decorators, parameter decorators, and helper utilities.
+## Recommended choices
 
-Included:
-
-- `@HttpApi`
-- `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`, `@Options`, `@Head`
-- `@QueryParam`, `@PathParam`, `@BodyParam`
-- `@TransformRequest`, `@TransformResponse`
-- `@RefAxios`, `@AxiosRef`
-- `useRetry`, `useDebounce`, `useThrottle`
-
-## `@awe-axios/mock`
-
-Use this when you want request-level mocking without pulling IoC or AOP into the project.
-
-Included:
-
-- `@Mock`
-- `MockAPI`
-- `HttpResponse`
-- `http`
-
-## `@awe-axios/ioc-aop`
-
-Use this when you need dependency injection or aspect-style interception around `@Component` classes.
-
-Included:
-
-- `@Component`
-- `@Inject`
-- `@Aspect`
-- `@Before`, `@After`, `@Around`, `@AfterReturning`, `@AfterThrowing`
+| Scenario | Install |
+| --- | --- |
+| Core HTTP only with short package name | `npm install awe-axios axios` |
+| Core HTTP only with fully scoped package names | `npm install @awe-axios/core axios` |
+| Core HTTP + mock | `npm install @awe-axios/core @awe-axios/mock axios msw` |
+| Core HTTP + IoC/AOP | `npm install @awe-axios/core @awe-axios/ioc-aop axios reflect-metadata` |
+| Full bundle | `npm install @awe-axios/all axios msw reflect-metadata` |
 
 ## `awe-axios`
 
-Use this when you want the core HTTP decorators through the short package name without pulling mock or IoC/AOP into the install.
+Use this when:
 
-Included:
+- you want the shortest install command for core HTTP features
+- you want the short import path
+- you do not want mock or IoC/AOP dependencies installed automatically
 
-- `awe-axios`
-- `awe-axios/core`
+What it exports:
+
+- the same public API surface as `@awe-axios/core`
+- the compatibility subpath `awe-axios/core`
+
+## `@awe-axios/core`
+
+Use this when:
+
+- you prefer fully explicit package boundaries
+- your codebase already uses scoped imports everywhere
+- you want the cleanest mental model for shared library code
+
+## `@awe-axios/mock`
+
+Use this when:
+
+- you want to intercept requests with MSW
+- you need per-method mock handlers
+- you want mocked and real requests to keep the same return shape
+
+Peer dependency:
+
+- `msw`
+
+## `@awe-axios/ioc-aop`
+
+Use this when:
+
+- you want lightweight dependency injection
+- you want aspect-style interception around component methods
+- you are already using decorators broadly in the app
+
+Peer dependency:
+
+- `reflect-metadata`
 
 ## `@awe-axios/all`
 
-Use this when you want the old umbrella behavior in a package that is explicit about being the full bundle.
+Use this when:
 
-Included:
+- you want one install that re-exports everything
+- convenience matters more than keeping the dependency graph minimal
+- you are building demos, prototypes, or internal apps where one bundle is acceptable
 
-- Everything from `@awe-axios/core`
-- Everything from `@awe-axios/mock`
-- Everything from `@awe-axios/ioc-aop`
+Peer dependencies:
+
+- `axios`
+- `msw`
+- `reflect-metadata`
+
+## Peer dependency ownership
+
+The host application owns the versions of `axios`, `msw`, and `reflect-metadata`.
+
+That design keeps two important things under your control:
+
+- the axios version and instance behavior used across the app
+- whether mock and metadata-related packages are present at all
+
+## A practical rule of thumb
+
+Start with one of these:
+
+- application code: `awe-axios`
+- library code: `@awe-axios/core`
+- demos and playgrounds: `@awe-axios/all`
+
+If you later need mocking or AOP, add the scoped package instead of switching your whole app to the full bundle unless you really want the one-package experience.

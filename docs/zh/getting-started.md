@@ -1,26 +1,34 @@
 # 快速开始
 
-## 安装 core 包
+这一页只讲最短路径：安装、开启装饰器、写第一个 API 类。
+
+## 1. 先选安装方式
+
+如果你想用短包名的 core-first 入口：
 
 ```bash
 npm install awe-axios axios
 ```
 
-如果你想显式地按功能拆包安装：
+如果你更偏好显式的 scoped 包：
 
 ```bash
-npm install @awe-axios/core @awe-axios/mock axios msw
+npm install @awe-axios/core axios
 ```
 
-如果你希望一次安装全部能力，可以使用 full bundle：
+如果你想一次安装全套能力：
 
 ```bash
 npm install @awe-axios/all axios msw reflect-metadata
 ```
 
-现在 `awe-axios` 只对应 core 能力，`@awe-axios/all` 才是明确的全家桶入口。
+::: tip
+大多数新项目可以直接从 `awe-axios` 开始。只有确定需要 mock 或 IoC/AOP 时，再继续加对应子包。
+:::
 
-## 打开装饰器支持
+## 2. 打开 TypeScript 装饰器支持
+
+在 `tsconfig.json` 里开启：
 
 ```json
 {
@@ -31,7 +39,9 @@ npm install @awe-axios/all axios msw reflect-metadata
 }
 ```
 
-## 定义一个 API 类
+如果你不会用到 `@awe-axios/ioc-aop`，`emitDecoratorMetadata` 可以先不开。
+
+## 3. 定义第一个 API 类
 
 ```ts
 import {
@@ -52,7 +62,10 @@ interface User {
 @HttpApi('https://api.example.com/users')
 class UserApi {
   @Get('/:id')
-  getUser(@PathParam('id') id: string, @QueryParam('expand') expand?: string): ApiCall<User> {
+  getUser(
+    @PathParam('id') id: string,
+    @QueryParam('expand') expand?: 'profile' | 'teams',
+  ): ApiCall<User> {
     return undefined as never;
   }
 
@@ -63,33 +76,57 @@ class UserApi {
 }
 ```
 
-## 调用方式
+## 4. 像普通异步方法一样调用
 
 ```ts
 const api = new UserApi();
-const { data } = await api.getUser('42', 'profile');
+
+const { data: user } = await api.getUser('42', 'profile');
+const { data: created } = await api.createUser({ name: 'Ada' });
 ```
 
-推荐把方法返回值写成 `ApiCall<T>`。这样既能保留完整的 Axios 响应类型，也能让装饰器代码更清晰。
+装饰器不会改变方法的调用方式，它只是帮你组织请求配置和执行流程。
 
-## 导入策略
+## 5. 推荐把返回值写成 `ApiCall<T>`
 
-如果你更在意按需安装，推荐直接从 scoped 子包导入：
+这是当前最推荐的写法：
 
 ```ts
-import { Get, HttpApi } from '@awe-axios/core';
-import { Mock } from '@awe-axios/mock';
-import { Component } from '@awe-axios/ioc-aop';
+class UserApi {
+  @Get('/:id')
+  getUser(@PathParam('id') id: string): ApiCall<User> {
+    return undefined as never;
+  }
+}
 ```
 
-如果你只想使用短包名的 core 入口：
+它本质上等价于 `Promise<AxiosResponse<T>>`，只是更适合装饰器风格的 API 类。
+
+## 6. 需要时绑定自定义 axios 实例
+
+如果你的项目已经有统一配置好的 axios 实例，可以直接绑定到类上：
 
 ```ts
-import { Get, HttpApi } from 'awe-axios';
+import axios from 'axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+
+const request = axios.create({
+  baseURL: 'https://api.example.com',
+  timeout: 5000,
+});
+
+@RefAxios(request)
+@HttpApi('/users')
+class UserApi {
+  @Get('/')
+  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
+    return undefined as never;
+  }
+}
 ```
 
-如果你想直接从一个包里取到全部能力：
+## 下一步看什么
 
-```ts
-import { Component, Get, HttpApi, Mock } from '@awe-axios/all';
-```
+- 看 [包选择](./packages) 决定是否要上 `@awe-axios/all` 或 scoped 子包。
+- 看 [Core HTTP](./core) 了解 transform、策略装饰器和自定义装饰器。
+- 看 [Mock](./mock) 学习如何在不改变调用方式的前提下接入 MSW。

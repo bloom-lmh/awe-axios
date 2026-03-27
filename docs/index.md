@@ -3,22 +3,26 @@ layout: home
 
 hero:
   name: Awe Axios
-  text: Decorator-first Axios toolkit, now rebuilt as a modular monorepo
+  text: Core-first Axios decorators with modular mock and IoC/AOP packages
+  tagline: Build typed request clients with decorators, keep your install lean, and opt into mock or aspect features only when you need them.
   actions:
     - theme: brand
-      text: English Docs
+      text: Read in English
       link: /en/
     - theme: alt
-      text: 中文文档
+      text: 阅读中文文档
       link: /zh/
+    - theme: alt
+      text: GitHub
+      link: https://github.com/bloom-lmh/awe-axios
 
 features:
-  - title: Modular packages
-    details: Install only core HTTP decorators, mock support, or IoC and AOP as needed.
-  - title: Better TypeScript ergonomics
-    details: Use `ApiCall<T>` to keep request methods consistently typed as `Promise<AxiosResponse<T>>`.
-  - title: Stable runtime model
-    details: Mock and real requests now share the same call signature and lifecycle.
-  - title: Cleaner extension points
-    details: Build custom decorators with `withHttpMethodConfig` and keep runtime behavior predictable.
+  - title: Core-first package strategy
+    details: "`awe-axios` is now a lightweight core entry, while `@awe-axios/all` is the explicit full bundle."
+  - title: Stable request return types
+    details: "Decorated methods stay readable and consistently return `Promise<AxiosResponse<T>>` through `ApiCall<T>`."
+  - title: Opt-in runtime features
+    details: "Add `@awe-axios/mock` for MSW integration or `@awe-axios/ioc-aop` for dependency injection and aspect weaving."
+  - title: Publish-ready monorepo
+    details: "The project ships as npm workspaces with dual ESM/CJS builds, Changesets, and GitHub Actions release automation."
 ---

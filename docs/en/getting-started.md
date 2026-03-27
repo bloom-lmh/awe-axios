@@ -1,26 +1,34 @@
 # Getting Started
 
-## Install the core package
+This page shows the shortest path from installation to a typed request method.
+
+## 1. Install the package style you want
+
+For the short core-first entry:
 
 ```bash
 npm install awe-axios axios
 ```
 
-If you want explicit package splits:
+For the fully scoped core package:
 
 ```bash
-npm install @awe-axios/core @awe-axios/mock axios msw
+npm install @awe-axios/core axios
 ```
 
-If you want everything in one package:
+For the full bundle:
 
 ```bash
 npm install @awe-axios/all axios msw reflect-metadata
 ```
 
-`awe-axios` now maps to the core runtime only. `@awe-axios/all` is the intentional full bundle.
+::: tip
+If you are starting fresh and only need HTTP decorators, `awe-axios` is the recommended default.
+:::
 
-## Enable decorators
+## 2. Enable decorators in TypeScript
+
+Set these compiler options in `tsconfig.json`:
 
 ```json
 {
@@ -31,7 +39,9 @@ npm install @awe-axios/all axios msw reflect-metadata
 }
 ```
 
-## Define an API class
+`emitDecoratorMetadata` is only required if you also plan to use `@awe-axios/ioc-aop`.
+
+## 3. Define your first API class
 
 ```ts
 import {
@@ -52,7 +62,10 @@ interface User {
 @HttpApi('https://api.example.com/users')
 class UserApi {
   @Get('/:id')
-  getUser(@PathParam('id') id: string, @QueryParam('expand') expand?: string): ApiCall<User> {
+  getUser(
+    @PathParam('id') id: string,
+    @QueryParam('expand') expand?: 'profile' | 'teams',
+  ): ApiCall<User> {
     return undefined as never;
   }
 
@@ -63,33 +76,57 @@ class UserApi {
 }
 ```
 
-## Call it
+## 4. Call it like a normal async API
 
 ```ts
 const api = new UserApi();
-const { data } = await api.getUser('42', 'profile');
+
+const { data: user } = await api.getUser('42', 'profile');
+const { data: created } = await api.createUser({ name: 'Ada' });
 ```
 
-`ApiCall<T>` is the recommended return type because it keeps method signatures readable while preserving full Axios response typing.
+The decorated method itself is still called like a normal method. The decorator layer is only shaping request metadata and execution.
 
-## Import strategy
+## 5. Use `ApiCall<T>` as the default return type
 
-For the leanest install surface, import from the scoped packages:
+This pattern gives the best balance between readability and editor hints:
 
 ```ts
-import { Get, HttpApi } from '@awe-axios/core';
-import { Mock } from '@awe-axios/mock';
-import { Component } from '@awe-axios/ioc-aop';
+class UserApi {
+  @Get('/:id')
+  getUser(@PathParam('id') id: string): ApiCall<User> {
+    return undefined as never;
+  }
+}
 ```
 
-If you want a core-first convenience import, use `awe-axios`:
+It is equivalent to returning `Promise<AxiosResponse<User>>`, but is easier to scan in decorator-based classes.
+
+## 6. Add a custom axios instance when needed
+
+If your project already has a configured axios instance, bind it once at the class level:
 
 ```ts
-import { Get, HttpApi } from 'awe-axios';
+import axios from 'axios';
+import { type ApiCall, Get, HttpApi, RefAxios } from 'awe-axios';
+
+const request = axios.create({
+  baseURL: 'https://api.example.com',
+  timeout: 5000,
+});
+
+@RefAxios(request)
+@HttpApi('/users')
+class UserApi {
+  @Get('/')
+  listUsers(): ApiCall<Array<{ id: string; name: string }>> {
+    return undefined as never;
+  }
+}
 ```
 
-If you want a single package that also includes mock and IoC/AOP exports:
+## Next steps
 
-```ts
-import { Component, Get, HttpApi, Mock } from '@awe-axios/all';
-```
+- Read [Package Selection](./packages) to choose between `awe-axios`, scoped packages, and `@awe-axios/all`.
+- Read [Core HTTP](./core) for request transforms, strategy decorators, and custom decorators.
+- Read [Mock](./mock) if you want request-level mocking without changing call sites.

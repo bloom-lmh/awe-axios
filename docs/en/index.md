@@ -1,33 +1,75 @@
 # Overview
 
-Awe Axios is a modular Axios enhancement toolkit built around decorators.
+Awe Axios is a decorator-first toolkit built on top of Axios. It keeps API client declarations close to application code while still letting you split runtime features into separate packages.
 
-The project now ships as a monorepo with a sharper package split:
+## What changed in the current architecture
 
-- `awe-axios`
-- `@awe-axios/core`
-- `@awe-axios/mock`
-- `@awe-axios/ioc-aop`
-- `@awe-axios/all`
+The current monorepo is intentionally core-first:
 
-`awe-axios` is now the lightweight core-first entry. If you want the old single-entry, full-bundle experience, install `@awe-axios/all`.
+- `awe-axios` is the lightweight entry and maps to the core HTTP decorators.
+- `@awe-axios/core` is the explicit core package if you prefer fully scoped imports.
+- `@awe-axios/mock` adds MSW-backed mocking.
+- `@awe-axios/ioc-aop` adds dependency injection and aspect weaving.
+- `@awe-axios/all` is the explicit full bundle when you want one package that re-exports everything.
 
-## Why this rebuild
+This solves the two biggest problems from the older design:
 
-The previous codebase mixed HTTP decorators, mock runtime, IoC, and AOP into one package. That caused three recurring problems:
+- Installing the short package name no longer pulls mock or IoC/AOP dependencies by surprise.
+- Real requests and mocked requests now share the same method shape and return type.
 
-- Runtime behavior changed depending on whether mock mode was on.
-- Internal state managers were hard to reason about and easy to break.
-- TypeScript hints were weaker than they should be for a decorator-driven API.
+## Why teams use it
 
-This rebuild fixes those issues by separating responsibilities and simplifying the runtime pipeline.
+### Decorators stay readable
 
-## What you get now
+You describe an API with class, method, and parameter decorators instead of hand-writing request builders everywhere.
 
-- Predictable request methods that always return `Promise<AxiosResponse<T>>`
-- Optional mock support powered by MSW
-- A small IoC and AOP package that can be adopted independently
-- A dedicated full-bundle package when you want everything in one install
-- Workspace-based builds and package-scoped tests
+```ts
+import { type ApiCall, Get, HttpApi, PathParam } from 'awe-axios';
 
-Continue with [Getting Started](./getting-started).
+interface User {
+  id: string;
+  name: string;
+}
+
+@HttpApi('https://api.example.com/users')
+class UserApi {
+  @Get('/:id')
+  getUser(@PathParam('id') id: string): ApiCall<User> {
+    return undefined as never;
+  }
+}
+```
+
+### TypeScript stays predictable
+
+`ApiCall<T>` keeps method signatures short while preserving the actual runtime shape:
+
+```ts
+type ApiCall<T> = Promise<AxiosResponse<T>>
+```
+
+### Features stay optional
+
+You can start with the HTTP layer only, then add mocking or AOP later without changing the whole project structure.
+
+## Recommended starting points
+
+Choose one of these depending on the kind of project you are building:
+
+| Need | Recommended package |
+| --- | --- |
+| Short package name, core HTTP only | `awe-axios` |
+| Explicit scoped core package | `@awe-axios/core` |
+| Core + MSW mocking | `@awe-axios/core` + `@awe-axios/mock` |
+| Core + IoC/AOP | `@awe-axios/core` + `@awe-axios/ioc-aop` |
+| Single full bundle | `@awe-axios/all` |
+
+## Documentation map
+
+- Start with [Getting Started](./getting-started) if you want the first runnable example.
+- Read [Package Selection](./packages) if you are deciding which package to install.
+- Read [Core HTTP](./core) for decorators, strategies, transforms, and custom axios instances.
+- Read [Mock](./mock) for MSW integration.
+- Read [IoC and AOP](./ioc-aop) for components, injection, and aspects.
+- Read [Recipes](./recipes) for practical patterns.
+- Read [Migration Guide](./migration) if you are upgrading from the previous single-package design.
