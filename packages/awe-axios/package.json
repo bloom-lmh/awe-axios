@@ -1,6 +1,6 @@
 {
   "name": "awe-axios",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Core-first package alias for Awe Axios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
@@ -48,7 +48,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/awe-axios-core": "^0.2.0"
+    "@decoraxios/awe-axios-core": "^0.3.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0"
