@@ -1,6 +1,6 @@
 {
   "name": "decoraxios",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Core-first package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
@@ -48,7 +48,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/core": "^0.4.0"
+    "@decoraxios/core": "^0.5.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0"

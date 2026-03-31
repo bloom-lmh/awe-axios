@@ -1,6 +1,6 @@
 {
   "name": "@decoraxios/all",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Full bundle package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
@@ -19,9 +19,11 @@
   "keywords": [
     "axios",
     "mock",
+    "websocket",
     "ioc",
     "aop",
     "decorator",
+    "decoraxios",
     "typescript"
   ],
   "exports": {
@@ -45,9 +47,10 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@decoraxios/core": "^0.4.0",
-    "@decoraxios/ioc-aop": "^0.4.0",
-    "@decoraxios/mock": "^0.4.0"
+    "@decoraxios/core": "^0.5.0",
+    "@decoraxios/ioc-aop": "^0.5.0",
+    "@decoraxios/mock": "^0.5.0",
+    "@decoraxios/mock-ws": "^0.5.0"
   },
   "peerDependencies": {
     "axios": "^1.11.0",

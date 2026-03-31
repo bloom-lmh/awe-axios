@@ -2,6 +2,8 @@
 
 `@decoraxios/mock` adds decorator-friendly mocking on top of the core HTTP package. It uses MSW under the hood, but keeps the call shape consistent with real requests.
 
+If you need WebSocket mocking, use [`@decoraxios/mock-ws`](./mock-ws.md).
+
 ## Install
 
 ```bash

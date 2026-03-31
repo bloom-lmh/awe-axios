@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@decoraxios/core": ["../core/src/index.ts"]
+    },
     "composite": true,
     "rootDir": "./src",
     "outDir": "./dist"

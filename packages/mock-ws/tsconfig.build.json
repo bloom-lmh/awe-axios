@@ -1,12 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "composite": false,
-    "incremental": false,
-    "paths": {
-      "@decoraxios/core": ["../core/dist/index.d.ts"]
-    }
+    "incremental": false
   },
   "references": [],
   "include": ["src/**/*.ts"],

@@ -8,9 +8,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:core && npm run build:mock && npm run build:ioc-aop && npm run build:bundle && npm run build:main",
+    "build": "npm run clean && npm run build:core && npm run build:mock && npm run build:mock-ws && npm run build:ioc-aop && npm run build:bundle && npm run build:main",
     "build:core": "npm run build -w @decoraxios/core",
     "build:mock": "npm run build -w @decoraxios/mock",
+    "build:mock-ws": "npm run build -w @decoraxios/mock-ws",
     "build:ioc-aop": "npm run build -w @decoraxios/ioc-aop",
     "build:bundle": "npm run build -w @decoraxios/all",
     "build:main": "npm run build -w decoraxios",
@@ -23,9 +24,10 @@
     "version-packages": "changeset version && npm install --package-lock-only --ignore-scripts",
     "release": "npm run build && changeset publish",
     "release:check": "npm run build && npm run typecheck && npm test && npm run docs:build && npm run pack:dry-run",
-    "pack:dry-run": "npm run pack:core && npm run pack:mock && npm run pack:ioc-aop && npm run pack:bundle && npm run pack:main",
+    "pack:dry-run": "npm run pack:core && npm run pack:mock && npm run pack:mock-ws && npm run pack:ioc-aop && npm run pack:bundle && npm run pack:main",
     "pack:core": "npm pack --dry-run -w @decoraxios/core",
     "pack:mock": "npm pack --dry-run -w @decoraxios/mock",
+    "pack:mock-ws": "npm pack --dry-run -w @decoraxios/mock-ws",
     "pack:ioc-aop": "npm pack --dry-run -w @decoraxios/ioc-aop",
     "pack:bundle": "npm pack --dry-run -w @decoraxios/all",
     "pack:main": "npm pack --dry-run -w decoraxios",

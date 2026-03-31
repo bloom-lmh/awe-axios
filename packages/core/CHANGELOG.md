@@ -1,5 +1,11 @@
 # @decoraxios/core
 
+## 0.5.0
+
+### Minor Changes
+
+- Add standalone WebSocket mocking with a decorator-first protocol DSL, plus bundled exports, examples, and documentation updates across the workspace.
+
 ## 0.4.1
 
 ### Patch Changes

@@ -2,6 +2,8 @@
 
 `@decoraxios/mock` adds MSW-powered mocking to Decoraxios while keeping the same async call shape as real requests.
 
+If you need WebSocket mocking, use `@decoraxios/mock-ws`.
+
 ## Install
 
 ```bash

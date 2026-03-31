@@ -13,7 +13,8 @@ const enSidebar = [
     items: [
       { text: 'HTTP Decorators', link: '/en/core' },
       { text: 'Runtime Decorators', link: '/en/extensions' },
-      { text: 'Mock', link: '/en/mock' },
+      { text: 'HTTP Mock', link: '/en/mock' },
+      { text: 'WebSocket Mock', link: '/en/mock-ws' },
       { text: 'IoC and AOP', link: '/en/ioc-aop' },
     ],
   },
@@ -23,7 +24,7 @@ const zhSidebar = [
   {
     text: '指南',
     items: [
-      { text: '概览', link: '/zh/' },
+      { text: '总览', link: '/zh/' },
       { text: '快速开始', link: '/zh/getting-started' },
     ],
   },
@@ -32,7 +33,8 @@ const zhSidebar = [
     items: [
       { text: 'HTTP 装饰器', link: '/zh/core' },
       { text: '运行时装饰器', link: '/zh/extensions' },
-      { text: 'Mock', link: '/zh/mock' },
+      { text: 'HTTP Mock', link: '/zh/mock' },
+      { text: 'WebSocket Mock', link: '/zh/mock-ws' },
       { text: 'IoC / AOP', link: '/zh/ioc-aop' },
     ],
   },

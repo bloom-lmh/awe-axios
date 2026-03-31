@@ -4,6 +4,7 @@
     { "path": "./packages/all" },
     { "path": "./packages/core" },
     { "path": "./packages/mock" },
+    { "path": "./packages/mock-ws" },
     { "path": "./packages/ioc-aop" },
     { "path": "./packages/decoraxios" }
   ]

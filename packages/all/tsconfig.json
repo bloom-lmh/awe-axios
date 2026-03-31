@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@decoraxios/core": ["../core/src/index.ts"],
+      "@decoraxios/mock": ["../mock/src/index.ts"],
+      "@decoraxios/mock-ws": ["../mock-ws/src/index.ts"],
+      "@decoraxios/ioc-aop": ["../ioc-aop/src/index.ts"]
+    },
     "composite": true,
     "rootDir": "./src",
     "outDir": "./dist"
@@ -8,6 +15,7 @@
   "references": [
     { "path": "../core" },
     { "path": "../mock" },
+    { "path": "../mock-ws" },
     { "path": "../ioc-aop" }
   ],
   "include": ["src/**/*.ts"],

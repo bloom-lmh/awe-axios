@@ -1,6 +1,6 @@
 {
   "name": "@decoraxios/core",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Decorator-first core HTTP package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",

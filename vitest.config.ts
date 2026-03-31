@@ -7,6 +7,7 @@ export default defineConfig({
       { find: '@decoraxios/all', replacement: resolve(__dirname, 'packages/all/src/index.ts') },
       { find: '@decoraxios/core', replacement: resolve(__dirname, 'packages/core/src/index.ts') },
       { find: '@decoraxios/mock', replacement: resolve(__dirname, 'packages/mock/src/index.ts') },
+      { find: '@decoraxios/mock-ws', replacement: resolve(__dirname, 'packages/mock-ws/src/index.ts') },
       { find: '@decoraxios/ioc-aop', replacement: resolve(__dirname, 'packages/ioc-aop/src/index.ts') },
       { find: 'decoraxios/core', replacement: resolve(__dirname, 'packages/decoraxios/src/core.ts') },
       { find: 'decoraxios', replacement: resolve(__dirname, 'packages/decoraxios/src/index.ts') },

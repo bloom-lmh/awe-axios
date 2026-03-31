@@ -7,6 +7,7 @@
       "@decoraxios/all": ["./packages/all/src/index.ts"],
       "@decoraxios/core": ["./packages/core/src/index.ts"],
       "@decoraxios/mock": ["./packages/mock/src/index.ts"],
+      "@decoraxios/mock-ws": ["./packages/mock-ws/src/index.ts"],
       "@decoraxios/ioc-aop": ["./packages/ioc-aop/src/index.ts"],
       "decoraxios": ["./packages/decoraxios/src/index.ts"],
       "decoraxios/core": ["./packages/decoraxios/src/core.ts"]

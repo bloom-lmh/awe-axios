@@ -14,8 +14,9 @@ Decoraxios is a decorator-first HTTP toolkit built on top of Axios. It keeps API
 | `decoraxios` | Recommended root package. Re-exports the core HTTP decorator surface. |
 | `@decoraxios/core` | Explicit core package with HTTP decorators, parameter decorators, and runtime decorators. |
 | `@decoraxios/mock` | MSW-powered mock decorators and `MockAPI`. |
+| `@decoraxios/mock-ws` | Standalone MSW-powered WebSocket mocking with decorators and raw handlers. |
 | `@decoraxios/ioc-aop` | IoC container, dependency injection, and AOP decorators. |
-| `@decoraxios/all` | Full bundle that re-exports every public decorator. |
+| `@decoraxios/all` | Full bundle that re-exports the public APIs from every package. |
 
 ## Installation
 
@@ -27,6 +28,10 @@ npm install decoraxios axios
 
 ```bash
 npm install decoraxios @decoraxios/mock axios msw
+```
+
+```bash
+npm install @decoraxios/mock-ws msw
 ```
 
 ```bash
@@ -112,8 +117,14 @@ const { data } = await api.getUser('42', 'profile');
 - Parameter binding: `@PathParam`, `@QueryParam`, `@BodyParam`
 - Runtime configuration: `@RefAxios`, `@AxiosRef`, `@TransformRequest`, `@TransformResponse`
 - Runtime strategies: `@Retry`, `@Debounce`, `@Throttle`
-- Mocking: `@Mock`, `MockAPI`
+- Mocking: `@Mock`, `MockAPI`, `@WebSocketMock`, `@WebSocketState`, `@OnConnection`, `@OnClientMessage`, `@WsMessageType`, `@WsGuard`, `@WsJsonGuard`, `@WsJsonMatch`, `@WsJsonPath`, `@WsNamespace`, `@WsAck`, `@WsError`, `@WsJsonData`, `@WsPathParam`, `@WsState`, `@WsPatchState`, `@WsSendJson`, `MockWebSocketAPI`, `ws`
 - IoC and AOP: `@Component`, `@Inject`, `@Aspect`, `@Before`, `@After`, `@Around`, `@AfterReturning`, `@AfterThrowing`
+
+## Workspace examples
+
+- [HTTP mock basics](./examples/mock-basic.ts)
+- [WebSocket protocol mock](./examples/mock-ws-protocol.ts)
+- [Umbrella imports](./examples/umbrella-imports.ts)
 
 ## Documentation map
 
@@ -121,13 +132,15 @@ const { data } = await api.getUser('42', 'profile');
 - [English getting started](./docs/en/getting-started.md)
 - [English HTTP decorators](./docs/en/core.md)
 - [English runtime decorators](./docs/en/extensions.md)
-- [English mock guide](./docs/en/mock.md)
+- [English HTTP mock guide](./docs/en/mock.md)
+- [English WebSocket mock guide](./docs/en/mock-ws.md)
 - [English IoC and AOP guide](./docs/en/ioc-aop.md)
 - [中文总览](./docs/zh/index.md)
 - [中文快速开始](./docs/zh/getting-started.md)
 - [中文 HTTP 装饰器](./docs/zh/core.md)
 - [中文运行时装饰器](./docs/zh/extensions.md)
-- [中文 Mock 指南](./docs/zh/mock.md)
+- [中文 HTTP Mock 指南](./docs/zh/mock.md)
+- [中文 WebSocket Mock 指南](./docs/zh/mock-ws.md)
 - [中文 IoC / AOP 指南](./docs/zh/ioc-aop.md)
 
 ## Development

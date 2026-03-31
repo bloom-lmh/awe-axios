@@ -1,6 +1,6 @@
 {
   "name": "@decoraxios/ioc-aop",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "IoC and AOP package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",

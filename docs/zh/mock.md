@@ -2,6 +2,8 @@
 
 `@decoraxios/mock` 在核心 HTTP 包之上提供装饰器友好的 Mock 能力。它底层使用 MSW，但调用方式与真实请求保持一致。
 
+如果你需要 WebSocket Mock，请使用 [`@decoraxios/mock-ws`](./mock-ws.md)。
+
 ## 安装
 
 ```bash

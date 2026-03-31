@@ -1,7 +1,7 @@
 {
-  "name": "@decoraxios/mock",
+  "name": "@decoraxios/mock-ws",
   "version": "0.5.0",
-  "description": "MSW-powered mock package for Decoraxios",
+  "description": "MSW-powered WebSocket mock package for Decoraxios",
   "author": "SWUST-LMH <1357526355@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -17,7 +17,9 @@
     "url": "https://github.com/bloom-lmh/decoraxios/issues"
   },
   "keywords": [
-    "axios",
+    "decoraxios",
+    "decorator",
+    "websocket",
     "mock",
     "msw",
     "typescript"
@@ -42,9 +44,6 @@
     "LICENSE"
   ],
   "sideEffects": false,
-  "dependencies": {
-    "@decoraxios/core": "^0.5.0"
-  },
   "peerDependencies": {
     "msw": "^2.11.6"
   },

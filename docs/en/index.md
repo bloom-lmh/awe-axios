@@ -14,15 +14,17 @@ Decoraxios is a focused Axios toolkit for teams that prefer decorator-based API 
 | `decoraxios` | You want the default root package with the core HTTP decorator surface. |
 | `@decoraxios/core` | You want the explicit core package name in imports or package manifests. |
 | `@decoraxios/mock` | You want decorator-friendly MSW mocking for local development or tests. |
+| `@decoraxios/mock-ws` | You want standalone WebSocket mocking powered by MSW, with decorator mode available. |
 | `@decoraxios/ioc-aop` | You want dependency injection and aspect weaving in class-based application code. |
-| `@decoraxios/all` | You want one package that re-exports every public decorator. |
+| `@decoraxios/all` | You want one package that re-exports the public APIs from every package. |
 
 ## Documentation map
 
 - [Getting Started](./getting-started.md)
 - [HTTP Decorators](./core.md)
 - [Runtime Decorators](./extensions.md)
-- [Mock](./mock.md)
+- [HTTP Mock](./mock.md)
+- [WebSocket Mock](./mock-ws.md)
 - [IoC and AOP](./ioc-aop.md)
 
 ## Design principles
